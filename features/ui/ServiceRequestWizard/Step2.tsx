@@ -6,7 +6,6 @@ import { skipToken } from '@reduxjs/toolkit/query';
 import { ChangeEvent, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
-import { useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 
 const minYear = new Date('1980').getFullYear();
@@ -29,7 +28,6 @@ export function Step2() {
   const [model, setModel] = useState<ModelDto>();
   const [trim, setTrim] = useState<TrimDto>();
   const [vin, setVin] = useState<string>();
-  const dispatch = useDispatch();
   const [decode, { data: vehicle, isLoading: isVehicleDecoding, error }] = useLazyDecodeQuery();
   const { data: makes, isFetching: isMakesFetching } = useGetMakesQuery();
   const { data: models, isFetching: isModelsFetching } = useGetModelsQuery(year && make ? { yearId: year.name, makeId: make.name } : skipToken, { skip: !year || !make });
