@@ -12,6 +12,23 @@ const loader = new Loader({
   libraries: ['places'],
 });
 
+function showError(error: GeolocationPositionError) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      alert('User denied the request for Geolocation.');
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert('Location information is unavailable.');
+      break;
+    case error.TIMEOUT:
+      alert('The request to get user location timed out.');
+      break;
+    default:
+      alert('An unknown error occurred.');
+      break;
+  }
+}
+
 export function Step1() {
   const [isMapsApiLoading, setMapsApiLoading] = useState(true);
   const { data: places, isFetching } = useGetPlacesQuery();
@@ -36,7 +53,7 @@ export function Step1() {
               zoom: 12,
               mapTypeControl: false,
             });
-            
+
             if (places) {
               for (const place of places) {
                 new google.maps.Marker({
@@ -46,7 +63,8 @@ export function Step1() {
               }
             }
           },
-          (e) => {
+          (positionError) => {
+            showError(positionError);
             map = new Map(document.getElementById('map') as HTMLElement, {
               center: { lat: 40.749933, lng: -73.98633 },
               zoom: 12,
