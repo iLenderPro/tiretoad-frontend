@@ -14,7 +14,7 @@ export function Step3() {
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
     const map = new Map(document.getElementById('map') as HTMLElement, {
       center: { lat: 40.749933, lng: -73.98633 },
-      zoom: 13,
+      zoom: 12,
       mapTypeControl: false,
     });
 
