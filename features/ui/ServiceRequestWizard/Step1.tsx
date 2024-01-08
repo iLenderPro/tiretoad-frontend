@@ -5,6 +5,9 @@ import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { useGetPlacesQuery } from '@/entities/vendors/api/vendorApi';
+import { useGetLocationQuery } from '@/entities/geo/api/geoApi';
+import { useSelector } from 'react-redux';
+import { selectLocation } from '@/entities/geo/geoSlice';
 
 const loader = new Loader({
   apiKey: 'AIzaSyCKhSAyYFPO5A1ADMys0uiNkIUS1763JyI',
@@ -12,32 +15,36 @@ const loader = new Loader({
   libraries: ['places'],
 });
 
-function showError(error: GeolocationPositionError) {
+function handleError(error: GeolocationPositionError) {
   switch (error.code) {
     case error.PERMISSION_DENIED:
-      alert('User denied the request for Geolocation.');
+      console.log('User denied the request for Geolocation.');
       break;
     case error.POSITION_UNAVAILABLE:
-      alert('Location information is unavailable.');
+      console.log('Location information is unavailable.');
       break;
     case error.TIMEOUT:
-      alert('The request to get user location timed out.');
+      console.log('The request to get user location timed out.');
       break;
     default:
-      alert('An unknown error occurred.');
+      console.log('An unknown error occurred.');
       break;
   }
 }
 
 export function Step1() {
   const [isMapsApiLoading, setMapsApiLoading] = useState(true);
-  const { data: places, isFetching } = useGetPlacesQuery();
+  const { isFetching: isLocationFetching, isSuccess: isLocationSuccess, isError: isLocationError } = useGetLocationQuery();
+  const { data: places, isFetching: isPlacesFetching } = useGetPlacesQuery();
+  const location = useSelector(selectLocation);
+
   let map: google.maps.Map;
 
   useEffect(() => {
-    loader.load().then(() => {
-      setMapsApiLoading(false);
-    });
+    !map &&
+      loader.load().then(() => {
+        setMapsApiLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -64,12 +71,25 @@ export function Step1() {
             }
           },
           (positionError) => {
-            showError(positionError);
-            map = new Map(document.getElementById('map') as HTMLElement, {
-              center: { lat: 40.749933, lng: -73.98633 },
-              zoom: 12,
-              mapTypeControl: false,
-            });
+            handleError(positionError);
+
+            if (!isLocationFetching && isLocationSuccess && location) {
+              console.log('Using IP location');
+              map = new Map(document.getElementById('map') as HTMLElement, {
+                center: { lat: location?.latitude || 40.749933, lng: location?.longitude || -73.98633 },
+                zoom: 12,
+                mapTypeControl: false,
+              });
+            }
+
+            if (!isLocationFetching && isLocationError) {
+              console.log('Using fallback location (NY)');
+              map = new Map(document.getElementById('map') as HTMLElement, {
+                center: { lat: 40.749933, lng: -73.98633 },
+                zoom: 12,
+                mapTypeControl: false,
+              });
+            }
 
             if (places) {
               for (const place of places) {
@@ -83,10 +103,10 @@ export function Step1() {
         );
       }
     };
-    if (!isMapsApiLoading && !map) {
+    if (!isMapsApiLoading && !map && !isLocationFetching && places) {
       renderMap().catch(console.error);
     }
-  }, [isMapsApiLoading, places]);
+  }, [isMapsApiLoading, isLocationFetching, places]);
 
   return (
     <Stack alignItems="center" gap={5}>

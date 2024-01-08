@@ -4,6 +4,8 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ReactNode } from 'react';
 import ThemeRegistry from '@/shared/ThemeRegistry/ThemeRegistry';
 import StoreProvider from '@/app/StoreProvider';
+import { store } from '@/app/store';
+import { geoApi } from '@/entities/geo/api/geoApi';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -11,6 +13,8 @@ export const metadata: Metadata = {
   title: 'TireToad',
   description: 'Mobile tire repair everywhere',
 };
+
+store.dispatch(geoApi.endpoints.getLocation.initiate());
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
