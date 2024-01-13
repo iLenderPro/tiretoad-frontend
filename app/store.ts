@@ -1,11 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { baseApi } from '@/shared/api';
 import { geoSlice } from '@/entities/geo/geoSlice';
+import { serviceRequestSlice } from '@/entities/serviceRequest/serviceRequestSlice';
+import { vendorSlice } from '@/entities/vendors/vendorSlice';
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     [geoSlice.reducerPath]: geoSlice.reducer,
+    [vendorSlice.reducerPath]: vendorSlice.reducer,
+    [serviceRequestSlice.reducerPath]: serviceRequestSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
   devTools: true,

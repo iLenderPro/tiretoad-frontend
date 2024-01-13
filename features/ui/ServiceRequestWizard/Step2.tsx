@@ -1,12 +1,17 @@
 import { CircularProgress, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { MakeDto, ModelDto, TrimDto } from '@/entities/tires/api/dto';
 import { useGetMakesQuery, useGetModelsQuery, useGetTiresQuery, useGetTrimsQuery } from '@/entities/tires/api/tiresApi';
 import { skipToken } from '@reduxjs/toolkit/query';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import Box from '@mui/material/Box';
+import { useDispatch, useSelector } from 'react-redux';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
+import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { ImageUpload } from '@/features/ui/ImageUpload/ImageUpload';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();
@@ -19,145 +24,269 @@ for (let i = minYear; i <= currentYear; i++) {
   years.push({ id: i.toString(), name: i });
 }
 
-export function Step2() {
-  const [year, setYear] = useState<{
-    id: string;
-    name: number;
-  }>({ id: currentYear.toString(), name: currentYear });
-  const [make, setMake] = useState<MakeDto>();
-  const [model, setModel] = useState<ModelDto>();
-  const [trim, setTrim] = useState<TrimDto>();
-  const [vin, setVin] = useState<string>();
-  const [decode, { data: vehicle, isLoading: isVehicleDecoding, error }] = useLazyDecodeQuery();
-  const { data: makes, isFetching: isMakesFetching } = useGetMakesQuery();
-  const { data: models, isFetching: isModelsFetching } = useGetModelsQuery(year && make ? { yearId: year.name, makeId: make.name } : skipToken, { skip: !year || !make });
-  const { data: trims, isFetching: isTrimsFetching } = useGetTrimsQuery(year && make && model ? { yearId: year.name, makeId: make.name, modelId: model.name } : skipToken, {
-    skip: !year || !make || !model,
+export function Step2(props: StepProps) {
+  const { formRef, goToNextStep } = props;
+  const [decode, { data: decoded, isLoading: isVehicleDecoding }] = useLazyDecodeQuery();
+
+  const serviceRequest = useSelector(selectServiceRequest);
+  const dispatch = useDispatch();
+  const methods = useForm<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>({
+    values: serviceRequest,
   });
-  const { data: tires, isFetching: isTiresFetching } = useGetTiresQuery(
-    year && make && model && trim ? { yearId: year.name, makeId: make.name, modelId: model.name, trimId: trim.name } : skipToken,
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = methods;
+
+  const vehicle = watch('vehicle');
+
+  const { data: makes, isFetching: isMakesFetching } = useGetMakesQuery();
+  const { data: models, isFetching: isModelsFetching } = useGetModelsQuery(
+    vehicle && vehicle?.year && vehicle?.make
+      ? {
+        yearId: vehicle?.year,
+        makeId: makes?.find((make) => make.id === vehicle?.make)?.name || '',
+      }
+      : skipToken,
+    { skip: !vehicle || !vehicle?.year || !vehicle?.make },
+  );
+  const { data: trims, isFetching: isTrimsFetching } = useGetTrimsQuery(
+    vehicle && vehicle?.year && vehicle?.make && vehicle?.model
+      ? {
+        yearId: vehicle?.year,
+        makeId: makes?.find((make) => make.id === vehicle?.make)?.name || '',
+        modelId: models?.find((model) => model.id === vehicle?.model)?.name || '',
+      }
+      : skipToken,
     {
-      skip: !year || !make || !model || !trim,
+      skip: !vehicle || !vehicle?.year || !vehicle?.make || !vehicle?.model,
+    },
+  );
+  const { data: tires, isFetching: isTiresFetching } = useGetTiresQuery(
+    vehicle && vehicle?.year && vehicle?.make && vehicle?.model && vehicle?.trim
+      ? {
+        yearId: vehicle?.year,
+        makeId: makes?.find((make) => make.id === vehicle?.make)?.name || '',
+        modelId: models?.find((model) => model.id === vehicle?.model)?.name || '',
+        trimId: trims?.find((trim) => trim.id === vehicle?.trim)?.name || '',
+      }
+      : skipToken,
+    {
+      skip: !vehicle || !vehicle?.year || !vehicle?.make || !vehicle?.model || !vehicle?.trim,
     },
   );
 
+  const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires' | 'vehicle'>) => {
+    dispatch(
+      setServiceRequest({
+        ...data,
+        tires: data.tires.map((tire) => ({ ...tire, size: tires?.find((size) => size.id === tire.size)?.name || '' })),
+        vehicle: {
+          ...data.vehicle,
+          make: makes?.find((make) => make.id === vehicle?.make)?.name || '',
+          model: models?.find((model) => model.id === vehicle?.model)?.name || '',
+          trim: trims?.find((trim) => trim.id === vehicle?.trim)?.name || '',
+        },
+      }),
+    );
+    goToNextStep();
+  };
+
   const handleDecode = () => {
-    vin && decode(vin);
-  };
-
-  const handleChangeYear = (e: ChangeEvent<HTMLInputElement>) => {
-    setYear(years?.find((year) => year.id.toString() === e.target.value) || { id: currentYear.toString(), name: currentYear });
-    setModel(undefined);
-    setTrim(undefined);
-  };
-
-  const handleChangeMake = async (e: ChangeEvent<HTMLInputElement>) => {
-    makes && setMake(makes?.find((make) => make.id === e.target.value));
-    setModel(undefined);
-    setTrim(undefined);
-    // trims && (await dispatch(tiresApi.util.upsertQueryData('getTrims', undefined, null)));
-  };
-  const handleChangeModel = (e: ChangeEvent<HTMLInputElement>) => {
-    models && setModel(models?.find((model) => model.id === e.target.value));
-  };
-
-  const handleChangeTrim = (e: ChangeEvent<HTMLInputElement>) => {
-    setTrim(trims?.find((trim) => trim.id === e.target.value));
+    vehicle.vin && decode(vehicle.vin);
   };
 
   const isLoading = isVehicleDecoding || isMakesFetching || isModelsFetching || isTrimsFetching || isTiresFetching;
 
   useEffect(() => {
-    if (vehicle && !isVehicleDecoding) {
-      vehicle.year && setYear({ id: vehicle.year.toString(), name: vehicle.year });
-      makes && vehicle.make && setMake(makes.find((make) => make.name === vehicle.make) || ({} as MakeDto));
+    if (decoded && !isVehicleDecoding) {
+      decoded.year && setValue('vehicle.year', decoded.year);
+      makes && decoded.make && setValue('vehicle.make', makes?.find((make) => make.name === decoded.make)?.id || '');
     }
-  }, [isVehicleDecoding, vehicle]);
+  }, [isVehicleDecoding, decoded]);
 
   useEffect(() => {
-    if (vehicle && !isVehicleDecoding) {
-      models && vehicle?.model && setModel(models.find((model) => model.name === vehicle.model) || ({} as ModelDto));
+    if (decoded && !isVehicleDecoding) {
+      models && decoded?.model && setValue('vehicle.model', models.find((model) => model.name === decoded.model)?.id || '');
     }
-  }, [make, models]);
+  }, [vehicle?.make, models]);
 
   useEffect(() => {
-    if (vehicle && !isVehicleDecoding) {
-      trims && vehicle?.trim && setModel(trims.find((trim) => trim.name === vehicle.trim) || ({} as TrimDto));
+    if (decoded && !isVehicleDecoding) {
+      trims && decoded?.trim && setValue('vehicle.trim', trims.find((trim) => trim.name === decoded.trim)?.id || '');
     }
-  }, [trim, trims]);
+  }, [vehicle?.trim, trims]);
 
   return (
-    <Stack alignItems="center" gap={5}>
-      <Typography variant="h4">Enter VIN or Select Year, Make, Model and Trim to Find Your Tire</Typography>
-      <Stack direction="row" width={1} gap={3}>
-        <TextField placeholder="Enter VIN" fullWidth onChange={(e) => setVin(e.target.value)} />
-        <Button variant="contained" size="large" onClick={handleDecode} disabled={isLoading} endIcon={isLoading ? <CircularProgress size="1.5rem" /> : null}>
-          Decode
-        </Button>
-      </Stack>
-      <Stack direction="row" gap={3} width={1}>
-        <TextField label="Year" select fullWidth disabled={isLoading} value={year?.id} onChange={handleChangeYear}>
-          {years &&
-            years.map(({ id, name }) => (
-              <MenuItem key={id} value={id}>
-                {name}
-              </MenuItem>
-            ))}
-        </TextField>
-        <TextField label="Make" select fullWidth disabled={isLoading} value={make?.id || ''} onChange={handleChangeMake}>
-          {makes ? (
-            makes.map(({ id, name }) => (
-              <MenuItem key={id} value={id}>
-                {name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>Select Make</MenuItem>
+    <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
+      <FormProvider {...methods}>
+        <Stack alignItems='center' gap={4}>
+          <Typography variant='h4'>Enter VIN</Typography>
+          <Stack direction='row' width={1} gap={2}>
+            <TextField {...register('vehicle.vin')} placeholder='Enter VIN' fullWidth />
+            <Button variant='contained' size='large' onClick={handleDecode} disabled={isLoading}
+                    endIcon={isLoading ? <CircularProgress size='1.5rem' color='inherit' /> : null}>
+              Decode
+            </Button>
+          </Stack>
+          <Typography variant='h5'>Or Select Year, Make, Model and Trim</Typography>
+          <Stack direction='row' flexWrap='wrap' gap={2} width={1}>
+            <Controller
+              control={control}
+              name='vehicle.year'
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label='Year'
+                  select
+                  fullWidth
+                  disabled={isLoading}
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    setValue('vehicle.model', '');
+                    setValue('vehicle.trim', '');
+                    field.onChange(e.target.value);
+                  }}
+                  style={{ flex: 1, minWidth: '250px' }}
+                >
+                  {years &&
+                    years.map(({ id, name }) => (
+                      <MenuItem key={id} value={id}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              )}
+            />
+            <Controller
+              control={control}
+              name='vehicle.make'
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label='Make'
+                  select
+                  fullWidth
+                  disabled={isLoading}
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    setValue('vehicle.model', '');
+                    setValue('vehicle.trim', '');
+                    field.onChange(e.target.value);
+                  }}
+                  style={{ flex: 1, minWidth: '250px' }}
+                >
+                  {makes ? (
+                    makes.map(({ id, name }) => (
+                      <MenuItem key={id} value={id}>
+                        {name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>Select Make</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+            <Controller
+              control={control}
+              name='vehicle.model'
+              render={({ field }) => (
+                <TextField
+                  label='Model'
+                  select
+                  fullWidth
+                  disabled={isLoading}
+                  value={field.value || ''}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  style={{ flex: 1, minWidth: '250px' }}
+                >
+                  {vehicle?.make && models ? (
+                    models.map(({ id, name }) => (
+                      <MenuItem key={id} value={id}>
+                        {name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Model'}</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+            <Controller
+              control={control}
+              name='vehicle.trim'
+              render={({ field }) => (
+                <TextField
+                  label='Trim'
+                  select
+                  fullWidth
+                  disabled={isLoading}
+                  value={field.value || ''}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  style={{ flex: 1, minWidth: '250px' }}
+                >
+                  {vehicle?.model && trims ? (
+                    trims.map(({ id, name }) => (
+                      <MenuItem key={id} value={id}>
+                        {name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>Select Trim</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+          </Stack>
+          <Typography variant='h5'>Add image of damage to tire and image of tire wall that shows tire size</Typography>
+          <Stack direction='row' maxWidth='566px' gap={2}>
+            <ImageUpload name='tires.0.imageOfDamage' title='Damage'
+                         placeholder='/images/tire-flat-placeholder-1.png' />
+            <ImageUpload name='tires.0.imageOfTireWall' title='Tire wall'
+                         placeholder='/images/tire-flat-placeholder-2.png' />
+          </Stack>
+          {tires && (
+            <Stack gap={2}>
+              <Controller
+                rules={{ required: true }}
+                control={control}
+                name='tires.0.size'
+                defaultValue={tires[0].id}
+                render={({ field }) => (
+                  <RadioGroup row {...field}>
+                    <Box width={1}>
+                      <Typography variant='h5'>Please select the tires you have</Typography>
+                      {tires.map((tire) => (
+                        <FormControlLabel key={tire.id} value={tire.id} control={<Radio />} label={tire.name} />
+                      ))}
+                    </Box>
+                  </RadioGroup>
+                )}
+              />
+              <Controller
+                rules={{ required: true }}
+                control={control}
+                name='tires.0.type'
+                defaultValue='STANDARD'
+                render={({ field }) => (
+                  <RadioGroup row {...field}>
+                    <Box width={1}>
+                      <Typography variant='h5'>Select tire type</Typography>
+                      <FormControlLabel key='RUNFLAT' value='RUNFLAT' control={<Radio />} label='Runflat' />
+                      <FormControlLabel key='STANDARD' value='STANDARD' control={<Radio />} label='Standard' />
+                    </Box>
+                  </RadioGroup>
+                )}
+              />
+            </Stack>
           )}
-        </TextField>
-        <TextField label="Model" select fullWidth disabled={isLoading} value={model?.id || ''} onChange={handleChangeModel}>
-          {make && models ? (
-            models.map(({ id, name }) => (
-              <MenuItem key={id} value={id}>
-                {name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Model'}</MenuItem>
-          )}
-        </TextField>
-        <TextField label="Trim" select fullWidth disabled={isLoading} value={trim?.id || ''} onChange={handleChangeTrim}>
-          {model && trims ? (
-            trims.map(({ id, name }) => (
-              <MenuItem key={id} value={id}>
-                {name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>Select Trim</MenuItem>
-          )}
-        </TextField>
-      </Stack>
-      {tires && (
-        <Stack gap={3}>
-          <RadioGroup row name="tire-size">
-            <Box width={1}>
-              <Typography variant="h5">Please select the tires you have</Typography>
-              {tires.map((tire) => (
-                <FormControlLabel key={tire.id} value={tire.id} control={<Radio />} label={tire.name} />
-              ))}
-            </Box>
-          </RadioGroup>
-
-          <RadioGroup row name="tire-type">
-            <Box width={1}>
-              <Typography variant="h5">Select tire type</Typography>
-              <FormControlLabel key="RUNFLAT" value="RUNFLAT" control={<Radio />} label="Runflat" />
-              <FormControlLabel key="STANDARD" value="STANDARD" control={<Radio />} label="Standard" />
-            </Box>
-          </RadioGroup>
         </Stack>
-      )}
-    </Stack>
+      </FormProvider>
+    </form>
   );
 }
