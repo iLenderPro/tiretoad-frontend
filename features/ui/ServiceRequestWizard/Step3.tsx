@@ -11,7 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry'],
+  libraries: ['places', 'geometry', 'marker'],
 });
 
 export function Step3(props: StepProps) {
@@ -55,7 +55,7 @@ export function Step3(props: StepProps) {
       if (!place.geometry || !place.geometry.location) {
         // User entered the name of a Place that was not suggested and
         // pressed the Enter key, or the Place Details request failed.
-        window.alert('No details available for input: \'' + place.name + '\'');
+        window.alert("No details available for input: '" + place.name + "'");
         return;
       }
 
@@ -77,27 +77,25 @@ export function Step3(props: StepProps) {
 
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
-      <Stack alignItems='center' gap={3}>
-        <Typography variant='h4'>How soon do you need the repair?</Typography>
+      <Stack alignItems="center" gap={3}>
+        <Typography variant="h4">How soon do you need the repair?</Typography>
         <Controller
           rules={{ required: true }}
           control={control}
-          name='urgency'
-          defaultValue='IMMEDIATELY'
+          name="urgency"
+          defaultValue="IMMEDIATELY"
           render={({ field }) => (
             <RadioGroup row {...field}>
-              <Stack alignItems='center'>
-                <FormControlLabel value='IMMEDIATELY' control={<Radio />} label='Immediately' />
+              <Stack alignItems="center">
+                <FormControlLabel value="IMMEDIATELY" control={<Radio />} label="Immediately" />
               </Stack>
             </RadioGroup>
           )}
         />
-        <Typography variant='h4'>What is your location?</Typography>
-        <TextField {...register('location.address')} id='pac-input' fullWidth label='Enter your exact location'
-                   placeholder='Start typing your address'></TextField>
-        <Box component='div' id='map' width={1} height='300px'></Box>
-        <TextField {...register('location.comment')} fullWidth label='Describe any landmarks'
-                   placeholder='In the sumepmaket parking lot'></TextField>
+        <Typography variant="h4">What is your location?</Typography>
+        <TextField {...register('location.address')} id="pac-input" fullWidth label="Enter your exact location" placeholder="Start typing your address"></TextField>
+        <Box component="div" id="map" width={1} height="300px"></Box>
+        <TextField {...register('location.comment')} fullWidth label="Describe any landmarks" placeholder="In the sumepmaket parking lot"></TextField>
       </Stack>
     </form>
   );

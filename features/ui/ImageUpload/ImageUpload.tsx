@@ -18,7 +18,7 @@ export function ImageUpload(props: ImageUploadProps) {
   const { name, title, placeholder } = props;
   const [file, setFile] = useState<File>();
   const { control } = useFormContext<ServiceRequestDto>();
-  const [uploadFile, { isLoading, error }] = useUploadFileMutation();
+  const [uploadFile, { isLoading }] = useUploadFileMutation();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
     if (event.target.files?.length) {

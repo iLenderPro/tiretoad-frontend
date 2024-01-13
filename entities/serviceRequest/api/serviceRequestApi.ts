@@ -3,6 +3,13 @@ import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequ
 
 export const serviceRequestApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    getServiceRequest: build.query<ServiceRequestDto, string>({
+      query: (id) => {
+        return {
+          url: `service-requests/${id}`,
+        };
+      },
+    }),
     createServiceRequest: build.mutation<ServiceRequestDto, ServiceRequestDto>({
       query: (serviceRequestDto) => {
         return {
@@ -15,4 +22,4 @@ export const serviceRequestApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateServiceRequestMutation } = serviceRequestApi;
+export const { useCreateServiceRequestMutation, useGetServiceRequestQuery } = serviceRequestApi;

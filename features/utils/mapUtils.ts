@@ -4,7 +4,7 @@ import { PlaceDto } from '@/entities/vendors/api/dto/placeDto';
 export const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry'],
+  libraries: ['places', 'geometry', 'marker'],
 });
 
 export async function createMap(initialLocation: google.maps.LatLng) {
@@ -13,6 +13,7 @@ export async function createMap(initialLocation: google.maps.LatLng) {
     center: initialLocation,
     zoom: 11,
     mapTypeControl: false,
+    mapId: '8a12ccb58590c858',
   });
 }
 
@@ -23,10 +24,17 @@ export function drawMarkers(places: PlaceDto[] | undefined, initialLocation: goo
     placesWithinRadius = places.filter((place) => {
       const placeLocation = new google.maps.LatLng(place.latitude, place.longitude);
       if (google.maps.geometry.spherical.computeDistanceBetween(initialLocation, placeLocation) < 1609.34 * 30) {
-        new google.maps.Marker({
+        const pin = new google.maps.marker.PinElement({
+          background: '#85acf7',
+          borderColor: '#6d8cc7',
+          glyph: 'T',
+          glyphColor: '#FFFFFF',
+          scale: 0.8,
+        });
+        new google.maps.marker.AdvancedMarkerElement({
           map,
           position: new google.maps.LatLng(place.latitude, place.longitude),
-          optimized: true,
+          content: pin.element,
         });
         return true;
       }

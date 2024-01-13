@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { Avatar, CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
-import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
+import { selectServiceRequest, setServiceRequest, setServiceRequestUpdating } from '@/entities/serviceRequest/serviceRequestSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import { useForm } from 'react-hook-form';
@@ -14,14 +14,16 @@ import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { useRegisterUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/serviceRequestApi';
+import { useRouter } from 'next/navigation';
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const serviceRequest = useSelector(selectServiceRequest);
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
+  const router = useRouter();
   const [registerUser, { isLoading: isRegisterLoading }] = useRegisterUserMutation();
   const [verifyUser, { isLoading: isVerifyLoading }] = useVerifyUserMutation();
   const [createServiceRequest, { isLoading: isServiceRequestLoading }] = useCreateServiceRequestMutation();
@@ -55,9 +57,15 @@ export function Step4(props: StepProps) {
   };
 
   const handleStepSubmit = async (data: Pick<ServiceRequestDto, 'user'>) => {
-    await createServiceRequest(serviceRequest);
+    const savedServiceRequest = await createServiceRequest(serviceRequest).unwrap();
+    if (savedServiceRequest) {
+      router.push('/service-request/' + savedServiceRequest.id);
+    }
   };
 
+  useEffect(() => {
+    dispatch(setServiceRequestUpdating(isServiceRequestLoading));
+  }, [isServiceRequestLoading]);
   return (
     <Stack alignItems="center" gap={3}>
       <Typography variant="h4">Confirm Your Request</Typography>

@@ -3,16 +3,18 @@ import MobileStepper from '@mui/material/MobileStepper';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Step1, Step2, Step3, Step4 } from '@/features/ui/ServiceRequestWizard/index';
-import { Stack } from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { selectServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
+import { isServiceRequestUpdating, selectServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
+import Box from '@mui/material/Box';
 
 const steps = [Step1, Step2, Step3, Step4];
 
 export default function ServiceRequestWizard() {
   const serviceRequest = useSelector(selectServiceRequest);
+  const isUpdating = useSelector(isServiceRequestUpdating);
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = steps.length;
   const CurrentStep = steps[activeStep];
@@ -32,7 +34,7 @@ export default function ServiceRequestWizard() {
   };
 
   return (
-    <Stack sx={{ textAlign: 'center', flexGrow: 1 }} minHeight="100%" justifyContent="space-between">
+    <Stack sx={{ textAlign: 'center' }} flexGrow={1} justifyContent="space-between" minHeight="100%">
       <CurrentStep goToNextStep={goToNextStep} formRef={formRef} />
       <MobileStepper
         variant="text"
@@ -44,11 +46,18 @@ export default function ServiceRequestWizard() {
             size="large"
             type="submit"
             onClick={handleNext}
+            disabled={isUpdating}
             variant={activeStep === 3 && serviceRequest?.user?.active ? 'contained' : 'text'}
             color={activeStep === 3 && serviceRequest?.user?.active ? 'success' : 'primary'}
           >
             {activeStep === 3 ? 'Submit' : 'Next'}
-            <KeyboardArrowRight />
+            {isUpdating ? (
+              <Box ml={1}>
+                <CircularProgress color="inherit" size="0.8rem" />
+              </Box>
+            ) : (
+              <KeyboardArrowRight />
+            )}
           </Button>
         }
         backButton={
