@@ -95,21 +95,25 @@ export function Step1(props: StepProps) {
           defaultValue="LF"
           render={({ field }) => (
             <RadioGroup row {...field}>
-              <Stack flex={1} minWidth="140px">
-                <img src="/icons/icon_left_front_tire.svg" alt="Driver Side Front Tire" />
-                <FormControlLabel value="LF" control={<Radio />} label={<Typography align="left">Driver Side Front</Typography>} />
+              <Stack direction="row" flex={1}>
+                <Stack flex={1} minWidth="145px">
+                  <img src="/icons/icon_left_front_tire.svg" alt="Driver Side Front Tire" />
+                  <FormControlLabel value="LF" control={<Radio />} label={<Typography align="left">Driver Side Front</Typography>} />
+                </Stack>
+                <Stack flex={1} minWidth="145px">
+                  <img src="/icons/icon_left_rear_tire.svg" alt="Driver Side Rear Tire" />
+                  <FormControlLabel value="LR" control={<Radio />} label={<Typography align="left">Driver Side Rear</Typography>} />
+                </Stack>
               </Stack>
-              <Stack flex={1} minWidth="140px">
-                <img src="/icons/icon_left_rear_tire.svg" alt="Driver Side Rear Tire" />
-                <FormControlLabel value="LR" control={<Radio />} label={<Typography align="left">Driver Side Rear</Typography>} />
-              </Stack>
-              <Stack flex={1} minWidth="140px">
-                <img src="/icons/icon_right_rear_tire.svg" alt="Passenger Side Rear Tire" />
-                <FormControlLabel value="RR" control={<Radio />} label={<Typography align="left">Passenger Side Rear</Typography>} />
-              </Stack>
-              <Stack flex={1} minWidth="140px">
-                <img src="/icons/icon_right_front_tire.svg" alt="Passenger Side Front Tire" />
-                <FormControlLabel value="RF" control={<Radio />} label={<Typography align="left">Passenger Side Front</Typography>} />
+              <Stack direction="row" flex={1}>
+                <Stack flex={1} minWidth="145px">
+                  <img src="/icons/icon_right_rear_tire.svg" alt="Passenger Side Rear Tire" />
+                  <FormControlLabel value="RR" control={<Radio />} label={<Typography align="left">Passenger Side Rear</Typography>} />
+                </Stack>
+                <Stack flex={1} minWidth="145px">
+                  <img src="/icons/icon_right_front_tire.svg" alt="Passenger Side Front Tire" />
+                  <FormControlLabel value="RF" control={<Radio />} label={<Typography align="left">Passenger Side Front</Typography>} />
+                </Stack>
               </Stack>
             </RadioGroup>
           )}
