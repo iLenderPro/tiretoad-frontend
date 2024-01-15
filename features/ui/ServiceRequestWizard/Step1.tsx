@@ -6,7 +6,7 @@ import { useGetPlacesQuery } from '@/entities/vendors/api/vendorApi';
 import { useGetLocationQuery } from '@/entities/geo/api/geoApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectLocation } from '@/entities/geo/geoSlice';
-import { createMap, drawMarkers, loader } from '@/features/utils/mapUtils';
+import { createMap, drawMarkers, handleError, loader } from '@/features/utils/mapUtils';
 import { Controller, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
@@ -17,8 +17,8 @@ export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; go
 export function Step1(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const [isMapsApiLoading, setMapsApiLoading] = useState(true);
-  const { isFetching: isLocationFetching, isSuccess: isLocationSuccess, isError: isLocationError } = useGetLocationQuery();
-  const { data: places, isFetching: isPlacesFetching } = useGetPlacesQuery();
+  const { isFetching: isLocationFetching } = useGetLocationQuery();
+  const { data: places } = useGetPlacesQuery();
   const location = useSelector(selectLocation);
   const serviceRequest = useSelector(selectServiceRequest);
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
@@ -55,6 +55,7 @@ export function Step1(props: StepProps) {
           },
           async (positionError) => {
             console.log('Using IP location');
+            handleError(positionError);
             const initialLocation = location?.latitude ? new google.maps.LatLng(location.latitude, location.longitude) : new google.maps.LatLng(40.749933, -73.98633);
             map = await createMap(initialLocation);
             const placesWithinRadius = drawMarkers(places, initialLocation, map);
