@@ -20,6 +20,6 @@ export const typography = {
     fontSize: '1rem',
     lineHeight: '1.2rem',
     fontWeight: 700,
-    align: 'left',
+    textAlign: 'left' as const,
   },
 };
