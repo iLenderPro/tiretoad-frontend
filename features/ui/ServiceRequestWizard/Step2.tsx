@@ -309,7 +309,7 @@ export function Step2(props: StepProps) {
               style={{ flex: 1, minWidth: '250px' }}
             >
               {years &&
-                years.map(({ id, name }) => (
+                years.map(({ name }) => (
                   <MenuItem key={name} value={name}>
                     {name}
                   </MenuItem>
