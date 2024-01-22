@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { VisuallyHiddenInput } from '@/features/ui/ImageUpload/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useUploadFileMutation } from '@/entities/file/api/fileApi';
-import React, { useState } from 'react';
+import React from 'react';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 
 export type ImageUploadProps = {
@@ -16,27 +16,14 @@ export type ImageUploadProps = {
 
 export function ImageUpload(props: ImageUploadProps) {
   const { name, title, placeholder } = props;
-  const [file, setFile] = useState<File>();
   const { control } = useFormContext<ServiceRequestDto>();
-  const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const [uploadFile, { isLoading, reset }] = useUploadFileMutation();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
     if (event.target.files?.length) {
+      onChange('');
       const fileToUpload = event.target.files[0];
-
       const { key } = await uploadFile({ file: fileToUpload }).unwrap();
-      onChange(key);
-
-      setFile((prevState) => {
-        if (fileToUpload === prevState) return;
-        return fileToUpload;
-      });
-    }
-  };
-
-  const handleFileUpload = async (onChange: (value: string) => void) => {
-    if (file) {
-      const { key } = await uploadFile({ file }).unwrap();
       onChange(key);
     }
   };
@@ -45,6 +32,7 @@ export function ImageUpload(props: ImageUploadProps) {
     <Controller
       name={name}
       control={control}
+      rules={{ required: true }}
       render={({ field }) => (
         <Card>
           <CardHeader

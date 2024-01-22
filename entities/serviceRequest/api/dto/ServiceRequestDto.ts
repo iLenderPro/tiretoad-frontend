@@ -12,7 +12,7 @@ export type ServiceRequestDto = {
   }[];
   vehicle: {
     vin?: string;
-    year: number;
+    year: string;
     make: string;
     model: string;
     trim: string;

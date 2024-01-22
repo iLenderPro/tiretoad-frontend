@@ -74,7 +74,7 @@ export function Step3(props: StepProps) {
       marker.setVisible(true);
     });
   });
-
+  console.log(serviceRequest);
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <Stack alignItems="center" gap={3}>
