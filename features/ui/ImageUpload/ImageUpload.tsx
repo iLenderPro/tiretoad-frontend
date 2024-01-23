@@ -16,8 +16,13 @@ export type ImageUploadProps = {
 
 export function ImageUpload(props: ImageUploadProps) {
   const { name, title, placeholder } = props;
-  const { control } = useFormContext<ServiceRequestDto>();
+  const {
+    control,
+    getFieldState,
+    formState: { errors },
+  } = useFormContext<ServiceRequestDto>();
   const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const { error } = getFieldState(name);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
     if (event.target.files?.length) {
@@ -37,7 +42,12 @@ export function ImageUpload(props: ImageUploadProps) {
         <Card>
           <CardHeader
             avatar={
-              <Avatar sx={{ bgcolor: field.value ? 'green' : 'lightgray' }}>
+              <Avatar
+                sx={(theme) => ({
+                  bgcolor: field.value ? 'green' : 'lightgray',
+                  border: Boolean(error) ? '4px solid ' + theme.palette.error.main : 'none',
+                })}
+              >
                 <CheckOutlinedIcon />
               </Avatar>
             }

@@ -74,7 +74,7 @@ export function Step3(props: StepProps) {
       marker.setVisible(true);
     });
   });
-  console.log(serviceRequest);
+
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <Stack alignItems="center" gap={3}>
@@ -93,7 +93,15 @@ export function Step3(props: StepProps) {
           )}
         />
         <Typography variant="h4">What is your location?</Typography>
-        <TextField {...register('location.address')} id="pac-input" fullWidth label="Enter your exact location" placeholder="Start typing your address"></TextField>
+        <TextField
+          {...register('location.address', { required: { value: true, message: 'Location is required' } })}
+          id="pac-input"
+          fullWidth
+          label="Enter your exact location"
+          placeholder="Start typing your address"
+          error={Boolean(errors.location?.address)}
+          helperText={errors.location?.address?.message}
+        ></TextField>
         <Box component="div" id="map" width={1} height="300px"></Box>
         <TextField {...register('location.comment')} fullWidth label="Describe any landmarks" placeholder="In the sumepmaket parking lot"></TextField>
       </Stack>

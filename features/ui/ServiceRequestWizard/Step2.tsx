@@ -19,7 +19,7 @@ const years: {
   name: number;
 }[] = [];
 
-for (let i = minYear; i <= currentYear; i++) {
+for (let i = currentYear; i >= minYear; i--) {
   years.push({ id: i.toString(), name: i });
 }
 
@@ -48,10 +48,26 @@ export function Step2(props: StepProps) {
   const [getTrims, { isFetching: isTrimsFetching }] = useLazyGetTrimsQuery();
   const [getTires, { isFetching: isTiresFetching }] = useLazyGetTiresQuery();
 
-  const { field: year } = useController({ name: 'vehicle.year', control, rules: { required: true } });
-  const { field: make } = useController({ name: 'vehicle.make', control, rules: { required: true } });
-  const { field: model } = useController({ name: 'vehicle.model', control, rules: { required: true } });
-  const { field: trim } = useController({ name: 'vehicle.trim', control, rules: { required: true } });
+  const { field: year } = useController({
+    name: 'vehicle.year',
+    control,
+    rules: { required: { value: true, message: 'Year is required' } },
+  });
+  const { field: make } = useController({
+    name: 'vehicle.make',
+    control,
+    rules: { required: { value: true, message: 'Make is required' } },
+  });
+  const { field: model } = useController({
+    name: 'vehicle.model',
+    control,
+    rules: { required: { value: true, message: 'Model is required' } },
+  });
+  const { field: trim } = useController({
+    name: 'vehicle.trim',
+    control,
+    rules: { required: { value: true, message: 'Trim is required' } },
+  });
   const { field: tire } = useController({ name: 'tires.0.size', control, rules: { required: true } });
 
   const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires' | 'vehicle'>) => {
@@ -74,8 +90,6 @@ export function Step2(props: StepProps) {
     );
     goToNextStep();
   };
-
-  const isLoading = isVehicleDecoding || isMakesFetching || isModelsFetching || isTrimsFetching || isTiresFetching;
 
   const loadMakes = async (yearId: string) => {
     const { data } = await getMakes({ yearId });
@@ -285,7 +299,7 @@ export function Step2(props: StepProps) {
       );
     }
   }, [isTiresFetching]);
-  console.log(errors);
+
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <FormProvider {...methods}>
@@ -293,7 +307,13 @@ export function Step2(props: StepProps) {
           <Typography variant="h4">Enter VIN</Typography>
           <Stack direction="row" width={1} gap={2}>
             <TextField {...register('vehicle.vin')} placeholder="Enter VIN" fullWidth />
-            <Button variant="contained" size="large" onClick={handleDecode} disabled={isLoading} endIcon={isLoading ? <CircularProgress size="1.5rem" color="inherit" /> : null}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleDecode}
+              disabled={isVehicleDecoding}
+              endIcon={isVehicleDecoding ? <CircularProgress size="1.5rem" color="inherit" /> : null}
+            >
               Decode
             </Button>
           </Stack>
@@ -303,10 +323,11 @@ export function Step2(props: StepProps) {
               label="Year"
               select
               fullWidth
-              disabled={isLoading}
+              style={{ flex: 1, minWidth: '250px' }}
               value={year.value || ''}
               onChange={(e) => handleYearChange(e.target.value)}
-              style={{ flex: 1, minWidth: '250px' }}
+              error={Boolean(errors.vehicle?.year)}
+              helperText={errors.vehicle?.year?.message}
             >
               {years &&
                 years.map(({ name }) => (
@@ -320,10 +341,11 @@ export function Step2(props: StepProps) {
               label="Make"
               select
               fullWidth
-              disabled={isLoading}
+              style={{ flex: 1, minWidth: '250px' }}
               value={make.value || ''}
               onChange={(e) => handleMakeChange(e.target.value)}
-              style={{ flex: 1, minWidth: '250px' }}
+              error={Boolean(errors.vehicle?.make)}
+              helperText={errors.vehicle?.make?.message}
             >
               {ymm?.children?.[year.value]?.children ? (
                 Object.keys(ymm?.children?.[year.value.toString()]?.children || {}).map((key) => (
@@ -332,17 +354,18 @@ export function Step2(props: StepProps) {
                   </MenuItem>
                 ))
               ) : (
-                <MenuItem>{isMakesFetching ? 'Loading...' : 'Select Year'}</MenuItem>
+                <MenuItem>{isMakesFetching ? 'Loading...' : 'Select Year to see all makes'}</MenuItem>
               )}
             </TextField>
             <TextField
               label="Model"
               select
               fullWidth
-              disabled={isLoading}
+              style={{ flex: 1, minWidth: '250px' }}
               value={model.value || ''}
               onChange={(e) => handleModelChange(e.target.value)}
-              style={{ flex: 1, minWidth: '250px' }}
+              error={Boolean(errors.vehicle?.model)}
+              helperText={errors.vehicle?.model?.message}
             >
               {ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children ? (
                 Object.keys(ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children || {}).map((key) => (
@@ -351,17 +374,18 @@ export function Step2(props: StepProps) {
                   </MenuItem>
                 ))
               ) : (
-                <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Make'}</MenuItem>
+                <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Make to see all models'}</MenuItem>
               )}
             </TextField>
             <TextField
               label="Trim"
               select
               fullWidth
-              disabled={isLoading}
+              style={{ flex: 1, minWidth: '250px' }}
               value={!isTrimsFetching ? trim?.value || '' : ''}
               onChange={(e) => handleTrimChange(e.target.value)}
-              style={{ flex: 1, minWidth: '250px' }}
+              error={Boolean(errors.vehicle?.trim)}
+              helperText={errors.vehicle?.trim?.message}
             >
               {ymm?.children?.[year.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children ? (
                 Object.keys(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children || {}).map((key) => (
@@ -373,7 +397,7 @@ export function Step2(props: StepProps) {
                   </MenuItem>
                 ))
               ) : (
-                <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model'}</MenuItem>
+                <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
               )}
             </TextField>
           </Stack>
@@ -430,7 +454,7 @@ export function Step2(props: StepProps) {
                 />
               </Stack>
               <Typography variant="h5">Add image of damage to tire and image of tire wall that shows tire size</Typography>
-              <Stack direction="row" maxWidth="566px" gap={2}>
+              <Stack direction="row" maxWidth="566px" gap={3}>
                 <ImageUpload name="tires.0.imageOfDamage" title="Damage" placeholder="/images/tire-flat-placeholder-1.png" />
                 <ImageUpload name="tires.0.imageOfTireWall" title="Tire wall" placeholder="/images/tire-flat-placeholder-2.png" />
               </Stack>

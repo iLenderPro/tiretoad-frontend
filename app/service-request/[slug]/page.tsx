@@ -1,5 +1,5 @@
 import { Container } from '@mui/material';
-import ServiceRequestOverview from '@/features/ui/ServiceRequestView/ServiceRequestOverview';
+import ServiceRequestOverview from '@/features/ui/ServiceRequestOverview/ServiceRequestOverview';
 
 export default function ServiceRequest({ params }: { params: { slug: string } }) {
   return (
