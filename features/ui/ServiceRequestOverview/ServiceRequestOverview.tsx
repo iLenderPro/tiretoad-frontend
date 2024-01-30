@@ -5,7 +5,6 @@ import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/service
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import Box from '@mui/material/Box';
-import React from 'react';
 
 export default function ServiceRequestOverview(props: { id: string }) {
   const { id } = props;
@@ -33,12 +32,12 @@ export default function ServiceRequestOverview(props: { id: string }) {
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
               <Card>
-                <CardMedia component="img" width={1} image={`https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${serviceRequest.tires[0].imageOfDamage}`} />
+                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.user.id}/${serviceRequest.tires[0].imageOfDamage}`} />
               </Card>
             </Box>
             <Box flex={1}>
               <Card>
-                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${serviceRequest.tires[0].imageOfTireWall}`} />
+                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.user.id}/${serviceRequest.tires[0].imageOfTireWall}`} />
               </Card>
             </Box>
           </Stack>
