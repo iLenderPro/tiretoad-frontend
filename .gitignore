@@ -7,7 +7,4 @@ node_modules
 
 # next generated files
 .next
-
-# amplify
-
 .env

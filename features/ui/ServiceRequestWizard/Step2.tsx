@@ -27,10 +27,14 @@ export function Step2(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const [ymm, setYmm] = useState<YmmHierarchy>({ id: 'root', name: 'root' });
   const [isDecodingFlow, toggleDecodingFlow] = useState<boolean>(false);
+  const [isInitFlow, toggleInitFlow] = useState<boolean>(false);
   const serviceRequest = useSelector(selectServiceRequest);
   const dispatch = useDispatch();
   const methods = useForm<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>({
-    values: serviceRequest,
+    values: {
+      vehicle: { vin: serviceRequest.vehicle?.vin } as ServiceRequestDto['vehicle'],
+      tires: serviceRequest.tires,
+    },
   });
   const {
     register,
@@ -256,9 +260,19 @@ export function Step2(props: StepProps) {
   }, [isVehicleDecoding, decodedData]);
 
   useEffect(() => {
+    if (isInitFlow && serviceRequest.vehicle) {
+      serviceRequest.vehicle.year && handleYearChange(serviceRequest.vehicle.year);
+    }
+  }, [isInitFlow]);
+
+  useEffect(() => {
     if (isDecodingFlow && !isMakesFetching && decodedData?.make && ymm?.children?.[year.value.toString()]?.children?.[decodedData.make.toLowerCase()]) {
       handleMakeChange(ymm?.children?.[year.value.toString()]?.children?.[decodedData.make.toLowerCase()]?.name || '');
       !decodedData.model && toggleDecodingFlow(false);
+    }
+
+    if (isInitFlow && !isMakesFetching && serviceRequest.vehicle.make && ymm?.children?.[year.value.toString()]?.children?.[serviceRequest.vehicle.make.toLowerCase()]) {
+      handleMakeChange(ymm?.children?.[year.value.toString()]?.children?.[serviceRequest.vehicle.make.toLowerCase()]?.name || '');
     }
   }, [isMakesFetching]);
 
@@ -270,36 +284,72 @@ export function Step2(props: StepProps) {
       ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]
     ) {
       handleModelChange(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]?.name || '');
-      !decodedData.trim && toggleDecodingFlow(false);
+      !decodedData?.trim && toggleDecodingFlow(false);
+    }
+
+    if (
+      isInitFlow &&
+      !isModelsFetching &&
+      serviceRequest.vehicle.model &&
+      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[serviceRequest.vehicle.model.toLowerCase()]
+    ) {
+      handleModelChange(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[serviceRequest.vehicle.model.toLowerCase()]?.name || '');
+      !serviceRequest.vehicle.trim && toggleInitFlow(false);
     }
   }, [isModelsFetching]);
 
   useEffect(() => {
     if (
+      isDecodingFlow &&
       !isTrimsFetching &&
       decodedData?.trim &&
-      ymm?.children?.[decodedData.year.toString()]?.children?.[decodedData.make.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]?.children?.[
-        decodedData.trim.toLowerCase()
-      ]
+      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[decodedData.trim.toLowerCase()]
     ) {
       handleTrimChange(
-        ymm?.children?.[decodedData.year.toString()]?.children?.[decodedData.make.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]?.children?.[
-          decodedData.trim.toLowerCase()
-        ]?.name || '',
+        ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[decodedData.trim.toLowerCase()]?.name || '',
       );
+      toggleDecodingFlow(false);
+    }
+
+    if (
+      isInitFlow &&
+      !isTrimsFetching &&
+      serviceRequest.vehicle.trim &&
+      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]
+    ) {
+      handleTrimChange(
+        ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]?.name || '',
+      );
+      !serviceRequest.tires?.[0]?.size && toggleInitFlow(false);
     }
   }, [isTrimsFetching]);
 
   useEffect(() => {
     if (!isTiresFetching) {
-      tire.onChange(
-        Object.keys(
-          ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children || {},
-        )?.[0],
-      );
+      if (isInitFlow && serviceRequest?.tires?.[0]?.size) {
+        // TODO: tire does not match tire name, gotta fix it
+        tire.onChange(
+          ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children?.[
+            serviceRequest?.tires?.[0]?.size?.toLowerCase()
+          ]?.id,
+        );
+        toggleInitFlow(false);
+      } else {
+        tire.onChange(
+          Object.keys(
+            ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children ||
+              {},
+          )?.[0],
+        );
+      }
     }
   }, [isTiresFetching]);
 
+  useEffect(() => {
+    if (serviceRequest.vehicle) {
+      toggleInitFlow(true);
+    }
+  }, []);
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <FormProvider {...methods}>
