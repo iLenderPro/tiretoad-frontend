@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 export default function Auth() {
   const dispatch = useDispatch();
-  const { data } = useGetUserSessionQuery(undefined, { pollingInterval: 60 * 1000 });
+  const { data } = useGetUserSessionQuery(undefined, { pollingInterval: 5 * 60 * 1000 });
 
   useEffect(() => {
     data && dispatch(setUserSession({ user: data }));

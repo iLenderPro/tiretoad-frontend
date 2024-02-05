@@ -49,7 +49,7 @@ export function Chat({ user, vendorResponse }: ChatProps) {
       >
         <StyledAppBar elevation={2} position="fixed">
           <Toolbar>
-            <Typography variant="h6">Communication History</Typography>
+            <Typography variant="h6">Conversation</Typography>
           </Toolbar>
         </StyledAppBar>
         <CardContent sx={{ overflow: 'scroll', height: '100%' }}>
