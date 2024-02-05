@@ -6,6 +6,7 @@ import ThemeRegistry from '@/shared/ThemeRegistry/ThemeRegistry';
 import StoreProvider from '@/app/StoreProvider';
 import { store } from '@/app/store';
 import { geoApi } from '@/entities/geo/api/geoApi';
+import Auth from '@/shared/ui/Auth/Auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <AppRouterCacheProvider>
         <StoreProvider>
           <ThemeRegistry>
+            <Auth />
             <body className={inter.className} style={{ height: '100%' }}>
               {children}
             </body>

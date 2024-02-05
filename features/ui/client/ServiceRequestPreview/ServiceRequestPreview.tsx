@@ -1,21 +1,28 @@
 'use client';
 import { Card, CardMedia, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import Box from '@mui/material/Box';
+import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import Link from 'next/link';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
+import { UserDto } from '@/entities/user/api/dto/UserDto';
 
-export default function ServiceRequestOverview(props: { id: string }) {
-  const { id } = props;
-  const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(id);
+export type ServiceRequestPreviewProps = {
+  serviceRequest: ServiceRequestDto;
+  user: UserDto;
+};
+export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
+  const { user, serviceRequest } = props;
 
   return (
-    <Stack alignItems="center" minHeight="100%" gap={3}>
-      {!isFetching && serviceRequest && (
+    <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
+      {serviceRequest && (
         <>
-          <Typography variant="h4">Message Sent!</Typography>
-          <Typography>We are reaching out to mobile repair shops to get you back on the road</Typography>
+          <Typography variant="h4">Service Request Summary</Typography>
+          {user.role === UserRole.CLIENT && <Typography>We are reaching out to mobile repair shops to get you back on the road</Typography>}
+          <Stack>{serviceRequest.responses && serviceRequest.responses?.map((response) => <Link href={/responses/ + response.id}>{response.vendor.fullName}</Link>)}</Stack>
           <Stack>
             <Stack>Name: {serviceRequest.user.fullName}</Stack>
             <Stack>
@@ -28,7 +35,7 @@ export default function ServiceRequestOverview(props: { id: string }) {
               Location: {serviceRequest.location.address} {serviceRequest.location.comment ? `(${serviceRequest.location.comment})` : ''}
             </Stack>
           </Stack>
-          <Typography>Images of your damage and tire wall</Typography>
+          <Typography>Images of damage and tire wall</Typography>
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
               <Card>

@@ -1,9 +1,24 @@
 import { baseApi } from '@/shared/api';
 import { UserDto } from '@/entities/user/api/dto/UserDto';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
+import { AuthDto } from '@/entities/account/authSlice';
 
 export const accountApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    getUserSession: build.query<UserDto, void>({
+      query: () => ({
+        url: `auth`,
+      }),
+    }),
+    loginUser: build.mutation<AuthDto, AccountDto['login']>({
+      query: (dto) => {
+        return {
+          url: `auth`,
+          method: 'POST',
+          body: dto,
+        };
+      },
+    }),
     registerUser: build.mutation<UserDto, AccountDto['registration']>({
       query: (dto) => {
         return {
@@ -25,4 +40,4 @@ export const accountApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useRegisterUserMutation, useVerifyUserMutation } = accountApi;
+export const { useRegisterUserMutation, useVerifyUserMutation, useLoginUserMutation, useGetUserSessionQuery } = accountApi;

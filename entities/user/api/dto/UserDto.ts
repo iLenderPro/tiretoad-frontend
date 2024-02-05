@@ -1,3 +1,5 @@
+import { UserRole } from '@/entities/user/api/dto/UserRole';
+
 export type UserDto = {
   id?: string;
   fullName: string;
@@ -6,4 +8,5 @@ export type UserDto = {
   password?: string;
   active?: boolean;
   verificationToken?: string;
+  role: UserRole;
 };

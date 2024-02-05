@@ -1,1 +1,1 @@
-export const SESSION_TAG = 'SESSION_TAG';
+export const AUTH_TAG = 'AUTH_TAG';

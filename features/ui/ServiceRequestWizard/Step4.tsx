@@ -60,7 +60,7 @@ export function Step4(props: StepProps) {
   const handleStepSubmit = async (data: Pick<ServiceRequestDto, 'user'>) => {
     const savedServiceRequest = await createServiceRequest(serviceRequest).unwrap();
     if (savedServiceRequest) {
-      router.push('/service-request/' + savedServiceRequest.id);
+      router.push(`/requests/${savedServiceRequest.id}/view`);
     }
   };
 

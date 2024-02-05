@@ -1,4 +1,5 @@
 import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 
 export type ServiceRequestDto = {
   id?: string;
@@ -24,5 +25,7 @@ export type ServiceRequestDto = {
     comment: string;
   };
   urgency: string;
+  createdAt?: string;
   user: UserDto;
+  responses?: VendorResponseDto[];
 };
