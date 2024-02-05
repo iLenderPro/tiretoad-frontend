@@ -12,7 +12,9 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/requests', request.url));
     }
   } else {
-    return NextResponse.redirect(new URL('/login?redirect_url=' + request.nextUrl.pathname, request.url));
+    if (request.nextUrl.pathname !== '/') {
+      return NextResponse.redirect(new URL('/login?redirect_url=' + request.nextUrl.pathname, request.url));
+    }
   }
 }
 
