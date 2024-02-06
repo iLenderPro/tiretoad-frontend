@@ -22,12 +22,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" style={{ height: '100%' }}>
       <AppRouterCacheProvider>
         <StoreProvider>
-          <ThemeRegistry>
-            <Auth />
-            <body className={inter.className} style={{ height: '100%' }}>
-              {children}
-            </body>
-          </ThemeRegistry>
+          <Auth>
+            <ThemeRegistry>
+              <body className={inter.className} style={{ height: '100%' }}>
+                {children}
+              </body>
+            </ThemeRegistry>
+          </Auth>
         </StoreProvider>
       </AppRouterCacheProvider>
     </html>

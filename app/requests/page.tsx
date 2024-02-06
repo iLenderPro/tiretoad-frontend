@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { selectUserSession } from '@/entities/account/authSlice';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 
-export default function ServiceRequests() {
+export default function ServiceRequestsPage() {
   const session = useSelector(selectUserSession);
   return (
     <>
