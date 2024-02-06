@@ -11,13 +11,14 @@ import { TireSide } from '@/features/ui/ServiceRequestWizard/types/TireSide';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
 import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
-import { useRegisterUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
+import { useLoginUserMutation, useRegisterUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import React, { useEffect } from 'react';
 import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { useRouter } from 'next/navigation';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
+import { setUserSession } from '@/entities/account/authSlice';
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
@@ -28,6 +29,7 @@ export function Step4(props: StepProps) {
   const [registerUser, { isLoading: isRegisterLoading }] = useRegisterUserMutation();
   const [verifyUser, { isLoading: isVerifyLoading }] = useVerifyUserMutation();
   const [createServiceRequest, { isLoading: isServiceRequestLoading }] = useCreateServiceRequestMutation();
+  const [login, { isLoading: isLoggingIn }] = useLoginUserMutation();
 
   const { register, handleSubmit, setValue, watch } = useForm<Pick<ServiceRequestDto, 'user'>>({ values: serviceRequest });
   const registerMethods = useForm<AccountDto['registration']>({ values: serviceRequest.user });
@@ -53,6 +55,10 @@ export function Step4(props: StepProps) {
       if (result) {
         setValue('user', { ...data, ...result });
         dispatch(setServiceRequest({ user: { ...serviceRequest.user, ...data, ...result } }));
+        if (user.email && user.password) {
+          const session = await login({ email: user.email, password: user.password }).unwrap();
+          dispatch(setUserSession(session));
+        }
       }
     }
   };
@@ -125,7 +131,10 @@ export function Step4(props: StepProps) {
                 helperText={registerMethods.formState.errors.fullName?.message}
               />
               <TextField
-                {...registerMethods.register('email', { required: { value: true, message: 'Email is required' } })}
+                {...registerMethods.register('email', {
+                  required: { value: true, message: 'Email is required' },
+                  setValueAs: (value) => value.toLowerCase(),
+                })}
                 label="Email"
                 placeholder="Your email"
                 fullWidth
