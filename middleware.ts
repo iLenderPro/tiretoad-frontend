@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login?redirect_url=' + request.nextUrl.pathname, request.url));
     }
   }
+  return NextResponse.next();
 }
 
 //,
