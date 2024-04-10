@@ -11,6 +11,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { selectPlacesWithinRadius, setPlacesWithinRadius } from '@/entities/vendors/vendorSlice';
+import { FieldErrors } from 'react-hook-form/dist/types/errors';
+import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: () => void };
 
@@ -24,13 +26,23 @@ export function Step1(props: StepProps) {
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
 
-  const { control, handleSubmit } = useForm<Pick<ServiceRequestDto, 'tires'>>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Pick<ServiceRequestDto, 'tires'>>({
     values: serviceRequest,
   });
 
   const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires'>) => {
     dispatch(setServiceRequest(data));
     goToNextStep();
+  };
+
+  const handleStepErrors = (errors: FieldErrors<Pick<ServiceRequestDto, 'tires'>>) => {
+    if (errors.tires?.[0]?.side) {
+      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.side.message }));
+    }
   };
 
   let map: google.maps.Map;
@@ -69,7 +81,7 @@ export function Step1(props: StepProps) {
   }, [isMapsApiLoading, isLocationFetching, places]);
 
   return (
-    <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
+    <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <Stack alignItems="center" gap={5}>
         <Typography variant="h4">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>
@@ -90,10 +102,10 @@ export function Step1(props: StepProps) {
         />
         <Typography variant="h4">Which tire is it?</Typography>
         <Controller
-          rules={{ required: true }}
+          rules={{ required: { value: true, message: 'Select your tire side' } }}
           control={control}
           name="tires.0.side"
-          defaultValue="LF"
+          defaultValue=""
           render={({ field }) => (
             <RadioGroup row {...field}>
               <Stack direction="row" flex={1}>

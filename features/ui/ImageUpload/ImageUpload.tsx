@@ -37,7 +37,7 @@ export function ImageUpload(props: ImageUploadProps) {
     <Controller
       name={name}
       control={control}
-      rules={{ required: true }}
+      rules={{ required: { value: true, message: 'Upload required images' } }}
       render={({ field }) => (
         <Card>
           <CardHeader
@@ -54,7 +54,7 @@ export function ImageUpload(props: ImageUploadProps) {
             title={title}
             titleTypographyProps={{ variant: 'h6' }}
           />
-          <CardMedia component="img" image={placeholder} />
+          <CardMedia component="img" width="100%" image={field.value ? `https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${field.value}` : placeholder} />
           <CardActions>
             <Button component="label" variant="contained" fullWidth startIcon={isLoading ? <CircularProgress size="1rem" color="inherit" /> : <CloudUploadIcon />}>
               Upload

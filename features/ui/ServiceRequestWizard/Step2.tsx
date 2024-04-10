@@ -5,12 +5,14 @@ import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
+import { Controller, FieldError, FormProvider, useController, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { ImageUpload } from '@/features/ui/ImageUpload/ImageUpload';
 import Box from '@mui/material/Box';
+import { FieldErrors } from 'react-hook-form/dist/types/errors';
+import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();
@@ -93,6 +95,26 @@ export function Step2(props: StepProps) {
       }),
     );
     goToNextStep();
+  };
+
+  const handleStepErrors = (errors: FieldErrors<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>) => {
+    if (errors.tires?.[0]?.size) {
+      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.size.message }));
+      return;
+    }
+    if (errors.tires?.[0]?.type) {
+      const error = errors.tires?.[0]?.type as FieldError;
+      dispatch(showSnackbar({ type: 'error', content: error.message }));
+      return;
+    }
+    if (errors.tires?.[0]?.imageOfDamage) {
+      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfDamage.message }));
+      return;
+    }
+    if (errors.tires?.[0]?.imageOfTireWall) {
+      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfTireWall.message }));
+      return;
+    }
   };
 
   const loadMakes = async (yearId: string) => {
@@ -334,14 +356,15 @@ export function Step2(props: StepProps) {
           ]?.id,
         );
         toggleInitFlow(false);
-      } else {
-        tire.onChange(
-          Object.keys(
-            ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children ||
-              {},
-          )?.[0],
-        );
       }
+      // else {
+      //   tire.onChange(
+      //     Object.keys(
+      //       ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children ||
+      //         {},
+      //     )?.[0],
+      //   );
+      // }
     }
   }, [isTiresFetching]);
 
@@ -351,12 +374,12 @@ export function Step2(props: StepProps) {
     }
   }, []);
   return (
-    <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
+    <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <FormProvider {...methods}>
         <Stack alignItems="center" gap={4}>
           <Typography variant="h4">Enter VIN</Typography>
           <Stack direction="row" width={1} gap={2}>
-            <TextField {...register('vehicle.vin')} placeholder="Enter VIN" fullWidth />
+            <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
             <Button
               variant="contained"
               size="large"
@@ -455,15 +478,16 @@ export function Step2(props: StepProps) {
             <>
               <Stack gap={2}>
                 <Controller
-                  rules={{ required: true }}
+                  rules={{ required: { value: true, message: 'Select your tire size' } }}
                   control={control}
                   name="tires.0.size"
-                  defaultValue={
-                    Object.keys(
-                      ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]
-                        ?.children || {},
-                    )[0]
-                  }
+                  // defaultValue={
+                  //   Object.keys(
+                  //     ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]
+                  //       ?.children || {},
+                  //   )[0]
+                  // }
+                  defaultValue=""
                   render={({ field }) => (
                     <RadioGroup row {...field}>
                       <Box width={1}>
@@ -488,10 +512,10 @@ export function Step2(props: StepProps) {
                   )}
                 />
                 <Controller
-                  rules={{ required: true }}
+                  rules={{ required: { value: true, message: 'Select your tire type' } }}
                   control={control}
                   name="tires.0.type"
-                  defaultValue="STANDARD"
+                  defaultValue=""
                   render={({ field }) => (
                     <RadioGroup row {...field}>
                       <Box width={1}>

@@ -7,6 +7,7 @@ import StoreProvider from '@/app/StoreProvider';
 import { store } from '@/app/store';
 import { geoApi } from '@/entities/geo/api/geoApi';
 import Auth from '@/shared/ui/Auth/Auth';
+import { Snackbar } from '@/shared/ui/Snackbar/ui/Snackbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Auth>
             <ThemeRegistry>
               <body className={inter.className} style={{ height: '100%' }}>
+                <Snackbar />
                 {children}
               </body>
             </ThemeRegistry>

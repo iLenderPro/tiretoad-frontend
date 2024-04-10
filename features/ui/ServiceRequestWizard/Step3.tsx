@@ -103,7 +103,7 @@ export function Step3(props: StepProps) {
           helperText={errors.location?.address?.message}
         ></TextField>
         <Box component="div" id="map" width={1} height="300px"></Box>
-        <TextField {...register('location.comment')} fullWidth label="Describe any landmarks" placeholder="In the sumepmaket parking lot"></TextField>
+        <TextField {...register('location.comment')} fullWidth label="Describe the place your car located at" placeholder="In the sumepmaket parking lot"></TextField>
       </Stack>
     </form>
   );
