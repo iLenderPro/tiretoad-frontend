@@ -39,7 +39,7 @@ export function ImageUpload(props: ImageUploadProps) {
       control={control}
       rules={{ required: { value: true, message: 'Upload required images' } }}
       render={({ field }) => (
-        <Card>
+        <Card sx={{ display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
           <CardHeader
             avatar={
               <Avatar

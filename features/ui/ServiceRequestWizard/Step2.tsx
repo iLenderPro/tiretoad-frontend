@@ -74,7 +74,12 @@ export function Step2(props: StepProps) {
     control,
     rules: { required: { value: true, message: 'Trim is required' } },
   });
-  const { field: tire } = useController({ name: 'tires.0.size', control, rules: { required: true } });
+  const { field: tire } = useController({
+    name: 'tires.0.size',
+    control,
+    rules: { required: { value: true, message: 'Select your tire size' } },
+    defaultValue: '',
+  });
 
   const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires' | 'vehicle'>) => {
     dispatch(
@@ -98,22 +103,24 @@ export function Step2(props: StepProps) {
   };
 
   const handleStepErrors = (errors: FieldErrors<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>) => {
-    if (errors.tires?.[0]?.size) {
-      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.size.message }));
-      return;
-    }
-    if (errors.tires?.[0]?.type) {
-      const error = errors.tires?.[0]?.type as FieldError;
-      dispatch(showSnackbar({ type: 'error', content: error.message }));
-      return;
-    }
-    if (errors.tires?.[0]?.imageOfDamage) {
-      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfDamage.message }));
-      return;
-    }
-    if (errors.tires?.[0]?.imageOfTireWall) {
-      dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfTireWall.message }));
-      return;
+    if (!errors.vehicle) {
+      if (errors.tires?.[0]?.size) {
+        dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.size.message }));
+        return;
+      }
+      if (errors.tires?.[0]?.type) {
+        const error = errors.tires?.[0]?.type as FieldError;
+        dispatch(showSnackbar({ type: 'error', content: error.message }));
+        return;
+      }
+      if (errors.tires?.[0]?.imageOfDamage) {
+        dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfDamage.message }));
+        return;
+      }
+      if (errors.tires?.[0]?.imageOfTireWall) {
+        dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.imageOfTireWall.message }));
+        return;
+      }
     }
   };
 
@@ -477,40 +484,25 @@ export function Step2(props: StepProps) {
           {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children && (
             <>
               <Stack gap={2}>
-                <Controller
-                  rules={{ required: { value: true, message: 'Select your tire size' } }}
-                  control={control}
-                  name="tires.0.size"
-                  // defaultValue={
-                  //   Object.keys(
-                  //     ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]
-                  //       ?.children || {},
-                  //   )[0]
-                  // }
-                  defaultValue=""
-                  render={({ field }) => (
-                    <RadioGroup row {...field}>
-                      <Box width={1}>
-                        <Typography variant="h5">Please select the tires you have</Typography>
-                        {Object.keys(
+                <RadioGroup row {...tire} defaultChecked={false}>
+                  <Box width={1}>
+                    <Typography variant="h5">Please select the tires you have</Typography>
+                    {Object.keys(
+                      ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]
+                        ?.children || {},
+                    ).map((key) => (
+                      <FormControlLabel
+                        key={key}
+                        value={key}
+                        control={<Radio />}
+                        label={
                           ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]
-                            ?.children || {},
-                        ).map((key) => (
-                          <FormControlLabel
-                            key={key}
-                            value={key}
-                            control={<Radio />}
-                            label={
-                              ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[
-                                trim.value.toLowerCase()
-                              ]?.children?.[key]?.name
-                            }
-                          />
-                        ))}
-                      </Box>
-                    </RadioGroup>
-                  )}
-                />
+                            ?.children?.[key]?.name
+                        }
+                      />
+                    ))}
+                  </Box>
+                </RadioGroup>
                 <Controller
                   rules={{ required: { value: true, message: 'Select your tire type' } }}
                   control={control}
@@ -528,7 +520,7 @@ export function Step2(props: StepProps) {
                 />
               </Stack>
               <Typography variant="h5">Add image of damage to tire and image of tire wall that shows tire size</Typography>
-              <Stack direction="row" maxWidth="566px" gap={3}>
+              <Stack direction="row" maxWidth="566px" gap={3} alignItems="stretch">
                 <ImageUpload name="tires.0.imageOfDamage" title="Damage" placeholder="/images/tire-flat-placeholder-1.png" />
                 <ImageUpload name="tires.0.imageOfTireWall" title="Tire wall" placeholder="/images/tire-flat-placeholder-2.png" />
               </Stack>
