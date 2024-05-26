@@ -2,6 +2,9 @@
   "name": "tiretoad-frontend",
   "version": "0.1.2",
   "private": true,
+  "engines": {
+    "node": "18.17.0"
+  },
   "scripts": {
     "dev": "next dev -p 8080",
     "build": "next build",

@@ -1,4 +1,4 @@
 export enum TireType {
-  STANDARD = 'standard',
-  RUNFLAT = 'runflat',
+  STANDARD = 'Standard',
+  RUNFLAT = 'Runflat',
 }

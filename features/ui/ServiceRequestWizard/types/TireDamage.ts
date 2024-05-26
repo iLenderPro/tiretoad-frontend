@@ -1,3 +1,3 @@
 export enum TireDamage {
-  FLAT = 'flat',
+  FLAT = 'Flat',
 }

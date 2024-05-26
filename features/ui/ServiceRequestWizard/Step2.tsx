@@ -357,6 +357,11 @@ export function Step2(props: StepProps) {
     if (!isTiresFetching) {
       if (isInitFlow && serviceRequest?.tires?.[0]?.size) {
         // TODO: tire does not match tire name, gotta fix it
+        // console.log('tire size from request: ', serviceRequest?.tires?.[0]?.size);
+        // console.log(
+        //   'tire size from hash table: ',
+        //   ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children,
+        // );
         tire.onChange(
           ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children?.[
             serviceRequest?.tires?.[0]?.size?.toLowerCase()

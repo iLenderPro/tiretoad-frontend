@@ -1,6 +1,6 @@
 export enum TireSide {
-  LF = 'left front',
-  LR = 'left rear',
-  RF = 'right front',
-  RR = 'right rear',
+  LF = 'Left Front',
+  LR = 'Left Rear',
+  RF = 'Right Front',
+  RR = 'Right Rear',
 }

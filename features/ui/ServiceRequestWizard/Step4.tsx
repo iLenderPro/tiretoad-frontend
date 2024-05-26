@@ -78,9 +78,10 @@ export function Step4(props: StepProps) {
     <Stack alignItems="center" gap={3}>
       <Typography variant="h4">Confirm Your Request</Typography>
       <Typography>
-        The <strong>{TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} tire</strong> on your{' '}
+        The <strong>{TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire</strong> on your{' '}
         <strong>
           {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
+          {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}
         </strong>{' '}
         has a <strong>{TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</strong>
       </Typography>
@@ -89,6 +90,13 @@ export function Step4(props: StepProps) {
         <strong>
           {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
         </strong>
+      </Typography>
+      <Typography>
+        The vehicle is located at <strong>{serviceRequest.location.address}</strong>
+      </Typography>
+      <Typography>
+        <strong>Comment: </strong>
+        {serviceRequest.location.comment}
       </Typography>
       <Typography variant="h5">Images of your damage and tire wall</Typography>
       <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
@@ -107,9 +115,6 @@ export function Step4(props: StepProps) {
       <Typography>
         We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
         and can have you back on the road in as little as 30 min
-      </Typography>
-      <Typography>
-        The vehicle is located at <strong>{serviceRequest.location.address}</strong>
       </Typography>
       <Button variant="text">Change address</Button>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>

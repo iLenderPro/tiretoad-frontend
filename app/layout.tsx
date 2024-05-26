@@ -8,6 +8,7 @@ import { store } from '@/app/store';
 import { geoApi } from '@/entities/geo/api/geoApi';
 import Auth from '@/shared/ui/Auth/Auth';
 import { Snackbar } from '@/shared/ui/Snackbar/ui/Snackbar';
+import NavBar from '@/shared/ui/NavBar/NavBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <ThemeRegistry>
               <body className={inter.className} style={{ height: '100%' }}>
                 <Snackbar />
+                <NavBar />
                 {children}
               </body>
             </ThemeRegistry>
