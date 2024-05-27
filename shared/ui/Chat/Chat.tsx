@@ -7,10 +7,10 @@ import { useForm } from 'react-hook-form';
 import { Message } from './Message/Message';
 import { useGetMessageQuery, useSendMessageMutation } from '@/entities/chat/api/chatApi';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 
 export type ChatProps = {
-  user: UserDto;
+  user: ClientDto;
   vendorResponse: VendorResponseDto;
 };
 

@@ -1,3 +1,4 @@
+'use client';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
@@ -9,10 +10,11 @@ import { geoApi } from '@/entities/geo/api/geoApi';
 import Auth from '@/shared/ui/Auth/Auth';
 import { Snackbar } from '@/shared/ui/Snackbar/ui/Snackbar';
 import NavBar from '@/shared/ui/NavBar/NavBar';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'TireToad',
   description: 'Mobile tire repair everywhere',
 };
@@ -21,20 +23,21 @@ store.dispatch(geoApi.endpoints.getLocation.initiate());
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" style={{ height: '100%' }}>
-      <AppRouterCacheProvider>
-        <StoreProvider>
-          <Auth>
-            <ThemeRegistry>
-              <body className={inter.className} style={{ height: '100%' }}>
-                <Snackbar />
+    <AppRouterCacheProvider>
+      <StoreProvider>
+        <Auth>
+          <ThemeRegistry>
+            <CssBaseline />
+            <html style={{ height: '100%' }} lang="en">
+              <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
                 <NavBar />
-                {children}
+                <Snackbar />
+                <main style={{ display: 'flex', flex: 1 }}>{children}</main>
               </body>
-            </ThemeRegistry>
-          </Auth>
-        </StoreProvider>
-      </AppRouterCacheProvider>
-    </html>
+            </html>
+          </ThemeRegistry>
+        </Auth>
+      </StoreProvider>
+    </AppRouterCacheProvider>
   );
 }

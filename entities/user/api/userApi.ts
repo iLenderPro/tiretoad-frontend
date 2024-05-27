@@ -1,9 +1,9 @@
 import { baseApi } from '@/shared/api';
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getLocation: build.query<UserDto[], void>({
+    getLocation: build.query<ClientDto[], void>({
       query: () => ({
         url: `/users`,
       }),

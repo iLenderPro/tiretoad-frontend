@@ -6,6 +6,7 @@ import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage'
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { ServiceRequestStatus } from '@/features/ui/ServiceRequestWizard/types/ServiceRequestStatus';
 import { useGetVendorResponsesQuery } from '@/entities/vendorResponse/api/vendorResponseApi';
+import Typography from '@mui/material/Typography';
 
 export default function ServiceRequestTableVendor() {
   const router = useRouter();
@@ -26,11 +27,11 @@ export default function ServiceRequestTableVendor() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {vendorResponses &&
+          {!!vendorResponses?.length ? (
             vendorResponses?.map((row) => (
               <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell component="th" scope="row">
-                  {row.serviceRequest.user.fullName}
+                  {row.serviceRequest.client.fullName}
                 </TableCell>
                 <TableCell>{row.serviceRequest.vehicle?.vin}</TableCell>
                 <TableCell>{`${row.serviceRequest.vehicle.year} ${row.serviceRequest.vehicle.model} ${row.serviceRequest.vehicle.trim}`}</TableCell>
@@ -46,7 +47,14 @@ export default function ServiceRequestTableVendor() {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell colSpan={8} align="center">
+                <Typography>No service requests yet</Typography>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

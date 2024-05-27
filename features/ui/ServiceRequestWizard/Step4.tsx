@@ -31,30 +31,30 @@ export function Step4(props: StepProps) {
   const [createServiceRequest, { isLoading: isServiceRequestLoading }] = useCreateServiceRequestMutation();
   const [login, { isLoading: isLoggingIn }] = useLoginUserMutation();
 
-  const { register, handleSubmit, setValue, watch } = useForm<Pick<ServiceRequestDto, 'user'>>({ values: serviceRequest });
-  const registerMethods = useForm<AccountDto['registration']>({ values: serviceRequest.user });
+  const { register, handleSubmit, setValue, watch } = useForm<Pick<ServiceRequestDto, 'client'>>({ values: serviceRequest });
+  const registerMethods = useForm<AccountDto['registration']>({ values: serviceRequest.client });
   const verificationMethods = useForm<AccountDto['verification']>({
     values: {
-      userId: serviceRequest.user?.id,
-      verificationToken: serviceRequest.user?.verificationToken,
+      userId: serviceRequest.client?.id,
+      verificationToken: serviceRequest.client?.verificationToken,
     },
   });
   const isLoading = isRegisterLoading || isVerifyLoading;
-  const user = watch('user');
+  const user = watch('client');
   const mapUrl = getStaticMapImage(serviceRequest.location, placesWithinRadius);
 
   const handleRegisterSubmit = async (data: AccountDto['registration']) => {
     const result = await registerUser(data).unwrap();
-    setValue('user', { ...data, ...result });
-    dispatch(setServiceRequest({ user: { ...serviceRequest.user, ...data, ...result } }));
+    setValue('client', { ...data, ...result });
+    dispatch(setServiceRequest({ client: { ...serviceRequest.client, ...data, ...result } }));
   };
 
   const handleVerificationSubmit = async (data: { verificationToken?: string }) => {
     if (user?.id) {
       const result = await verifyUser({ ...data, userId: user.id }).unwrap();
       if (result) {
-        setValue('user', { ...data, ...result });
-        dispatch(setServiceRequest({ user: { ...serviceRequest.user, ...data, ...result } }));
+        setValue('client', { ...data, ...result });
+        dispatch(setServiceRequest({ client: { ...serviceRequest.client, ...data, ...result } }));
         if (user.email && user.password) {
           const session = await login({ email: user.email, password: user.password }).unwrap();
           dispatch(setUserSession(session));
@@ -63,7 +63,7 @@ export function Step4(props: StepProps) {
     }
   };
 
-  const handleStepSubmit = async (data: Pick<ServiceRequestDto, 'user'>) => {
+  const handleStepSubmit = async (data: Pick<ServiceRequestDto, 'client'>) => {
     const savedServiceRequest = await createServiceRequest(serviceRequest).unwrap();
     if (savedServiceRequest) {
       router.push(`/requests/${savedServiceRequest.id}/view`);
@@ -206,7 +206,7 @@ export function Step4(props: StepProps) {
             </form>
           )}
           <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
-            <input type="hidden" {...register('user')} defaultValue={undefined} />
+            <input type="hidden" {...register('client')} defaultValue={undefined} />
           </form>
         </Stack>
       </Stack>

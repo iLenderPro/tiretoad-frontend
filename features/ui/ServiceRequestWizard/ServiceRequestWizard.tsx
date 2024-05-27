@@ -47,8 +47,8 @@ export default function ServiceRequestWizard() {
             type="submit"
             onClick={handleNext}
             disabled={isUpdating}
-            variant={activeStep === 3 && serviceRequest?.user?.active ? 'contained' : 'text'}
-            color={activeStep === 3 && serviceRequest?.user?.active ? 'success' : 'primary'}
+            variant={activeStep === 3 && serviceRequest?.client?.active ? 'contained' : 'text'}
+            color={activeStep === 3 && serviceRequest?.client?.active ? 'success' : 'primary'}
           >
             {activeStep === 3 ? 'Submit' : 'Next'}
             {isUpdating ? (

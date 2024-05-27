@@ -7,12 +7,12 @@ import Box from '@mui/material/Box';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import Link from 'next/link';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 
 export type ServiceRequestPreviewProps = {
   serviceRequest: ServiceRequestDto;
-  user: UserDto;
+  user: ClientDto;
 };
 export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
   const { user, serviceRequest } = props;
@@ -31,7 +31,7 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
             </Stack>
           )}
           <Stack>
-            <Stack>Name: {serviceRequest.user.fullName}</Stack>
+            <Stack>Name: {serviceRequest.client.fullName}</Stack>
             <Stack>
               Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
             </Stack>
@@ -46,12 +46,16 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
               <Card>
-                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.user.id}/${serviceRequest.tires[0].imageOfDamage}`} />
+                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`} />
               </Card>
             </Box>
             <Box flex={1}>
               <Card>
-                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.user.id}/${serviceRequest.tires[0].imageOfTireWall}`} />
+                <CardMedia
+                  width={1}
+                  component="img"
+                  image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`}
+                />
               </Card>
             </Box>
           </Stack>

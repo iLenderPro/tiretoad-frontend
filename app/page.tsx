@@ -3,12 +3,8 @@ import { Container } from '@mui/material';
 
 export default function Home() {
   return (
-    <>
-      <main style={{ height: '100%' }}>
-        <Container style={{ height: '100%', paddingTop: '16px' }}>
-          <ServiceRequestWizard />
-        </Container>
-      </main>
-    </>
+    <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
+      <ServiceRequestWizard />
+    </Container>
   );
 }

@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { VendorDto } from '@/entities/user/api/dto/VendorDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 
 export type AuthDto = {
-  user?: UserDto;
-  authToken?: string | null;
+  user?: ClientDto | VendorDto | undefined;
+  authToken?: string | undefined;
 };
 
 const initialState: AuthDto = {};
@@ -12,7 +13,7 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: (create) => ({
-    setUserSession: create.reducer<AuthDto>((state, action) => ({ ...state, ...action.payload })),
+    setUserSession: create.reducer<AuthDto>((state, action) => action.payload),
   }),
   selectors: { selectUserSession: (state) => state },
 });

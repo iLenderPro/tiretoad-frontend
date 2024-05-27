@@ -54,7 +54,7 @@ export default function ServiceRequestResponseTable(props: ServiceRequestRespons
           {serviceRequests.map((row) => (
             <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                {row.user.fullName}
+                {row.client.fullName}
               </TableCell>
               <TableCell>{row.vehicle?.vin}</TableCell>
               <TableCell>{`${row.vehicle.year} ${row.vehicle.model} ${row.vehicle.trim}`}</TableCell>

@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,15 +13,26 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Divider, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
+import { MouseEvent, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserSession, setUserSession } from '@/entities/account/authSlice';
+import { VendorDto } from '@/entities/user/api/dto/VendorDto';
+import Typography from '@mui/material/Typography';
+import { useLogoutMutation } from '@/entities/account/api/accountApi';
+import { useRouter } from 'next/navigation';
 
 export default function NavBar() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [logout] = useLogoutMutation();
+  const session = useSelector(selectUserSession);
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
+  const dispatch = useDispatch();
+  const router = useRouter();
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -35,10 +45,17 @@ export default function NavBar() {
     handleMobileMenuClose();
   };
 
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+  const handleLogout = async () => {
+    const result = await logout(undefined).unwrap();
+    dispatch(setUserSession({ authToken: undefined, user: undefined }));
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    router.refresh();
   };
 
+  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -56,9 +73,9 @@ export default function NavBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <Divider />
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <Divider />
+      <MenuItem onClick={handleLogout}>Log out</MenuItem>
     </Menu>
   );
 
@@ -104,8 +121,8 @@ export default function NavBar() {
     </Menu>
   );
 
-  return (
-    <Box sx={{ flexGrow: 1 }}>
+  return session.user ? (
+    <>
       <AppBar position="static">
         <Toolbar>
           <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
@@ -126,14 +143,18 @@ export default function NavBar() {
             <Stack direction="row" alignItems="center" gap={2}>
               <Button
                 size="large"
-                startIcon={<AccountCircle fontSize="inherit" />}
+                endIcon={<AccountCircle fontSize="inherit" />}
                 aria-label="account of current user"
                 aria-controls={menuId}
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                Nick Zakonov
+                <Stack direction="row" gap={1}>
+                  {session?.user.fullName}
+                  <Typography> | </Typography>
+                  {session?.user.hasOwnProperty('businessName') && `${(session?.user as VendorDto).businessName}`}
+                </Stack>
               </Button>
             </Stack>
           </Box>
@@ -146,6 +167,8 @@ export default function NavBar() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
-    </Box>
+    </>
+  ) : (
+    <></>
   );
 }

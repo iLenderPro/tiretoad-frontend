@@ -1,11 +1,12 @@
 import { baseApi } from '@/shared/api';
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
 import { AuthDto } from '@/entities/account/authSlice';
+import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 
 export const accountApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getUserSession: build.query<UserDto, void>({
+    getUserSession: build.query<ClientDto, void>({
       query: () => ({
         url: `auth`,
       }),
@@ -19,7 +20,15 @@ export const accountApi = baseApi.injectEndpoints({
         };
       },
     }),
-    registerUser: build.mutation<UserDto, AccountDto['registration']>({
+    logout: build.mutation({
+      query: () => {
+        return {
+          url: `auth/logout`,
+          method: 'POST',
+        };
+      },
+    }),
+    registerUser: build.mutation<ClientDto, ClientDto>({
       query: (dto) => {
         return {
           url: `users/register`,
@@ -28,7 +37,16 @@ export const accountApi = baseApi.injectEndpoints({
         };
       },
     }),
-    verifyUser: build.mutation<UserDto, AccountDto['verification']>({
+    registerVendor: build.mutation<VendorDto, VendorDto>({
+      query: (dto) => {
+        return {
+          url: `vendors/register`,
+          method: 'POST',
+          body: dto,
+        };
+      },
+    }),
+    verifyUser: build.mutation<ClientDto | VendorDto, AccountDto['verification']>({
       query: (dto) => {
         return {
           url: `users/verify`,
@@ -40,4 +58,4 @@ export const accountApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useRegisterUserMutation, useVerifyUserMutation, useLoginUserMutation, useGetUserSessionQuery } = accountApi;
+export const { useRegisterUserMutation, useRegisterVendorMutation, useVerifyUserMutation, useLoginUserMutation, useLogoutMutation, useGetUserSessionQuery } = accountApi;

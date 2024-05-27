@@ -1,4 +1,4 @@
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 
 export interface MessageDto {
@@ -8,5 +8,5 @@ export interface MessageDto {
   attachment?: string;
   createdAt: number;
   serviceRequest: ServiceRequestDto;
-  user: UserDto;
+  user: ClientDto;
 }

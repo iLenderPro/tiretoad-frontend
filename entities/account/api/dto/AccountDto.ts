@@ -1,7 +1,7 @@
-import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 
 export type AccountDto = {
-  registration: UserDto;
+  registration: ClientDto;
   login: {
     email: string;
     password: string;
