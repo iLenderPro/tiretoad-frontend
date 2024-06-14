@@ -13,7 +13,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
-import { Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from '@mui/material';
+import { Avatar, Divider, Drawer, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from '@mui/material';
 import { MouseEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserSession, setUserSession } from '@/entities/account/authSlice';
@@ -85,20 +85,38 @@ export default function NavBar() {
                 {/*    <NotificationsIcon />*/}
                 {/*  </Badge>*/}
                 {/*</IconButton>*/}
-                <IconButton size="large" aria-label={`show ${unreadMessages} new messages`} color="inherit" onClick={handleUnreadMessagesClick}>
+                <IconButton disabled={!unreadMessages?.length} size="large" aria-label={`show ${unreadMessages} new messages`} color="inherit" onClick={handleUnreadMessagesClick}>
                   <Badge badgeContent={unreadMessages?.length} color="error">
-                    <MailIcon color={!!unreadMessages?.length ? 'inherit' : 'disabled'} />
+                    <MailIcon color="inherit" />
                   </Badge>
                 </IconButton>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={unreadMessagesIsOpen}
-                  onClose={handleUnreadMessagesClose}
-                  slotProps={{ paper: { style: { maxHeight: '80vh', width: '80%', maxWidth: '500px' } } }}
-                >
-                  <MenuItem onClick={handleUnreadMessagesClose}>Message</MenuItem>
-                </Menu>
+                {!!unreadMessages?.length && (
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={unreadMessagesIsOpen}
+                    onClose={handleUnreadMessagesClose}
+                    slotProps={{ paper: { style: { maxHeight: '80vh', width: '80%', maxWidth: '400px' } } }}
+                  >
+                    <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                      {unreadMessages?.map((message) => (
+                        <MenuItem onClick={handleUnreadMessagesClose}>
+                          <ListItemAvatar>
+                            <Avatar src="/icons/icon_tiretoad.png" />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primaryTypographyProps={{ display: 'block', noWrap: true }}
+                            secondaryTypographyProps={{ display: 'block', noWrap: true }}
+                            primary={
+                              session.user?.role === UserRole.CLIENT ? `${message.user.fullName} from ${(message.user as VendorDto).businessName}` : `${message.user.fullName}`
+                            }
+                            secondary={message.content}
+                          />
+                        </MenuItem>
+                      ))}
+                    </List>
+                  </Menu>
+                )}
               </Stack>
             )}
           </Box>

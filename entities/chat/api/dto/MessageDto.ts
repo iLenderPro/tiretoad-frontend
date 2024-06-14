@@ -1,5 +1,5 @@
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 
 export interface MessageDto {
   id: string;
@@ -7,6 +7,6 @@ export interface MessageDto {
   content: string;
   attachment?: string;
   createdAt: number;
-  serviceRequest: ServiceRequestDto;
+  response: VendorResponseDto;
   user: ClientDto;
 }
