@@ -5,7 +5,6 @@ import { useGetUserSessionQuery } from '@/entities/account/api/accountApi';
 import { PropsWithChildren, useEffect } from 'react';
 
 export default function Auth({ children }: PropsWithChildren) {
-  // const pathname = usePathname();
   const dispatch = useDispatch();
   // const session = useSelector(selectUserSession);
   const { data } = useGetUserSessionQuery(undefined, { pollingInterval: 5 * 60 * 1000 });
