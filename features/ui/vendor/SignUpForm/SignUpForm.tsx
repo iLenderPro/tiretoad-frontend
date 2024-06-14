@@ -102,7 +102,7 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             helperText={registerMethods.formState.errors.businessName?.message}
           />
           <TextField
-            {...registerMethods.register('addresses.line1', {
+            {...registerMethods.register('addresses.0.line1', {
               required: {
                 value: true,
                 message: 'Business address',
@@ -111,11 +111,12 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             label="Business address"
             placeholder="Business address"
             fullWidth
-            error={Boolean(registerMethods.formState.errors.addresses?.line1)}
-            helperText={registerMethods.formState.errors.addresses?.line1?.message}
+            error={Boolean(registerMethods.formState.errors.addresses?.[0]?.line1)}
+            helperText={registerMethods.formState.errors.addresses?.[0]?.line1?.message}
           />
+          <input type="hidden" {...registerMethods.register('addresses.0.country')} defaultValue="US" />
           <TextField
-            {...registerMethods.register('addresses.state', {
+            {...registerMethods.register('addresses.0.state', {
               required: {
                 value: true,
                 message: 'State is required',
@@ -124,11 +125,24 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             label="State"
             placeholder="State"
             fullWidth
-            error={Boolean(registerMethods.formState.errors.addresses?.state)}
-            helperText={registerMethods.formState.errors.addresses?.state?.message}
+            error={Boolean(registerMethods.formState.errors.addresses?.[0]?.state)}
+            helperText={registerMethods.formState.errors.addresses?.[0]?.state?.message}
           />
           <TextField
-            {...registerMethods.register('addresses.zip', {
+            {...registerMethods.register('addresses.0.city', {
+              required: {
+                value: true,
+                message: 'City is required',
+              },
+            })}
+            label="City"
+            placeholder="City"
+            fullWidth
+            error={Boolean(registerMethods.formState.errors.addresses?.[0]?.city)}
+            helperText={registerMethods.formState.errors.addresses?.[0]?.city?.message}
+          />
+          <TextField
+            {...registerMethods.register('addresses.0.zip', {
               required: {
                 value: true,
                 message: 'ZIP code is required',
@@ -137,8 +151,8 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             label="ZIP code"
             placeholder="ZIP code"
             fullWidth
-            error={Boolean(registerMethods.formState.errors.addresses?.zip)}
-            helperText={registerMethods.formState.errors.addresses?.zip?.message}
+            error={Boolean(registerMethods.formState.errors.addresses?.[0]?.zip)}
+            helperText={registerMethods.formState.errors.addresses?.[0]?.zip?.message}
           />
           <Button variant="contained" type="submit" size="large" disabled={isLoading || !!user} endIcon={isLoading ? <CircularProgress color="inherit" size="1em" /> : null}>
             Confirm

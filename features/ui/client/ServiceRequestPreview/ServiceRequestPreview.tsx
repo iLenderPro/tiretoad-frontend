@@ -1,20 +1,22 @@
 'use client';
-import { Card, CardMedia, Stack } from '@mui/material';
+import { Alert, Avatar, Card, CardMedia, List, ListItem, ListItemAvatar, ListItemText, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import Box from '@mui/material/Box';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
-import Link from 'next/link';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
+import Button from '@mui/material/Button';
+import { useRouter } from 'next/navigation';
 
 export type ServiceRequestPreviewProps = {
   serviceRequest: ServiceRequestDto;
   user: ClientDto;
 };
 export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
+  const router = useRouter();
   const { user, serviceRequest } = props;
 
   return (
@@ -22,12 +24,64 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
       {serviceRequest && (
         <>
           {user.role === UserRole.CLIENT && (
-            <Stack>
-              <Typography>We are reaching out to mobile repair shops to get you back on the road</Typography>
-              <Typography gutterBottom>Already responded:</Typography>
-              {!!serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED)?.length && (
-                <Box>{serviceRequest.responses?.map((response) => <Link href={`/responses/${response.id}/chat`}>{response.vendor.fullName}</Link>)}</Box>
-              )}
+            <Stack alignItems="center" gap={2}>
+              <Alert severity="info">
+                <Typography gutterBottom>We are reaching out to mobile repair shops to get you back on the road</Typography>
+              </Alert>
+              <Typography gutterBottom variant="h6">
+                Who already responded:
+              </Typography>
+              <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                {!!serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED)?.length &&
+                  serviceRequest.responses?.map((response) => (
+                    // <Card variant="elevation" elevation={1} key={response.id} sx={{ width: '100%' }}>
+                    //   <CardHeader
+                    //     style={{ paddingBottom: '8px' }}
+                    //     action={
+                    //       <IconButton aria-label="settings">
+                    //         <MoreVertOutlinedIcon />
+                    //       </IconButton>
+                    //     }
+                    //     title={
+                    //       <Typography gutterBottom variant="h6">
+                    //         {response.vendor.businessName}
+                    //       </Typography>
+                    //     }
+                    //     subheader={
+                    //       <Typography gutterBottom variant="body2" color="text.secondary">
+                    //         {response.vendor.fullName}
+                    //       </Typography>
+                    //     }
+                    //     disableTypography
+                    //   />
+                    //   <CardContent style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+                    //     <Link href={`/responses/${response.id}/chat`}>{response.vendor.fullName}</Link>
+                    //   </CardContent>
+                    // </Card>
+                    <ListItem
+                      alignItems="flex-start"
+                      secondaryAction={
+                        <Button color="success" variant="contained" onClick={() => router.push(`/responses/${response.id}/chat`)}>
+                          Chat
+                        </Button>
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar src="/icons/icon_tiretoad.png" />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={response.vendor.businessName}
+                        secondary={
+                          <>
+                            <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                              {response.vendor.fullName}
+                            </Typography>
+                          </>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+              </List>
             </Stack>
           )}
           <Stack>

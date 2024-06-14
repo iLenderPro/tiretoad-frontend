@@ -4,171 +4,179 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
 import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import { Divider, Stack } from '@mui/material';
-import Button from '@mui/material/Button';
+import OutboxOutlinedIcon from '@mui/icons-material/OutboxOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import { Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from '@mui/material';
 import { MouseEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserSession, setUserSession } from '@/entities/account/authSlice';
-import { VendorDto } from '@/entities/user/api/dto/VendorDto';
-import Typography from '@mui/material/Typography';
 import { useLogoutMutation } from '@/entities/account/api/accountApi';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
+import { VendorDto } from '@/entities/user/api/dto/VendorDto';
+import { useGetUnreadMessagesQuery } from '@/entities/chat/api/chatApi';
 
 export default function NavBar() {
-  const [logout] = useLogoutMutation();
   const session = useSelector(selectUserSession);
-
+  const [logout] = useLogoutMutation();
+  const { data: unreadMessages } = useGetUnreadMessagesQuery(undefined, {
+    skip: !session?.user,
+    pollingInterval: 3000,
+  });
+  const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
+  const unreadMessagesIsOpen = Boolean(anchorEl);
+
   const dispatch = useDispatch();
   const router = useRouter();
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const params = useParams();
 
-  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const toggleLeftDrawer = (newOpen: boolean) => () => {
+    setLeftDrawerOpen(newOpen);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
+  const handleLogin = () => {
+    router.push('/login');
   };
 
   const handleLogout = async () => {
     const result = await logout(undefined).unwrap();
     dispatch(setUserSession({ authToken: undefined, user: undefined }));
-    setAnchorEl(null);
-    handleMobileMenuClose();
     router.refresh();
   };
 
-  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+  const handleUnreadMessagesClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
   };
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <Divider />
-      <MenuItem onClick={handleLogout}>Log out</MenuItem>
-    </Menu>
-  );
+  const handleUnreadMessagesClose = () => {
+    setAnchorEl(null);
+  };
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton size="large" aria-label="account of current user" aria-controls="primary-search-account-menu" aria-haspopup="true" color="inherit">
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
-
-  return session.user ? (
+  return (
     <>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
-          <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
-            <MenuIcon />
-          </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={1} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            {/*<IconButton size="large" aria-label="show 17 new notifications" color="inherit">*/}
-            {/*  <Badge badgeContent={17} color="error">*/}
-            {/*    <NotificationsIcon />*/}
-            {/*  </Badge>*/}
-            {/*</IconButton>*/}
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Button
-                size="large"
-                endIcon={<AccountCircle fontSize="inherit" />}
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <Stack direction="row" gap={1}>
-                  {session?.user.fullName}
-                  <Typography> | </Typography>
-                  {session?.user.hasOwnProperty('businessName') && `${(session?.user as VendorDto).businessName}`}
-                </Stack>
-              </Button>
-            </Stack>
+          <Box flex={1 / 3}>
+            {params.slug ? (
+              <IconButton size="large" color="inherit" aria-label="open drawer" onClick={() => router.back()}>
+                <ArrowBackOutlinedIcon />
+              </IconButton>
+            ) : (
+              <IconButton size="large" color="inherit" aria-label="open drawer" onClick={toggleLeftDrawer(true)}>
+                <MenuIcon />
+              </IconButton>
+            )}
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton size="large" aria-label="show more" aria-controls={mobileMenuId} aria-haspopup="true" onClick={handleMobileMenuOpen} color="inherit">
-              <MoreIcon />
-            </IconButton>
+          <Box flex={1} sx={{ flexGrow: 1 }} textAlign="center">
+            <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={36} height={36} />
+          </Box>
+          <Box flex={1 / 3}>
+            {session?.user && (
+              <Stack direction="row" justifyContent="flex-end">
+                {/*<IconButton size="large" aria-label="show 17 new notifications" color="inherit">*/}
+                {/*  <Badge badgeContent={17} color="error">*/}
+                {/*    <NotificationsIcon />*/}
+                {/*  </Badge>*/}
+                {/*</IconButton>*/}
+                <IconButton size="large" aria-label={`show ${unreadMessages} new messages`} color="inherit" onClick={handleUnreadMessagesClick}>
+                  <Badge badgeContent={unreadMessages?.length} color="error">
+                    <MailIcon color={!!unreadMessages?.length ? 'inherit' : 'disabled'} />
+                  </Badge>
+                </IconButton>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={unreadMessagesIsOpen}
+                  onClose={handleUnreadMessagesClose}
+                  slotProps={{ paper: { style: { maxHeight: '80vh', width: '80%', maxWidth: '500px' } } }}
+                >
+                  <MenuItem onClick={handleUnreadMessagesClose}>Message</MenuItem>
+                </Menu>
+              </Stack>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
+      <Drawer open={leftDrawerOpen} onClose={toggleLeftDrawer(false)}>
+        <Box minWidth="300px" role="presentation" onClick={toggleLeftDrawer(false)}>
+          {session?.user ? (
+            <List>
+              <ListItem key="user-info">
+                <ListItemButton>
+                  <ListItemIcon style={{ minWidth: 40 }}>
+                    <AccountCircle />
+                  </ListItemIcon>
+                  <ListItemText
+                    primaryTypographyProps={{ variant: 'h6' }}
+                    primary={session?.user.fullName}
+                    secondary={session?.user.role === UserRole.VENDOR && (session?.user as VendorDto).businessName}
+                  />
+                </ListItemButton>
+              </ListItem>
+              <Divider variant="middle" />
+              {session?.user.role !== UserRole.VENDOR && (
+                <ListItem key="new-request">
+                  <ListItemButton onClick={() => router.push('/')}>
+                    <ListItemIcon style={{ minWidth: 40 }}>
+                      <AddCircleOutlineOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="New request" />
+                  </ListItemButton>
+                </ListItem>
+              )}
+              <ListItem key="service-requests">
+                <ListItemButton onClick={() => router.push('/requests')}>
+                  <ListItemIcon style={{ minWidth: 40 }}>
+                    <OutboxOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="All requests" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem key="account">
+                <ListItemButton onClick={() => router.push('/account')}>
+                  <ListItemIcon style={{ minWidth: 40 }}>
+                    <AccountCircleOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="My profile" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          ) : (
+            <List>
+              <ListItem key="login" disablePadding>
+                <ListItemButton onClick={handleLogin}>
+                  <ListItemIcon style={{ minWidth: 40 }}>
+                    <LoginOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Sign In" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          )}
+          {session?.user && (
+            <>
+              <Divider variant="middle" />
+              <List>
+                <ListItem key="logout">
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemIcon style={{ minWidth: 40 }}>
+                      <LogoutOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </>
+          )}
+        </Box>
+      </Drawer>
     </>
-  ) : (
-    <></>
   );
 }

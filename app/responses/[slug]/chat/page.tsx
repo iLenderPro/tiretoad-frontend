@@ -28,31 +28,29 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
 
   return (
     <>
-      <main style={{ height: '100%' }}>
-        <Container style={{ height: '100%', paddingTop: '16px' }}>
-          <Stack alignItems="center" minHeight="100%" gap={3}>
-            {vendorResponse && serviceRequest && session?.user && (
-              <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
-                <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
-                  <Typography variant="h4">Service Request Summary</Typography>
-                  {session?.user.role === UserRole.VENDOR && (
-                    <Stack direction="row" gap={2}>
-                      <Button variant="contained" color="success" disabled={vendorResponse.status === VendorResponseStatus.ACCEPTED} onClick={handleAcceptRequest}>
-                        Accept
-                      </Button>
-                      <Button variant="contained" color="error" disabled={vendorResponse.status === VendorResponseStatus.DECLINED} onClick={handleDeclineRequest}>
-                        Decline
-                      </Button>
-                    </Stack>
-                  )}
-                  <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest} />
-                </Stack>
-                <Chat user={session.user} vendorResponse={vendorResponse} />
+      <Container style={{ height: '100%', paddingTop: '24px' }}>
+        <Stack alignItems="center" minHeight="100%" gap={3}>
+          {vendorResponse && serviceRequest && session?.user && (
+            <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
+              <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
+                <Typography variant="h4">Service Request Summary</Typography>
+                {session?.user.role === UserRole.VENDOR && (
+                  <Stack direction="row" gap={2}>
+                    <Button variant="contained" color="success" disabled={vendorResponse.status === VendorResponseStatus.ACCEPTED} onClick={handleAcceptRequest}>
+                      Accept
+                    </Button>
+                    <Button variant="contained" color="error" disabled={vendorResponse.status === VendorResponseStatus.DECLINED} onClick={handleDeclineRequest}>
+                      Decline
+                    </Button>
+                  </Stack>
+                )}
+                <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest} />
               </Stack>
-            )}
-          </Stack>
-        </Container>
-      </main>
+              <Chat user={session.user} vendorResponse={vendorResponse} />
+            </Stack>
+          )}
+        </Stack>
+      </Container>
     </>
   );
 }

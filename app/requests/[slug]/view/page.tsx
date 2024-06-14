@@ -12,14 +12,12 @@ export default function ServiceRequestView({ params }: { params: { slug: string 
 
   return (
     <>
-      <main style={{ height: '100%' }}>
-        <Container style={{ height: '100%', paddingTop: '16px' }}>
-          <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
-            <Typography variant="h4">Service Request Summary</Typography>
-            {serviceRequest && session?.user && <ServiceRequestPreview user={session?.user} serviceRequest={serviceRequest} />}
-          </Stack>
-        </Container>
-      </main>
+      <Container style={{ height: '100%', paddingTop: '24px' }}>
+        <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
+          <Typography variant="h4">Service Request Summary</Typography>
+          {serviceRequest && session?.user && <ServiceRequestPreview user={session?.user} serviceRequest={serviceRequest} />}
+        </Stack>
+      </Container>
     </>
   );
 }

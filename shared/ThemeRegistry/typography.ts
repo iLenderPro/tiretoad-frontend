@@ -13,7 +13,7 @@ export const typography = {
     fontSize: '1rem',
   },
   h4: {
-    fontSize: '2rem',
+    fontSize: '1.85rem',
     fontWeight: 500,
   },
   h6: {

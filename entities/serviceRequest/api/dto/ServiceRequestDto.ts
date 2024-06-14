@@ -26,6 +26,7 @@ export type ServiceRequestDto = {
   };
   urgency: string;
   createdAt?: string;
+  prettyTime?: string;
   client: ClientDto;
   responses?: VendorResponseDto[];
 };

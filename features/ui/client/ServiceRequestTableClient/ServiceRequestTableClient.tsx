@@ -1,18 +1,46 @@
 'use client';
-import { Badge, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Badge,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { ServiceRequestStatus } from '@/features/ui/ServiceRequestWizard/types/ServiceRequestStatus';
 import { useGetServiceRequestsQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
+import IconButton from '@mui/material/IconButton';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import Typography from '@mui/material/Typography';
+
+enum StatusColor {
+  PENDING = 'warning',
+  ACCEPTED = 'success',
+  DECLINED = 'error',
+  DONE = 'primary',
+}
 
 export default function ServiceRequestTableClient() {
+  const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up('sm'));
   const router = useRouter();
-
   const { data: serviceRequests, isFetching } = useGetServiceRequestsQuery();
 
-  return (
+  return desktop ? (
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
@@ -47,5 +75,52 @@ export default function ServiceRequestTableClient() {
         </TableBody>
       </Table>
     </TableContainer>
+  ) : (
+    <Stack width="1" gap={2}>
+      {!!serviceRequests?.length ? (
+        serviceRequests?.map((row) => (
+          <Card variant="elevation" elevation={1} key={row.id} sx={{ width: '100%' }}>
+            <CardHeader
+              style={{ paddingBottom: '8px' }}
+              action={
+                <IconButton aria-label="settings">
+                  <MoreVertOutlinedIcon />
+                </IconButton>
+              }
+              title={
+                <Typography gutterBottom variant="h6">
+                  {`${row.vehicle.year} ${row.vehicle.model} ${row.vehicle.trim}`}
+                </Typography>
+              }
+              // subheader={
+              //   <Typography gutterBottom variant="body2" color="text.secondary">
+              //     {row.client.fullName}
+              //   </Typography>
+              // }
+              disableTypography
+            />
+            <CardContent style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+              <Typography variant="body1">Tire: {`${row.tires[0].size} (${TireType[row.tires[0].type as keyof typeof TireType]})`}</Typography>
+              <Typography variant="body1">Damage: {TireDamage[row.tires[0].damage as keyof typeof TireDamage]}</Typography>
+            </CardContent>
+            <Divider variant="middle" light>
+              <Badge slotProps={{ badge: { style: { position: 'relative', transform: 'translate(0, 0)' } } }} component="div" color={StatusColor.PENDING} badgeContent="PENDING" />
+            </Divider>
+            <CardActions sx={{ justifyContent: 'space-between', padding: '8px 16px' }}>
+              <Typography variant="subtitle2">{row.prettyTime}</Typography>
+              <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/requests/${row.id}/view`)}>
+                View
+              </Button>
+            </CardActions>
+          </Card>
+        ))
+      ) : (
+        <Card variant="elevation" elevation={1} sx={{ width: '100%' }}>
+          <CardContent>
+            <Typography align="center">No service requests yet</Typography>
+          </CardContent>
+        </Card>
+      )}
+    </Stack>
   );
 }

@@ -10,6 +10,11 @@ export const chatApi = baseApi.injectEndpoints({
         url: `/chat/messages/${vendorResponseId}`,
       }),
     }),
+    getUnreadMessages: build.query<MessageDto[], void>({
+      query: () => ({
+        url: `/chat/unread`,
+      }),
+    }),
     sendMessage: build.mutation<MessageDto, { vendorResponse: VendorResponseDto; user: ClientDto; prompt: string }>({
       query: ({ vendorResponse, user, prompt }) => ({
         url: `/chat/messages/${vendorResponse.id}`,
@@ -20,4 +25,4 @@ export const chatApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetMessageQuery, useSendMessageMutation } = chatApi;
+export const { useGetMessageQuery, useGetUnreadMessagesQuery, useSendMessageMutation } = chatApi;

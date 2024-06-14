@@ -8,6 +8,7 @@ import { Message } from './Message/Message';
 import { useGetMessageQuery, useSendMessageMutation } from '@/entities/chat/api/chatApi';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 export type ChatProps = {
   user: ClientDto;
@@ -49,7 +50,9 @@ export function Chat({ user, vendorResponse }: ChatProps) {
       >
         <StyledAppBar elevation={2} position="fixed">
           <Toolbar>
-            <Typography variant="h6">Conversation</Typography>
+            <Typography variant="body2" fontWeight="700">
+              Chat with {user.fullName} {user.role === UserRole.CLIENT && ` from ${vendorResponse.vendor.businessName}`}
+            </Typography>
           </Toolbar>
         </StyledAppBar>
         <CardContent sx={{ overflow: 'scroll', height: '100%' }}>
