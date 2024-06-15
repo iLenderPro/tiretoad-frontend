@@ -34,31 +34,8 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
               <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {!!serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED)?.length &&
                   serviceRequest.responses?.map((response) => (
-                    // <Card variant="elevation" elevation={1} key={response.id} sx={{ width: '100%' }}>
-                    //   <CardHeader
-                    //     style={{ paddingBottom: '8px' }}
-                    //     action={
-                    //       <IconButton aria-label="settings">
-                    //         <MoreVertOutlinedIcon />
-                    //       </IconButton>
-                    //     }
-                    //     title={
-                    //       <Typography gutterBottom variant="h6">
-                    //         {response.vendor.businessName}
-                    //       </Typography>
-                    //     }
-                    //     subheader={
-                    //       <Typography gutterBottom variant="body2" color="text.secondary">
-                    //         {response.vendor.fullName}
-                    //       </Typography>
-                    //     }
-                    //     disableTypography
-                    //   />
-                    //   <CardContent style={{ paddingTop: '8px', paddingBottom: '8px' }}>
-                    //     <Link href={`/responses/${response.id}/chat`}>{response.vendor.fullName}</Link>
-                    //   </CardContent>
-                    // </Card>
                     <ListItem
+                      key={response.id}
                       alignItems="flex-start"
                       secondaryAction={
                         <Button color="success" variant="contained" onClick={() => router.push(`/responses/${response.id}/chat`)}>

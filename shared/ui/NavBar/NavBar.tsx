@@ -55,6 +55,12 @@ export default function NavBar() {
   const handleUnreadMessagesClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const handleMessageClick = (event: MouseEvent<HTMLLIElement>) => {
+    router.push(`/responses/${event.currentTarget.id}/chat`);
+    setAnchorEl(null);
+  };
+
   const handleUnreadMessagesClose = () => {
     setAnchorEl(null);
   };
@@ -100,7 +106,7 @@ export default function NavBar() {
                   >
                     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                       {unreadMessages?.map((message) => (
-                        <MenuItem onClick={handleUnreadMessagesClose}>
+                        <MenuItem key={message.id} id={message.response.id} onClick={handleMessageClick}>
                           <ListItemAvatar>
                             <Avatar src="/icons/icon_tiretoad.png" />
                           </ListItemAvatar>
