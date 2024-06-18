@@ -5,8 +5,8 @@ import Button from '@mui/material/Button';
 import { VisuallyHiddenInput } from '@/features/ui/ImageUpload/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useLazyGetUploadUrlQuery, useUploadMutation } from '@/entities/file/api/fileApi';
-import React from 'react';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import { ChangeEvent } from 'react';
 
 export type ImageUploadProps = {
   name: Path<ServiceRequestDto>;
@@ -25,7 +25,7 @@ export function ImageUpload(props: ImageUploadProps) {
   const [upload, { isLoading }] = useUploadMutation();
   const { error } = getFieldState(name);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
     if (event.target.files?.length) {
       onChange('');
       const file = event.target.files[0];
