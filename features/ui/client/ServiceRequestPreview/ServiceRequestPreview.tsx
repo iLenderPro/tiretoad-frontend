@@ -25,12 +25,11 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
         <>
           {user.role === UserRole.CLIENT && (
             <Stack alignItems="center" gap={2}>
-              <Alert severity="info">
-                <Typography gutterBottom>We are reaching out to mobile repair shops to get you back on the road</Typography>
-              </Alert>
+              <Typography gutterBottom>We are reaching out to mobile repair shops to get you back on the road</Typography>
               <Typography gutterBottom variant="h6">
                 Who already responded:
               </Typography>
+              <Alert severity="warning">Please, wait on this page until someone responds.</Alert>
               <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {!!serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED)?.length &&
                   serviceRequest.responses?.map((response) => (
