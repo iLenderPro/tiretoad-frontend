@@ -4,7 +4,7 @@ import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import Button from '@mui/material/Button';
 import { VisuallyHiddenInput } from '@/features/ui/ImageUpload/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useUploadFileMutation } from '@/entities/file/api/fileApi';
+import { useLazyGetUploadUrlQuery, useUploadMutation } from '@/entities/file/api/fileApi';
 import React from 'react';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 
@@ -21,14 +21,16 @@ export function ImageUpload(props: ImageUploadProps) {
     getFieldState,
     formState: { errors },
   } = useFormContext<ServiceRequestDto>();
-  const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const [getUploadUrl, { isLoading: isUrlLoading }] = useLazyGetUploadUrlQuery();
+  const [upload, { isLoading }] = useUploadMutation();
   const { error } = getFieldState(name);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
     if (event.target.files?.length) {
       onChange('');
-      const fileToUpload = event.target.files[0];
-      const { key } = await uploadFile({ file: fileToUpload }).unwrap();
+      const file = event.target.files[0];
+      const { url, key } = await getUploadUrl({ name: file.name, mimetype: file.type }).unwrap();
+      await upload({ url, file }).unwrap();
       onChange(key);
     }
   };
@@ -54,7 +56,7 @@ export function ImageUpload(props: ImageUploadProps) {
             title={title}
             titleTypographyProps={{ variant: 'h6' }}
           />
-          <CardMedia component="img" width="100%" image={field.value ? `https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${field.value}` : placeholder} />
+          <CardMedia component="img" width="100%" image={field.value ? `https://tiretoad-data-bucket.s3.amazonaws.com/${field.value}` : placeholder} />
           <CardActions>
             <Button component="label" variant="contained" fullWidth startIcon={isLoading ? <CircularProgress size="1rem" color="inherit" /> : <CloudUploadIcon />}>
               Upload

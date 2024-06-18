@@ -102,12 +102,12 @@ export function Step4(props: StepProps) {
       <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
         <Box flex={1}>
           <Card>
-            <CardMedia component="img" width={1} image={`https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${serviceRequest.tires[0].imageOfDamage}`} />
+            <CardMedia component="img" width={1} image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.tires[0].imageOfDamage}`} />
           </Card>
         </Box>
         <Box flex={1}>
           <Card>
-            <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/tmp/${serviceRequest.tires[0].imageOfTireWall}`} />
+            <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.tires[0].imageOfTireWall}`} />
           </Card>
         </Box>
       </Stack>

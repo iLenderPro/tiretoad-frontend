@@ -1,20 +1,36 @@
 import { baseApi } from '@/shared/api';
-import { FileDto } from './dto/FileDto';
+import { UploadDto } from '@/entities/file/api/dto/UploadDto';
+import { FileDto } from '@/entities/file/api/dto/FileDto';
+import { awsApi } from '@/shared/api/awsApi';
 
 export const fileApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    uploadFile: build.mutation<{ key: string }, FileDto>({
+    getUploadUrl: build.query<{ url: string; key: string }, UploadDto>({
       query: (dto) => {
-        const formData = new FormData();
-        formData.append('file', dto.file);
         return {
-          url: `/files`,
-          method: 'POST',
-          body: formData,
+          url: `/files/upload`,
+          method: 'GET',
+          params: dto,
         };
       },
     }),
   }),
 });
 
-export const { useUploadFileMutation } = fileApi;
+export const uploadApi = awsApi.injectEndpoints({
+  endpoints: (build) => ({
+    upload: build.mutation<void, FileDto>({
+      query: (dto) => {
+        return {
+          url: dto.url,
+          method: 'PUT',
+          body: dto.file,
+          headers: { 'Content-Type': dto.file.type, 'Content-Disposition': 'inline' },
+        };
+      },
+    }),
+  }),
+});
+
+export const { useLazyGetUploadUrlQuery } = fileApi;
+export const { useUploadMutation } = uploadApi;
