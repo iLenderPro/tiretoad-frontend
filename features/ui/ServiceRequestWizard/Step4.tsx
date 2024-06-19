@@ -99,7 +99,7 @@ export function Step4(props: StepProps) {
         {serviceRequest.location.comment}
       </Typography>
       <Typography variant="h5">Images of your damage and tire wall</Typography>
-      <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
+      <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="stretch">
         <Box flex={1}>
           <Card>
             <CardMedia component="img" width={1} image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.tires[0].imageOfDamage}`} />
@@ -119,7 +119,7 @@ export function Step4(props: StepProps) {
       <Button variant="text">Change address</Button>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
         <Box maxWidth="600px" style={{ overflowX: 'hidden' }}>
-          <img src={mapUrl} alt="TireToad services around you" width="600" height="400" style={{ marginLeft: '50%', transform: 'translateX(-50%)' }} />
+          <img src={mapUrl} alt="TireToad services around you" width="100%" /*style={{ marginLeft: '50%', transform: 'translateX(-50%)' }} */ />
         </Box>
         <Stack flex={1} gap={2}>
           <form onSubmit={registerMethods.handleSubmit(handleRegisterSubmit)} style={{ width: '100%' }}>
