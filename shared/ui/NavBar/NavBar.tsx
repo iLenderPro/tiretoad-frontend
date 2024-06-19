@@ -28,7 +28,7 @@ export default function NavBar() {
   const [logout] = useLogoutMutation();
   const { data: unreadMessages } = useGetUnreadMessagesQuery(undefined, {
     skip: !session?.user,
-    pollingInterval: 3000,
+    pollingInterval: 1000,
   });
   const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

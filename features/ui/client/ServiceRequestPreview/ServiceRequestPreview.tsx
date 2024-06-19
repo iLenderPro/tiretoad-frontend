@@ -10,6 +10,7 @@ import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
+import { TireSide } from '@/features/ui/ServiceRequestWizard/types/TireSide';
 
 export type ServiceRequestPreviewProps = {
   serviceRequest: ServiceRequestDto;
@@ -68,9 +69,10 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
             <Stack>
               Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
             </Stack>
-            <Stack>Damage: {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</Stack>
+            <Stack>Tire Side: {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]}</Stack>
             <Stack>Tire Size: {serviceRequest.tires[0].size}</Stack>
             <Stack>Tire Type: {TireType[serviceRequest.tires[0].type as keyof typeof TireType]}</Stack>
+            <Stack>Damage: {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</Stack>
             <Stack>
               Location: {serviceRequest.location.address} {serviceRequest.location.comment ? `(${serviceRequest.location.comment})` : ''}
             </Stack>

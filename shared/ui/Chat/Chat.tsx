@@ -16,7 +16,7 @@ export type ChatProps = {
 };
 
 export function Chat({ user, vendorResponse }: ChatProps) {
-  const { data: messages, isLoading, refetch } = useGetMessageQuery(vendorResponse?.id || '', { pollingInterval: 3000 });
+  const { data: messages, isLoading, refetch } = useGetMessageQuery(vendorResponse?.id || '', { pollingInterval: 1000 });
   const [sendMessage, { isLoading: isMessageSending }] = useSendMessageMutation();
   const { register, handleSubmit, reset } = useForm<{ prompt: string }>({ defaultValues: { prompt: '' } });
   const [markAsRead] = useMarkAsReadMutation();
@@ -26,9 +26,9 @@ export function Chat({ user, vendorResponse }: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = (data: { prompt: string }) => {
-    sendMessage({ vendorResponse, user, prompt: data.prompt });
+  const handleSendMessage = async (data: { prompt: string }) => {
     reset({ prompt: '' });
+    await sendMessage({ vendorResponse, user, prompt: data.prompt });
     refetch();
   };
 
