@@ -52,7 +52,8 @@ export function Chat({ user, vendorResponse }: ChatProps) {
       <StyledAppBar elevation={2} position="fixed">
         <Toolbar>
           <Typography variant="body2" fontWeight="700">
-            Chat with {user.fullName} {user.role === UserRole.CLIENT && ` from ${vendorResponse.vendor.businessName}`}
+            {user.role === UserRole.CLIENT && `Chat with ${vendorResponse.vendor.fullName} from ${vendorResponse.vendor.businessName}`}
+            {user.role === UserRole.VENDOR && `Chat with ${vendorResponse.serviceRequest.client.fullName}`}
           </Typography>
         </Toolbar>
       </StyledAppBar>
