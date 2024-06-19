@@ -1,5 +1,5 @@
 'use client';
-import { Alert, Avatar, Card, CardMedia, List, ListItem, ListItemAvatar, ListItemText, Stack } from '@mui/material';
+import { Alert, Avatar, Card, CardActionArea, CardMedia, List, ListItem, ListItemAvatar, ListItemText, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
@@ -18,7 +18,7 @@ export type ServiceRequestPreviewProps = {
 export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
   const router = useRouter();
   const { user, serviceRequest } = props;
-
+  const accepted = serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED);
   return (
     <>
       {serviceRequest && (
@@ -26,38 +26,41 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
           {user.role === UserRole.CLIENT && (
             <Stack alignItems="center" gap={2}>
               <Typography gutterBottom>We are reaching out to mobile repair shops to get you back on the road</Typography>
-              <Typography gutterBottom variant="h6">
-                Who already responded:
-              </Typography>
               <Alert severity="warning">Please, wait on this page until someone responds.</Alert>
-              <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                {!!serviceRequest.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED)?.length &&
-                  serviceRequest.responses?.map((response) => (
-                    <ListItem
-                      key={response.id}
-                      alignItems="flex-start"
-                      secondaryAction={
-                        <Button color="success" variant="contained" onClick={() => router.push(`/responses/${response.id}/chat`)}>
-                          Chat
-                        </Button>
-                      }
-                    >
-                      <ListItemAvatar>
-                        <Avatar src="/icons/icon_tiretoad.png" />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={response.vendor.businessName}
-                        secondary={
-                          <>
-                            <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                              {response.vendor.fullName}
-                            </Typography>
-                          </>
+              {!!accepted?.length && (
+                <>
+                  <Typography gutterBottom variant="h6">
+                    Who already responded:
+                  </Typography>
+                  <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                    {accepted?.map((response) => (
+                      <ListItem
+                        key={response.id}
+                        alignItems="flex-start"
+                        secondaryAction={
+                          <Button color="success" variant="contained" onClick={() => router.push(`/responses/${response.id}/chat`)}>
+                            Chat
+                          </Button>
                         }
-                      />
-                    </ListItem>
-                  ))}
-              </List>
+                      >
+                        <ListItemAvatar>
+                          <Avatar src="/icons/icon_tiretoad.png" />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={response.vendor.businessName}
+                          secondary={
+                            <>
+                              <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                                {response.vendor.fullName}
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )}
             </Stack>
           )}
           <Stack>
@@ -76,16 +79,28 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
               <Card>
-                <CardMedia width={1} component="img" image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`} />
+                <CardActionArea
+                  onClick={() => window.open(`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`, '_blank')}
+                >
+                  <CardMedia
+                    width={1}
+                    component="img"
+                    image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`}
+                  />
+                </CardActionArea>
               </Card>
             </Box>
             <Box flex={1}>
               <Card>
-                <CardMedia
-                  width={1}
-                  component="img"
-                  image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`}
-                />
+                <CardActionArea
+                  onClick={() => window.open(`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`, '_blank')}
+                >
+                  <CardMedia
+                    width={1}
+                    component="img"
+                    image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`}
+                  />
+                </CardActionArea>
               </Card>
             </Box>
           </Stack>

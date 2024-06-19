@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <ThemeRegistry>
             <CssBaseline />
             <html style={{ height: '100%' }} lang="en">
-              <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+              <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', paddingBottom: '24px' }}>
                 <NavBar />
                 <Snackbar />
                 <main style={{ display: 'flex', flex: 1 }}>{children}</main>
