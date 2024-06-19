@@ -23,6 +23,7 @@ export default function ServiceRequestWizard() {
 
   const goToNextStep = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    window.scrollTo(0, 0);
   };
 
   const handleNext = () => {
@@ -31,6 +32,7 @@ export default function ServiceRequestWizard() {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    window.scrollTo(0, 0);
   };
 
   return (

@@ -1,3 +1,4 @@
+'use client';
 import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequestWizard';
 import { Container } from '@mui/material';
 
