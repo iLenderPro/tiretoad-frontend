@@ -13,7 +13,7 @@ export type ServiceRequestPreviewProps = {
   user: ClientDto;
 };
 export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
-  const { user, serviceRequest } = props;
+  const { serviceRequest } = props;
 
   return (
     <>

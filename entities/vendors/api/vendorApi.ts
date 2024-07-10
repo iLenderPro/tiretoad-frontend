@@ -5,7 +5,7 @@ export const vendorApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getPlaces: build.query<PlaceDto[], void>({
       query: () => ({
-        url: `/places`,
+        url: `/vendors/places`,
       }),
       transformResponse: (response: PlaceDto[]) => response,
     }),
