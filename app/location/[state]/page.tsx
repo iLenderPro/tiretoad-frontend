@@ -17,7 +17,7 @@ export default async function LocationState(props: any) {
   );
 }
 
-export async function getCount({ params }: { params: { state: string } }) {
+async function getCount({ params }: { params: { state: string } }) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vendors/count/${params.state}/`);
   return await response.json();
 }

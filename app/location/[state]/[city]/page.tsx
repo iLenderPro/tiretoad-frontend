@@ -19,7 +19,7 @@ export default async function LocationCity(props: any) {
   );
 }
 
-export async function getCount({ params }: { params: { state: string; city: string } }) {
+async function getCount({ params }: { params: { state: string; city: string } }) {
   const searchParams = new URLSearchParams({
     city: params.city,
   });
