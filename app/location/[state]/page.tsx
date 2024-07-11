@@ -1,6 +1,12 @@
 import { Container, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequestWizard';
+import type { Metadata, ResolvingMetadata } from 'next';
+
+type Props = {
+  params: { state: string; city: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
 export default async function LocationState(props: any) {
   const { params } = props;
@@ -15,6 +21,15 @@ export default async function LocationState(props: any) {
       </Stack>
     </Container>
   );
+}
+
+export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const { state, city, count } = await getCount({ params });
+
+  return {
+    title: `There are ${count} mobile tire repair shops in ${state.name}`,
+    description: `Get your flat tire fixed in ${state.name} in 30 minutes or less. Connect with a mobile tire repair service right in your area instantly.`,
+  };
 }
 
 async function getCount({ params }: { params: { state: string } }) {

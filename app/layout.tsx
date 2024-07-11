@@ -1,5 +1,4 @@
 'use client';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ReactNode } from 'react';
@@ -13,11 +12,6 @@ import NavBar from '@/shared/ui/NavBar/NavBar';
 import CssBaseline from '@mui/material/CssBaseline';
 
 const inter = Inter({ subsets: ['latin'] });
-
-const metadata: Metadata = {
-  title: 'TireToad',
-  description: 'Mobile tire repair everywhere',
-};
 
 store.dispatch(geoApi.endpoints.getLocation.initiate());
 
