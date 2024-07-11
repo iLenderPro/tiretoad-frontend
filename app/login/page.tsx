@@ -6,7 +6,7 @@ export default function LoginPage({ searchParams }: { searchParams: { redirect_u
   return (
     <Container style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
       <Stack flex="1" alignItems="center" gap={5}>
-        <Typography variant="h4">Please, login</Typography>
+        <Typography variant="h3">Please, login</Typography>
         <UserLoginForm redirectUrl={searchParams.redirect_url} />
       </Stack>
     </Container>

@@ -6,7 +6,7 @@ export default function SignUpPage({ searchParams }: { searchParams?: { redirect
   return (
     <Container style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
       <Stack flex="1" alignItems="center" gap={5}>
-        <Typography variant="h4">Please, sign up</Typography>
+        <Typography variant="h3">Please, sign up</Typography>
         <SignUpForm redirectUrl={searchParams?.redirect_url} />
       </Stack>
     </Container>

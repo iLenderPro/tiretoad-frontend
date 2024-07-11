@@ -8,7 +8,7 @@ export default async function LocationCity(props: any) {
   return (
     <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
       <Stack flex="1" alignItems="center" gap={5}>
-        <Typography variant="h4">
+        <Typography variant="h1">
           There are {count} mobile tire repair shops in {city.name} ({state.name})
         </Typography>
         <ServiceRequestWizard />

@@ -11,7 +11,7 @@ export default function ServiceRequests() {
       <main style={{ height: '100%' }}>
         <Container style={{ height: '100%', paddingTop: '16px' }}>
           <Stack alignItems="center" gap={5}>
-            <Typography variant="h4">All Service Requests</Typography>
+            <Typography variant="h3">All Service Requests</Typography>
             {serviceRequests?.length && <ServiceRequestResponseTable serviceRequests={serviceRequests} />}
           </Stack>
         </Container>

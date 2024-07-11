@@ -16,7 +16,7 @@ export default function ServiceRequestView({ params }: { params: { slug: string 
     <>
       <Container style={{ height: '100%', paddingTop: '24px' }}>
         <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
-          <Typography variant="h4">Service Request Summary</Typography>
+          <Typography variant="h3">Service Request Summary</Typography>
           {session?.user?.role === UserRole.CLIENT && serviceRequest?.id && <RespondedVendorsList serviceRequestId={serviceRequest.id} />}
           {serviceRequest && session?.user && <ServiceRequestPreview user={session?.user} serviceRequest={serviceRequest} />}
         </Stack>

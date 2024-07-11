@@ -12,7 +12,15 @@ export const typography = {
   body1: {
     fontSize: '1rem',
   },
-  h4: {
+  h1: {
+    fontSize: '2rem',
+    fontWeight: 500,
+  },
+  h2: {
+    fontSize: '1.85rem',
+    fontWeight: 500,
+  },
+  h3: {
     fontSize: '1.85rem',
     fontWeight: 500,
   },

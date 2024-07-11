@@ -83,9 +83,9 @@ export function Step1(props: StepProps) {
   return (
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <Stack alignItems="center" gap={5}>
-        <Typography variant="h4">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
+        <Typography variant="h2">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>
-        <Typography variant="h4">What repair do you need?</Typography>
+        <Typography variant="h3">What repair do you need?</Typography>
         <Controller
           rules={{ required: true }}
           control={control}
@@ -100,7 +100,7 @@ export function Step1(props: StepProps) {
             </RadioGroup>
           )}
         />
-        <Typography variant="h4">Which tire is it?</Typography>
+        <Typography variant="h3">Which tire is it?</Typography>
         <Controller
           rules={{ required: { value: true, message: 'Select your tire side' } }}
           control={control}

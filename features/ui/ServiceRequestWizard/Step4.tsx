@@ -76,7 +76,7 @@ export function Step4(props: StepProps) {
 
   return (
     <Stack alignItems="center" gap={3}>
-      <Typography variant="h4">Confirm Your Request</Typography>
+      <Typography variant="h3">Confirm Your Request</Typography>
       <Typography>
         The <strong>{TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire</strong> on your{' '}
         <strong>

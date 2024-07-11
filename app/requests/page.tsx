@@ -12,7 +12,7 @@ export default function ServiceRequestsPage() {
   return (
     <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
       <Stack flex="1" alignItems="center" gap={5}>
-        <Typography variant="h4">All Service Requests</Typography>
+        <Typography variant="h3">All Service Requests</Typography>
         {session?.user?.role === UserRole.CLIENT && <ServiceRequestTableClient />}
         {session?.user?.role === UserRole.VENDOR && <ServiceRequestTableVendor />}
       </Stack>

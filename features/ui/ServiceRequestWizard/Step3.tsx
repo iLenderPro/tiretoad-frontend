@@ -75,7 +75,7 @@ export function Step3(props: StepProps) {
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <Stack alignItems="center" gap={3}>
-        <Typography variant="h4">How soon do you need the repair?</Typography>
+        <Typography variant="h3">How soon do you need the repair?</Typography>
         <Controller
           rules={{ required: true }}
           control={control}
@@ -89,7 +89,7 @@ export function Step3(props: StepProps) {
             </RadioGroup>
           )}
         />
-        <Typography variant="h4">What is your location?</Typography>
+        <Typography variant="h3">What is your location?</Typography>
         <TextField
           {...register('location.address', { required: { value: true, message: 'Location is required' } })}
           id="pac-input"

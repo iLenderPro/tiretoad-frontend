@@ -33,7 +33,7 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
           {vendorResponse && serviceRequest && session?.user && (
             <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
               <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
-                <Typography variant="h4">Service Request Summary</Typography>
+                <Typography variant="h3">Service Request Summary</Typography>
                 {session?.user.role === UserRole.VENDOR && (
                   <Stack direction="row" gap={2}>
                     <Button variant="contained" color="success" disabled={vendorResponse.status === VendorResponseStatus.ACCEPTED} onClick={handleAcceptRequest}>

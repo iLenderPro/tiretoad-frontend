@@ -389,7 +389,7 @@ export function Step2(props: StepProps) {
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <FormProvider {...methods}>
         <Stack alignItems="center" gap={4}>
-          <Typography variant="h4">Enter VIN</Typography>
+          <Typography variant="h3">Enter VIN</Typography>
           <Stack direction="row" width={1} gap={2}>
             <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
             <Button
