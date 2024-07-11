@@ -4,7 +4,7 @@ import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequ
 import type { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {
-  params: { state: string; city: string };
+  params: { state: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -32,7 +32,15 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   };
 }
 
+export async function generateStaticParams() {
+  const states = [{ code: 'FL', name: 'Florida' }];
+
+  return states.map((state) => ({
+    state: state.code,
+  }));
+}
+
 async function getCount({ params }: { params: { state: string } }) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vendors/count/${params.state}/`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vendors/count/${params.state}/`, { cache: 'force-cache' });
   return await response.json();
 }

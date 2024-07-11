@@ -36,6 +36,6 @@ async function getCount({ params }: { params: { state: string; city: string } })
   const searchParams = new URLSearchParams({
     city: params.city,
   });
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vendors/count/${params.state}/?${searchParams}`, { cache: 'no-cache' });
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vendors/count/${params.state}/?${searchParams}`, { cache: 'force-cache' });
   return await response.json();
 }
