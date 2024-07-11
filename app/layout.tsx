@@ -1,4 +1,3 @@
-import { Inter } from 'next/font/google';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ReactNode } from 'react';
 import ThemeRegistry from '@/shared/ThemeRegistry/ThemeRegistry';
@@ -9,7 +8,7 @@ import Auth from '@/shared/ui/Auth/Auth';
 import { Snackbar } from '@/shared/ui/Snackbar/ui/Snackbar';
 import NavBar from '@/shared/ui/NavBar/NavBar';
 
-const inter = Inter({ subsets: ['latin'] });
+//const inter = Inter({ subsets: ['latin'] });
 
 store.dispatch(geoApi.endpoints.getLocation.initiate());
 
@@ -19,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <StoreProvider>
         <Auth>
           <html style={{ height: '100%' }} lang="en">
-            <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', paddingBottom: '24px' }}>
+            <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', paddingBottom: '24px' }}>
               <ThemeRegistry>
                 <NavBar />
                 <Snackbar />
