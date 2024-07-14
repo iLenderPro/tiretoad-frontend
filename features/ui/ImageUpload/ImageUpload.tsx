@@ -56,7 +56,7 @@ export function ImageUpload(props: ImageUploadProps) {
             title={title}
             titleTypographyProps={{ variant: 'h6' }}
           />
-          <CardMedia component="img" width="100%" image={field.value ? `https://tiretoad-data-bucket.s3.amazonaws.com/${field.value}` : placeholder} />
+          <CardMedia component="img" width="100%" image={field.value ? `https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.amazonaws.com/${field.value}` : placeholder} />
           <CardActions>
             <Button component="label" variant="contained" fullWidth startIcon={isLoading ? <CircularProgress size="1rem" color="inherit" /> : <CloudUploadIcon />}>
               Upload

@@ -37,12 +37,14 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
             <Box flex={1}>
               <Card>
                 <CardActionArea
-                  onClick={() => window.open(`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`, '_blank')}
+                  onClick={() =>
+                    window.open(`https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`, '_blank')
+                  }
                 >
                   <CardMedia
                     width={1}
                     component="img"
-                    image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`}
+                    image={`https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfDamage}`}
                   />
                 </CardActionArea>
               </Card>
@@ -50,12 +52,14 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
             <Box flex={1}>
               <Card>
                 <CardActionArea
-                  onClick={() => window.open(`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`, '_blank')}
+                  onClick={() =>
+                    window.open(`https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`, '_blank')
+                  }
                 >
                   <CardMedia
                     width={1}
                     component="img"
-                    image={`https://tiretoad-data-bucket.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`}
+                    image={`https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.amazonaws.com/${serviceRequest.client.id}/${serviceRequest.tires[0].imageOfTireWall}`}
                   />
                 </CardActionArea>
               </Card>
