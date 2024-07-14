@@ -7,6 +7,7 @@ import { geoApi } from '@/entities/geo/api/geoApi';
 import Auth from '@/shared/ui/Auth/Auth';
 import { Snackbar } from '@/shared/ui/Snackbar/ui/Snackbar';
 import NavBar from '@/shared/ui/NavBar/NavBar';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 //const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Auth>
           <html style={{ height: '100%' }} lang="en">
             <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', paddingBottom: '24px' }}>
+              {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && <GoogleAnalytics gaId="G-87C6D9V2J4" />}
               <ThemeRegistry>
                 <NavBar />
                 <Snackbar />
