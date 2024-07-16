@@ -24,6 +24,7 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
             <Stack>
               Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
             </Stack>
+            <Stack>VIN #: {serviceRequest.vehicle.vin}</Stack>
             <Stack>Tire Side: {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]}</Stack>
             <Stack>Tire Size: {serviceRequest.tires[0].size}</Stack>
             <Stack>Tire Type: {TireType[serviceRequest.tires[0].type as keyof typeof TireType]}</Stack>

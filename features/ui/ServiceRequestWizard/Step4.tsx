@@ -1,5 +1,20 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Card, CardMedia, CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
+import {
+  Avatar,
+  Card,
+  CardMedia,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  TextField,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import { selectServiceRequest, setServiceRequest, setServiceRequestUpdating } from '@/entities/serviceRequest/serviceRequestSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,14 +29,17 @@ import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { useLoginUserMutation, useRegisterUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { useRouter } from 'next/navigation';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { setUserSession } from '@/entities/account/authSlice';
+import IconButton from '@mui/material/IconButton';
+import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon';
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
+  const [open, setOpen] = useState(false);
   const serviceRequest = useSelector(selectServiceRequest);
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
@@ -70,6 +88,13 @@ export function Step4(props: StepProps) {
     }
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
     dispatch(setServiceRequestUpdating(isServiceRequestLoading));
   }, [isServiceRequestLoading]);
@@ -77,28 +102,100 @@ export function Step4(props: StepProps) {
   return (
     <Stack alignItems="center" gap={3}>
       <Typography variant="h3">Confirm Your Request</Typography>
-      <Typography>
-        The <strong>{TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire</strong> on your{' '}
-        <strong>
-          {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
-          {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}
-        </strong>{' '}
-        has a <strong>{TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</strong>
+      <Typography variant="h2">
+        {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]} Tire Service for {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire
       </Typography>
-      <Typography>
-        The tire you've selected is{' '}
-        <strong>
-          {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
-        </strong>
-      </Typography>
-      <Typography>
-        The vehicle is located at <strong>{serviceRequest.location.address}</strong>
-      </Typography>
-      <Typography>
-        <strong>Comment: </strong>
-        {serviceRequest.location.comment}
-      </Typography>
-      <Typography variant="h5">Images of your damage and tire wall</Typography>
+      <Stack alignItems="start" textAlign="left">
+        <List>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography fontWeight="bold">
+                  Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText primary={<Typography fontWeight="bold">VIN #: {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}</Typography>} />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography fontWeight="bold">
+                  Tire size: {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography>
+                  <strong>Location:</strong>{' '}
+                  <a
+                    href="#"
+                    onClick={handleClickOpen}
+                    style={{
+                      display: 'inline-block',
+                      maxWidth: '13rem',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    {serviceRequest.location.address}
+                  </a>
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography>
+                  <strong>Location Description:</strong> {serviceRequest.location.comment}
+                </Typography>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
+      <Dialog onClose={handleClose} open={open} fullScreen>
+        <DialogTitle>Car location</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <img src={mapUrl} alt="TireToad services around you" width="100%" />
+        </DialogContent>
+      </Dialog>
+      <Typography variant="h6">Damage tire and tire wall images</Typography>
       <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="stretch">
         <Box flex={1}>
           <Card>
@@ -111,16 +208,11 @@ export function Step4(props: StepProps) {
           </Card>
         </Box>
       </Stack>
-      <Button variant="text">Change tires or damage</Button>
       <Typography>
         We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
         and can have you back on the road in as little as 30 min
       </Typography>
-      <Button variant="text">Change address</Button>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
-        <Box maxWidth="600px" style={{ overflowX: 'hidden' }}>
-          <img src={mapUrl} alt="TireToad services around you" width="100%" /*style={{ marginLeft: '50%', transform: 'translateX(-50%)' }} */ />
-        </Box>
         <Stack flex={1} gap={2}>
           <form onSubmit={registerMethods.handleSubmit(handleRegisterSubmit)} style={{ width: '100%' }}>
             <Stack gap={2} flex={1} width={1}>
