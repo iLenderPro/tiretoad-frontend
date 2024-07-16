@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardActionArea, CardMedia, Stack } from '@mui/material';
+import { Card, CardActionArea, CardMedia, List, ListItem, ListItemIcon, ListItemText, Stack, Tooltip } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
@@ -7,32 +7,119 @@ import Box from '@mui/material/Box';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { TireSide } from '@/features/ui/ServiceRequestWizard/types/TireSide';
+import MapDialog from '@/features/ui/MapDialog/MapDialog';
+import React, { memo, useState } from 'react';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
+import Button from '@mui/material/Button';
 
 export type ServiceRequestPreviewProps = {
   serviceRequest: ServiceRequestDto;
   user: ClientDto;
 };
-export default function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
-  const { serviceRequest } = props;
 
+function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
+  const { serviceRequest } = props;
+  const [open, setOpen] = useState(false);
+  const toggleDialog = () => {
+    setOpen((prevState) => !prevState);
+  };
   return (
     <>
       {serviceRequest && (
         <>
-          <Stack>
-            <Stack>Name: {serviceRequest.client.fullName}</Stack>
-            <Stack>
-              Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
-            </Stack>
-            <Stack>VIN #: {serviceRequest.vehicle.vin}</Stack>
-            <Stack>Tire Side: {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]}</Stack>
-            <Stack>Tire Size: {serviceRequest.tires[0].size}</Stack>
-            <Stack>Tire Type: {TireType[serviceRequest.tires[0].type as keyof typeof TireType]}</Stack>
-            <Stack>Damage: {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</Stack>
-            <Stack>
-              Location: {serviceRequest.location.address} {serviceRequest.location.comment ? `(${serviceRequest.location.comment})` : ''}
-            </Stack>
+          <Stack alignItems="start" textAlign="left">
+            <List>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary={<Typography fontWeight="bold">Name: {serviceRequest.client.fullName}</Typography>} />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography fontWeight="bold">
+                      Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary={<Typography fontWeight="bold">VIN #: {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}</Typography>} />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary={<Typography fontWeight="bold">Tire Side: {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]}</Typography>} />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography fontWeight="bold">
+                      Tire Size: {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary={<Typography fontWeight="bold">Tire Size: {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</Typography>} />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography>
+                      <strong>Location:</strong>
+                      <Tooltip title={serviceRequest.location.address}>
+                        <Button
+                          variant="text"
+                          style={{
+                            display: 'inline-block',
+                            maxWidth: '14rem',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            verticalAlign: 'middle',
+                          }}
+                          onClick={toggleDialog}
+                        >
+                          {serviceRequest.location.address}
+                        </Button>
+                      </Tooltip>
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemIcon style={{ minWidth: 32 }}>
+                  <CheckOutlinedIcon color="success" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography>
+                      <strong>Location Description:</strong> {serviceRequest.location.comment}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            </List>
           </Stack>
+          <MapDialog open={open} toggleDialog={toggleDialog} location={serviceRequest.location} />
           <Typography>Images of damage and tire wall</Typography>
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
@@ -71,3 +158,5 @@ export default function ServiceRequestPreview(props: ServiceRequestPreviewProps)
     </>
   );
 }
+
+export default memo(ServiceRequestPreview);

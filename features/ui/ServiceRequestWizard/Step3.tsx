@@ -64,8 +64,8 @@ export function Step3(props: StepProps) {
         map.setZoom(17);
       }
 
-      setValue('location.latitude', place.geometry.location.lat());
-      setValue('location.longitude', place.geometry.location.lng());
+      setValue('location.latitude', place.geometry.location.lat().toString());
+      setValue('location.longitude', place.geometry.location.lng().toString());
 
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);

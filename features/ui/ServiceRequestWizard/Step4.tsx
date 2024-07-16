@@ -1,20 +1,5 @@
 import Typography from '@mui/material/Typography';
-import {
-  Avatar,
-  Card,
-  CardMedia,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  InputAdornment,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Avatar, Card, CardMedia, CircularProgress, InputAdornment, List, ListItem, ListItemIcon, ListItemText, Stack, TextField, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import { selectServiceRequest, setServiceRequest, setServiceRequestUpdating } from '@/entities/serviceRequest/serviceRequestSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,17 +14,21 @@ import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { useLoginUserMutation, useRegisterUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { useRouter } from 'next/navigation';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { setUserSession } from '@/entities/account/authSlice';
-import IconButton from '@mui/material/IconButton';
-import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon';
+import { Loader } from '@googlemaps/js-api-loader';
+
+const loader = new Loader({
+  apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  version: 'weekly',
+  libraries: ['places', 'geometry', 'marker'],
+});
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
-  const [open, setOpen] = useState(false);
   const serviceRequest = useSelector(selectServiceRequest);
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
@@ -88,13 +77,6 @@ export function Step4(props: StepProps) {
     }
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
     dispatch(setServiceRequestUpdating(isServiceRequestLoading));
   }, [isServiceRequestLoading]);
@@ -132,7 +114,7 @@ export function Step4(props: StepProps) {
             <ListItemText
               primary={
                 <Typography fontWeight="bold">
-                  Tire size: {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
+                  Tire Size: {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
                 </Typography>
               }
             />
@@ -143,23 +125,20 @@ export function Step4(props: StepProps) {
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography>
-                  <strong>Location:</strong>{' '}
-                  <a
-                    href="#"
-                    onClick={handleClickOpen}
+                <Tooltip title={serviceRequest.location.address}>
+                  <Typography
                     style={{
                       display: 'inline-block',
-                      maxWidth: '13rem',
+                      maxWidth: '18rem',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       verticalAlign: 'middle',
                     }}
                   >
-                    {serviceRequest.location.address}
-                  </a>
-                </Typography>
+                    <strong>Location:</strong> {serviceRequest.location.address}
+                  </Typography>
+                </Tooltip>
               }
             />
           </ListItem>
@@ -177,24 +156,7 @@ export function Step4(props: StepProps) {
           </ListItem>
         </List>
       </Stack>
-      <Dialog onClose={handleClose} open={open} fullScreen>
-        <DialogTitle>Car location</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>
-          <img src={mapUrl} alt="TireToad services around you" width="100%" />
-        </DialogContent>
-      </Dialog>
+
       <Typography variant="h6">Damage tire and tire wall images</Typography>
       <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="stretch">
         <Box flex={1}>
@@ -213,6 +175,9 @@ export function Step4(props: StepProps) {
         and can have you back on the road in as little as 30 min
       </Typography>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
+        <Box maxWidth="600px" style={{ overflowX: 'hidden' }}>
+          <img src={mapUrl} alt="TireToad services around you" width="100%" />
+        </Box>
         <Stack flex={1} gap={2}>
           <form onSubmit={registerMethods.handleSubmit(handleRegisterSubmit)} style={{ width: '100%' }}>
             <Stack gap={2} flex={1} width={1}>
