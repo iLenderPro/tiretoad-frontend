@@ -120,7 +120,7 @@ function ServiceRequestPreview(props: ServiceRequestPreviewProps) {
             </List>
           </Stack>
           <MapDialog open={open} toggleDialog={toggleDialog} location={serviceRequest.location} />
-          <Typography>Images of damage and tire wall</Typography>
+          <Typography variant="h6">Damage tire and tire wall images</Typography>
           <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="center">
             <Box flex={1}>
               <Card>

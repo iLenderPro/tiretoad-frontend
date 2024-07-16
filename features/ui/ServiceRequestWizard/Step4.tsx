@@ -83,6 +83,10 @@ export function Step4(props: StepProps) {
 
   return (
     <Stack alignItems="center" gap={3}>
+      <Typography>
+        We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
+        and can have you back on the road in as little as 30 min
+      </Typography>
       <Typography variant="h3">Confirm Your Request</Typography>
       <Typography variant="h2">
         {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]} Tire Service for {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire
@@ -170,13 +174,17 @@ export function Step4(props: StepProps) {
           </Card>
         </Box>
       </Stack>
-      <Typography>
-        We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
-        and can have you back on the road in as little as 30 min
-      </Typography>
+      <Button variant="text" onClick={() => goToNextStep(-2)}>
+        Change tire or damage images
+      </Button>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
         <Box maxWidth="600px" style={{ overflowX: 'hidden' }}>
           <img src={mapUrl} alt="TireToad services around you" width="100%" />
+          <Box mt={2}>
+            <Button variant="text" onClick={() => goToNextStep(-1)}>
+              Change location
+            </Button>
+          </Box>
         </Box>
         <Stack flex={1} gap={2}>
           <form onSubmit={registerMethods.handleSubmit(handleRegisterSubmit)} style={{ width: '100%' }}>

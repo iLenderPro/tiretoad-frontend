@@ -14,7 +14,7 @@ import { selectPlacesWithinRadius, setPlacesWithinRadius } from '@/entities/vend
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
 
-export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: () => void };
+export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
 export function Step1(props: StepProps) {
   const { formRef, goToNextStep } = props;
