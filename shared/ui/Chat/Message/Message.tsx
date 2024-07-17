@@ -1,7 +1,7 @@
 import { MessageContent, MessageRow, MessageText, MessageTime } from './styles';
 import { MessageDto } from '@/entities/chat/api/dto/MessageDto';
 import { Typography } from '@mui/material';
-import FaceIcon from '@mui/icons-material/Face';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import Box from '@mui/material/Box';
 
@@ -18,7 +18,7 @@ export function Message({ isMyMessage, message }: MessageProps) {
       </Typography>
     ) : (
       <Typography variant="subtitle2">
-        <FaceIcon fontSize="inherit" sx={{ fontSize: '48px' }} />
+        <PersonOutlineOutlinedIcon fontSize="inherit" sx={{ fontSize: '48px' }} />
       </Typography>
     )
   ) : null;
