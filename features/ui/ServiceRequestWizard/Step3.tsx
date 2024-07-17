@@ -33,7 +33,7 @@ export function Step3(props: StepProps) {
   loader.load().then(async () => {
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
     const map = new Map(document.getElementById('map') as HTMLElement, {
-      center: { lat: 40.749933, lng: -73.98633 },
+      center: { lat: 30.455, lng: -84.253334 },
       zoom: 11,
       mapTypeControl: false,
     });
@@ -64,8 +64,8 @@ export function Step3(props: StepProps) {
         map.setZoom(17);
       }
 
-      setValue('location.latitude', place.geometry.location.lat());
-      setValue('location.longitude', place.geometry.location.lng());
+      setValue('location.latitude', place.geometry.location.lat().toString());
+      setValue('location.longitude', place.geometry.location.lng().toString());
 
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);

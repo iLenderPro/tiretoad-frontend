@@ -19,8 +19,8 @@ export type ServiceRequestDto = {
     trim: string;
   };
   location: {
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
     address: string;
     comment: string;
   };

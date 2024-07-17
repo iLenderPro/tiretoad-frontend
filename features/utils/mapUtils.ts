@@ -45,7 +45,7 @@ export function drawMarkers(places: PlaceDto[] | undefined, initialLocation: goo
   return placesWithinRadius;
 }
 
-export function getStaticMapImage(location: { latitude: number; longitude: number }, places: PlaceDto[]): string {
+export function getStaticMapImage(location: { latitude: string; longitude: string }, places: PlaceDto[]): string {
   let url = `https://maps.googleapis.com/maps/api/staticmap?maptype=terrain&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&center=${location.latitude},${location.longitude}&zoom=12&size=600x400&scale=2&markers=${location.latitude},${location.longitude}&markers=size:mid%7Clabel:T%7Ccolor:blue`;
   url += places.length ? places.map((place) => `%7C${place.latitude},${place.longitude}`).join('') : '';
   return url;

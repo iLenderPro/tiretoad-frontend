@@ -13,8 +13,9 @@ import { selectServiceRequest, setServiceRequest } from '@/entities/serviceReque
 import { selectPlacesWithinRadius, setPlacesWithinRadius } from '@/entities/vendors/vendorSlice';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
+import Image from 'next/image';
 
-export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: () => void };
+export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
 export function Step1(props: StepProps) {
   const { formRef, goToNextStep } = props;
@@ -68,7 +69,7 @@ export function Step1(props: StepProps) {
           async (positionError) => {
             console.log('Using IP location');
             handleError(positionError);
-            const initialLocation = location?.latitude ? new google.maps.LatLng(location.latitude, location.longitude) : new google.maps.LatLng(40.749933, -73.98633);
+            const initialLocation = location?.latitude ? new google.maps.LatLng(location.latitude, location.longitude) : new google.maps.LatLng(30.455, -84.253334);
             map = await createMap(initialLocation);
             const placesWithinRadius = drawMarkers(places, initialLocation, map);
             dispatch(setPlacesWithinRadius(placesWithinRadius));
@@ -83,6 +84,9 @@ export function Step1(props: StepProps) {
   return (
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <Stack alignItems="center" gap={5}>
+        <Box position="relative" width="100%" height="100px">
+          <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} objectFit="contain" />
+        </Box>
         <Typography variant="h2">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>
         <Typography variant="h3">What repair do you need?</Typography>

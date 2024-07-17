@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Card, CardMedia, CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
+import { Avatar, Card, CardMedia, CircularProgress, InputAdornment, List, ListItem, ListItemIcon, ListItemText, Stack, TextField, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import { selectServiceRequest, setServiceRequest, setServiceRequestUpdating } from '@/entities/serviceRequest/serviceRequestSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +19,13 @@ import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/s
 import { useRouter } from 'next/navigation';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { setUserSession } from '@/entities/account/authSlice';
+import { Loader } from '@googlemaps/js-api-loader';
+
+const loader = new Loader({
+  apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  version: 'weekly',
+  libraries: ['places', 'geometry', 'marker'],
+});
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
@@ -76,29 +83,85 @@ export function Step4(props: StepProps) {
 
   return (
     <Stack alignItems="center" gap={3}>
+      <Typography>
+        We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
+        and can have you back on the road in as little as 30 min
+      </Typography>
       <Typography variant="h3">Confirm Your Request</Typography>
-      <Typography>
-        The <strong>{TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire</strong> on your{' '}
-        <strong>
-          {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
-          {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}
-        </strong>{' '}
-        has a <strong>{TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]}</strong>
+      <Typography variant="h2">
+        {TireDamage[serviceRequest.tires[0].damage as keyof typeof TireDamage]} Tire Service for {TireSide[serviceRequest.tires[0].side as keyof typeof TireSide]} Tire
       </Typography>
-      <Typography>
-        The tire you've selected is{' '}
-        <strong>
-          {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
-        </strong>
-      </Typography>
-      <Typography>
-        The vehicle is located at <strong>{serviceRequest.location.address}</strong>
-      </Typography>
-      <Typography>
-        <strong>Comment: </strong>
-        {serviceRequest.location.comment}
-      </Typography>
-      <Typography variant="h5">Images of your damage and tire wall</Typography>
+      <Stack alignItems="start" textAlign="left">
+        <List>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography fontWeight="bold">
+                  Vehicle: {serviceRequest.vehicle.year} {serviceRequest.vehicle.model} {serviceRequest.vehicle.trim}
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText primary={<Typography fontWeight="bold">VIN #: {serviceRequest.vehicle.vin && ` (${serviceRequest.vehicle.vin})`}</Typography>} />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography fontWeight="bold">
+                  Tire Size: {serviceRequest.tires[0].size} ({TireType[serviceRequest.tires[0].type as keyof typeof TireType]})
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Tooltip title={serviceRequest.location.address}>
+                  <Typography
+                    style={{
+                      display: 'inline-block',
+                      maxWidth: '18rem',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    <strong>Location:</strong> {serviceRequest.location.address}
+                  </Typography>
+                </Tooltip>
+              }
+            />
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon style={{ minWidth: 32 }}>
+              <CheckOutlinedIcon color="success" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography>
+                  <strong>Location Description:</strong> {serviceRequest.location.comment}
+                </Typography>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
+
+      <Typography variant="h6">Damage tire and tire wall images</Typography>
       <Stack direction="row" maxWidth="566px" gap={3} flexWrap="nowrap" alignItems="stretch">
         <Box flex={1}>
           <Card>
@@ -111,15 +174,17 @@ export function Step4(props: StepProps) {
           </Card>
         </Box>
       </Stack>
-      <Button variant="text">Change tires or damage</Button>
-      <Typography>
-        We have <strong>{placesWithinRadius.length}</strong> mobile tire repair shops near you <br />
-        and can have you back on the road in as little as 30 min
-      </Typography>
-      <Button variant="text">Change address</Button>
+      <Button variant="text" onClick={() => goToNextStep(-2)}>
+        Change tire or damage images
+      </Button>
       <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
         <Box maxWidth="600px" style={{ overflowX: 'hidden' }}>
-          <img src={mapUrl} alt="TireToad services around you" width="100%" /*style={{ marginLeft: '50%', transform: 'translateX(-50%)' }} */ />
+          <img src={mapUrl} alt="TireToad services around you" width="100%" />
+          <Box mt={2}>
+            <Button variant="text" onClick={() => goToNextStep(-1)}>
+              Change location
+            </Button>
+          </Box>
         </Box>
         <Stack flex={1} gap={2}>
           <form onSubmit={registerMethods.handleSubmit(handleRegisterSubmit)} style={{ width: '100%' }}>

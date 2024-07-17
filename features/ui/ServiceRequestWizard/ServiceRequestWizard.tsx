@@ -21,8 +21,8 @@ export default function ServiceRequestWizard() {
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  const goToNextStep = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const goToNextStep = (index = 1) => {
+    setActiveStep((prevActiveStep) => prevActiveStep + index);
     window.scrollTo(0, 0);
   };
 
