@@ -80,9 +80,7 @@ export default function NavBar() {
               </IconButton>
             )}
           </Box>
-          <Box flex={1} sx={{ flexGrow: 1 }} textAlign="center">
-            <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={36} height={36} />
-          </Box>
+          <Box flex={1} sx={{ flexGrow: 1 }} textAlign="center" />
           <Box flex={1 / 3}>
             {session?.user && (
               <Stack direction="row" justifyContent="flex-end">

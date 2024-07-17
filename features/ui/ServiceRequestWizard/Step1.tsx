@@ -13,6 +13,7 @@ import { selectServiceRequest, setServiceRequest } from '@/entities/serviceReque
 import { selectPlacesWithinRadius, setPlacesWithinRadius } from '@/entities/vendors/vendorSlice';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
+import Image from 'next/image';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
@@ -83,6 +84,7 @@ export function Step1(props: StepProps) {
   return (
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <Stack alignItems="center" gap={5}>
+        <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" width={500} height={187} />
         <Typography variant="h2">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>
         <Typography variant="h3">What repair do you need?</Typography>
