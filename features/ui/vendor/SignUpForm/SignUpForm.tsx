@@ -1,7 +1,7 @@
 'use client';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
-import { Avatar, CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
+import { Avatar, CircularProgress, InputAdornment, MenuItem, Stack, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
@@ -11,6 +11,7 @@ import { setUserSession } from '@/entities/account/authSlice';
 import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
 
 export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
   const router = useRouter();
@@ -26,8 +27,10 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
   const isLoading = isRegisterLoading || isVerifyLoading;
 
   const handleRegisterSubmit = async (data: VendorDto) => {
-    const result = await registerVendor(data).unwrap();
-    setUser({ ...data, ...result });
+    const result = await registerVendor(data)
+      .unwrap()
+      .then((payload) => setUser({ ...data, ...payload }))
+      .catch((error) => dispatch(showSnackbar({ type: 'error', content: error.data.message })));
   };
 
   const handleVerificationSubmit = async (data: { verificationToken?: string }) => {
@@ -75,20 +78,6 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             helperText={registerMethods.formState.errors.phone?.message}
           />
           <TextField
-            {...registerMethods.register('password', {
-              required: {
-                value: true,
-                message: 'Password is required',
-              },
-            })}
-            label="Password"
-            placeholder="Create password"
-            type="password"
-            fullWidth
-            error={Boolean(registerMethods.formState.errors.password)}
-            helperText={registerMethods.formState.errors.password?.message}
-          />
-          <TextField
             {...registerMethods.register('businessName', {
               required: {
                 value: true,
@@ -116,19 +105,6 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
           />
           <input type="hidden" {...registerMethods.register('addresses.0.country')} defaultValue="US" />
           <TextField
-            {...registerMethods.register('addresses.0.state', {
-              required: {
-                value: true,
-                message: 'State is required',
-              },
-            })}
-            label="State"
-            placeholder="State"
-            fullWidth
-            error={Boolean(registerMethods.formState.errors.addresses?.[0]?.state)}
-            helperText={registerMethods.formState.errors.addresses?.[0]?.state?.message}
-          />
-          <TextField
             {...registerMethods.register('addresses.0.city', {
               required: {
                 value: true,
@@ -141,6 +117,28 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             error={Boolean(registerMethods.formState.errors.addresses?.[0]?.city)}
             helperText={registerMethods.formState.errors.addresses?.[0]?.city?.message}
           />
+          <Controller
+            rules={{ required: { value: true, message: 'State is required' } }}
+            control={registerMethods.control}
+            name="addresses.0.state"
+            defaultValue="FL"
+            render={({ field }) => (
+              <TextField
+                label="State"
+                select
+                fullWidth
+                value={field.value}
+                onChange={(e) => field.onChange(e.target.value)}
+                error={Boolean(registerMethods.formState.errors.addresses?.[0]?.state)}
+                helperText={registerMethods.formState.errors.addresses?.[0]?.state?.message}
+              >
+                <MenuItem key="FL" value="FL">
+                  Florida (FL)
+                </MenuItem>
+              </TextField>
+            )}
+          />
+
           <TextField
             {...registerMethods.register('addresses.0.zip', {
               required: {
@@ -153,6 +151,20 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
             fullWidth
             error={Boolean(registerMethods.formState.errors.addresses?.[0]?.zip)}
             helperText={registerMethods.formState.errors.addresses?.[0]?.zip?.message}
+          />
+          <TextField
+            {...registerMethods.register('password', {
+              required: {
+                value: true,
+                message: 'Password is required',
+              },
+            })}
+            label="Password"
+            placeholder="Create password"
+            type="password"
+            fullWidth
+            error={Boolean(registerMethods.formState.errors.password)}
+            helperText={registerMethods.formState.errors.password?.message}
           />
           <Button variant="contained" type="submit" size="large" disabled={isLoading || !!user} endIcon={isLoading ? <CircularProgress color="inherit" size="1em" /> : null}>
             Confirm

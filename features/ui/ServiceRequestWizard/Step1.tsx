@@ -85,7 +85,7 @@ export function Step1(props: StepProps) {
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <Stack alignItems="center" gap={5}>
         <Box position="relative" width="100%" height="100px">
-          <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} objectFit="contain" />
+          <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} style={{ objectFit: 'contain' }} />
         </Box>
         <Typography variant="h2">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>

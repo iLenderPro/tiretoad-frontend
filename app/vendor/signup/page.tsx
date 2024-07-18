@@ -9,9 +9,12 @@ export default function SignUpPage({ searchParams }: { searchParams?: { redirect
     <Container style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
       <Stack flex="1" alignItems="center" gap={5} marginTop={3}>
         <Box position="relative" width="100%" height="100px">
-          <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} objectFit="contain" />
+          <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} style={{ objectFit: 'contain' }} />
         </Box>
-        <Typography variant="h3">Please, sign up</Typography>
+        <Stack gap={2} alignItems="center">
+          <Typography variant="h3">Please, sign up</Typography>
+          <Typography variant="h5">Become a Toader</Typography>
+        </Stack>
         <SignUpForm redirectUrl={searchParams?.redirect_url} />
       </Stack>
     </Container>
