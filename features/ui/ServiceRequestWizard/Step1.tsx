@@ -87,7 +87,7 @@ export function Step1(props: StepProps) {
         <Box position="relative" width="100%" height="100px">
           <Image src="/images/tiretoad_logo_min.png" alt="TireToad - Mobile Tire Repair Shops" fill={true} style={{ objectFit: 'contain' }} />
         </Box>
-        <Typography variant="h6">Instantly Connect with a Mobile Tire Repair Service for Free</Typography>
+        <Typography variant="body1">Instantly Connect with a Mobile Tire Repair Service for Free</Typography>
         <Typography variant="h2">We have {placesWithinRadius.length} mobile tire repair shops near you</Typography>
         <Box component="div" id="map" width={1} height="300px"></Box>
         <Typography variant="h3">What repair do you need?</Typography>
