@@ -69,7 +69,7 @@ export function Step1(props: StepProps) {
           async (positionError) => {
             console.log('Using IP location');
             handleError(positionError);
-            const initialLocation = location?.latitude ? new google.maps.LatLng(location.latitude, location.longitude) : new google.maps.LatLng(30.455, -84.253334);
+            const initialLocation = location?.latitude ? new google.maps.LatLng(location.latitude, location.longitude) : new google.maps.LatLng(25.761681, -80.191788);
             map = await createMap(initialLocation);
             const placesWithinRadius = drawMarkers(places, initialLocation, map);
             dispatch(setPlacesWithinRadius(placesWithinRadius));

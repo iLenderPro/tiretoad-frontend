@@ -33,7 +33,7 @@ export function Step3(props: StepProps) {
   loader.load().then(async () => {
     const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
     const map = new Map(document.getElementById('map') as HTMLElement, {
-      center: { lat: 30.455, lng: -84.253334 },
+      center: { lat: 25.761681, lng: -80.191788 },
       zoom: 11,
       mapTypeControl: false,
     });
