@@ -33,11 +33,14 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 }
 
 export async function generateStaticParams() {
-  const states = [{ code: 'FL', name: 'Florida' }];
+  const locations = await getLocations();
+  console.log('locations', locations);
+  return locations.map((state: { code: string; name: string }) => ({ code: state.code }));
+}
 
-  return states.map((state) => ({
-    state: state.code,
-  }));
+async function getLocations() {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/geo/locations`);
+  return await response.json();
 }
 
 async function getCount({ params }: { params: { state: string } }) {
