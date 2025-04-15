@@ -1,6 +1,6 @@
+import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequestWizard';
 import { Container } from '@mui/material';
 import type { Metadata } from 'next';
-import TowingRequestWizard from '@/features/ui/TowingRequestWizard/TowingRequestWizard';
 
 export const metadata: Metadata = {
   title: `Mobile tire repair shops - TireToad`,
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
-      <TowingRequestWizard />
+      <ServiceRequestWizard />
     </Container>
   );
 }

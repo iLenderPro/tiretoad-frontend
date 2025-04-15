@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <ThemeRegistry>
                 <NavBar />
                 <Snackbar />
-                <main style={{ display: 'flex', flex: 1 }}>{children}</main>
+                <main style={{ display: 'flex', flex: 1, backgroundColor: '#fafafa' }}>{children}</main>
               </ThemeRegistry>
             </body>
           </html>

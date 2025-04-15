@@ -1,6 +1,6 @@
-import { Roboto } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 
-const roboto = Roboto({
+const roboto = Open_Sans({
   weight: ['300', '400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
