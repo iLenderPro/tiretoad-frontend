@@ -4,28 +4,28 @@ import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux';
 import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { Controller, useForm } from 'react-hook-form';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
+  libraries: ['places', 'geometry', 'marker', 'routes'],
 });
 
 export function Step3(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const dispatch = useDispatch();
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TireRepairRequest;
   const {
     register,
     control,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<Pick<ServiceRequestDto, 'location' | 'urgency'>>({ values: serviceRequest });
-  const handleStepSubmit = (data: Pick<ServiceRequestDto, 'location' | 'urgency'>) => {
+  } = useForm<Pick<TireRepairRequest, 'location' | 'urgency'>>({ values: serviceRequest });
+  const handleStepSubmit = (data: Pick<TireRepairRequest, 'location' | 'urgency'>) => {
     dispatch(setServiceRequest(data));
     goToNextStep();
   };

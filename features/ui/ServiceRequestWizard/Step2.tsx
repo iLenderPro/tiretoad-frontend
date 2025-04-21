@@ -6,13 +6,13 @@ import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FieldError, FormProvider, useController, useForm } from 'react-hook-form';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { ImageUpload } from '@/features/ui/ImageUpload/ImageUpload';
 import Box from '@mui/material/Box';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();
@@ -30,11 +30,11 @@ export function Step2(props: StepProps) {
   const [ymm, setYmm] = useState<YmmHierarchy>({ id: 'root', name: 'root' });
   const [isDecodingFlow, toggleDecodingFlow] = useState<boolean>(false);
   const [isInitFlow, toggleInitFlow] = useState<boolean>(false);
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TireRepairRequest;
   const dispatch = useDispatch();
-  const methods = useForm<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>({
+  const methods = useForm<Pick<TireRepairRequest, 'tires' | 'vehicle'>>({
     values: {
-      vehicle: { vin: serviceRequest.vehicle?.vin } as ServiceRequestDto['vehicle'],
+      vehicle: { vin: serviceRequest.vehicle?.vin } as TireRepairRequest['vehicle'],
       tires: serviceRequest.tires,
     },
   });
@@ -81,7 +81,7 @@ export function Step2(props: StepProps) {
     defaultValue: '',
   });
 
-  const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires' | 'vehicle'>) => {
+  const handleStepSubmit = (data: Pick<TireRepairRequest, 'tires' | 'vehicle'>) => {
     dispatch(
       setServiceRequest({
         ...data,
@@ -102,7 +102,7 @@ export function Step2(props: StepProps) {
     goToNextStep();
   };
 
-  const handleStepErrors = (errors: FieldErrors<Pick<ServiceRequestDto, 'tires' | 'vehicle'>>) => {
+  const handleStepErrors = (errors: FieldErrors<Pick<TireRepairRequest, 'tires' | 'vehicle'>>) => {
     if (!errors.vehicle) {
       if (errors.tires?.[0]?.size) {
         dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.size.message }));

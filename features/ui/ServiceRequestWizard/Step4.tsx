@@ -20,16 +20,17 @@ import { useRouter } from 'next/navigation';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { setUserSession } from '@/entities/account/authSlice';
 import { Loader } from '@googlemaps/js-api-loader';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
+  libraries: ['places', 'geometry', 'marker', 'routes'],
 });
 
 export function Step4(props: StepProps) {
   const { formRef, goToNextStep } = props;
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TireRepairRequest;
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -38,7 +39,7 @@ export function Step4(props: StepProps) {
   const [createServiceRequest, { isLoading: isServiceRequestLoading }] = useCreateServiceRequestMutation();
   const [login, { isLoading: isLoggingIn }] = useLoginUserMutation();
 
-  const { register, handleSubmit, setValue, watch } = useForm<Pick<ServiceRequestDto, 'client'>>({ values: serviceRequest });
+  const { register, handleSubmit, setValue, watch } = useForm<Pick<TireRepairRequest, 'client'>>({ values: serviceRequest });
   const registerMethods = useForm<AccountDto['registration']>({ values: serviceRequest.client });
   const verificationMethods = useForm<AccountDto['verification']>({
     values: {

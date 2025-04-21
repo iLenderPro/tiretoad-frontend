@@ -6,7 +6,6 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import MenuIcon from '@mui/icons-material/Menu';
 import MailIcon from '@mui/icons-material/Mail';
 import OutboxOutlinedIcon from '@mui/icons-material/OutboxOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -22,6 +21,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 import { useGetUnreadMessagesQuery } from '@/entities/chat/api/chatApi';
+import MenuIcon from '@mui/icons-material/Menu';
+import Typography from '@mui/material/Typography';
+import Image from 'next/image';
 
 export default function NavBar() {
   const session = useSelector(selectUserSession);
@@ -67,22 +69,24 @@ export default function NavBar() {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar variant="outlined" elevation={0} position="sticky" color="default">
         <Toolbar>
           <Box flex={1 / 3}>
-            {params.slug ? (
+            {params.slug && (
               <IconButton size="large" color="inherit" aria-label="open drawer" onClick={() => router.back()}>
                 <ArrowBackOutlinedIcon />
               </IconButton>
-            ) : (
-              <IconButton size="large" color="inherit" aria-label="open drawer" onClick={toggleLeftDrawer(true)}>
-                <MenuIcon />
-              </IconButton>
             )}
           </Box>
-          <Box flex={1} sx={{ flexGrow: 1 }} textAlign="center" />
-          <Box flex={1 / 3}>
-            {session?.user && (
+          <Box display="flex" flex={1} sx={{ flexGrow: 1 }} alignItems="center" justifyContent="center" gap={1}>
+            <Image src="/icons/icon_tiretoad.png" alt="TireToad" width="26" height="26" />
+            <Typography variant="h2">TireToad</Typography>
+          </Box>
+          <Box flex={1 / 3} textAlign="right">
+            <IconButton size="large" color="inherit" aria-label="open drawer" onClick={toggleLeftDrawer(true)}>
+              <MenuIcon />
+            </IconButton>
+            {false && (
               <Stack direction="row" justifyContent="flex-end">
                 {/*<IconButton size="large" aria-label="show 17 new notifications" color="inherit">*/}
                 {/*  <Badge badgeContent={17} color="error">*/}

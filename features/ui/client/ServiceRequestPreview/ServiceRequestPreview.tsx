@@ -4,16 +4,16 @@ import Typography from '@mui/material/Typography';
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import Box from '@mui/material/Box';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { TireSide } from '@/features/ui/ServiceRequestWizard/types/TireSide';
 import MapDialog from '@/features/ui/MapDialog/MapDialog';
 import React, { memo, useState } from 'react';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import Button from '@mui/material/Button';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 export type ServiceRequestPreviewProps = {
-  serviceRequest: ServiceRequestDto;
+  serviceRequest: TireRepairRequest;
   user: ClientDto;
 };
 

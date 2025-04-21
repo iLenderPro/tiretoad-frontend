@@ -8,7 +8,7 @@ import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequ
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
+  libraries: ['places', 'geometry', 'marker', 'routes'],
 });
 
 export default function MapDialog({ open, toggleDialog, location }: { open: boolean; toggleDialog: () => void; location: ServiceRequestDto['location'] }) {

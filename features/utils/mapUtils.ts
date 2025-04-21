@@ -4,7 +4,7 @@ import { PlaceDto } from '@/entities/vendors/api/dto/placeDto';
 export const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
+  libraries: ['places', 'geometry', 'marker', 'routes'],
 });
 
 export async function createMap(initialLocation: google.maps.LatLng) {
