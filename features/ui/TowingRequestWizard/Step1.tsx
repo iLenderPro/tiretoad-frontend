@@ -1,4 +1,4 @@
-import { Grid, Paper, Stack, TextField } from '@mui/material';
+import { Stack, TextField } from '@mui/material';
 import React, { MutableRefObject } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -6,27 +6,26 @@ import { selectServiceRequest, setServiceRequest } from '@/entities/serviceReque
 import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
-import Typography from '@mui/material/Typography';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { StyledPaper } from '@/features/ui/Paper/Paper';
+import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
+  libraries: ['places', 'geometry', 'marker', 'routes'],
 });
 
 export function Step1(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const dispatch = useDispatch();
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const {
     register,
-    control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Pick<TowingRequest, 'location' | 'locationDropOff'>>({ values: serviceRequest });
   const handleStepSubmit = (data: Pick<TowingRequest, 'location' | 'locationDropOff'>) => {
@@ -43,25 +42,62 @@ export function Step1(props: StepProps) {
         mapTypeControl: false,
       });
 
-      const input = document.getElementById('pac-input') as HTMLInputElement;
-      const autocomplete = new google.maps.places.Autocomplete(input);
-      autocomplete.bindTo('bounds', map);
+      const drawRoute = () => {
+        const pickupLocation = getValues('location');
+        const dropoffLocation = getValues('locationDropOff');
+        const pickupLat = pickupLocation?.latitude;
+        const pickupLng = pickupLocation?.longitude;
+        const dropoffLat = dropoffLocation?.latitude;
+        const dropoffLng = dropoffLocation?.longitude;
 
-      const marker = new google.maps.Marker({
+        if (pickupLat && pickupLng && dropoffLat && dropoffLng) {
+          const directionsService = new google.maps.DirectionsService();
+          const directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+          directionsRenderer.setMap(map);
+
+          const request = {
+            origin: { lat: parseFloat(pickupLat), lng: parseFloat(pickupLng) },
+            destination: { lat: parseFloat(dropoffLat), lng: parseFloat(dropoffLng) },
+            travelMode: google.maps.TravelMode.DRIVING,
+          };
+
+          directionsService.route(request, (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(result);
+            }
+          });
+        }
+      };
+
+      // Pickup autocomplete
+      const pickupInput = document.getElementById('pickup-input') as HTMLInputElement;
+      const pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput);
+      pickupAutocomplete.bindTo('bounds', map);
+
+      // Dropoff autocomplete - Add this section
+      const dropoffInput = document.getElementById('dropoff-input') as HTMLInputElement;
+      const dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput);
+      dropoffAutocomplete.bindTo('bounds', map);
+
+      const pickupMarker = new google.maps.Marker({
         map,
         anchorPoint: new google.maps.Point(0, -29),
       });
 
-      autocomplete.addListener('place_changed', () => {
-        marker.setVisible(false);
+      // Create a second marker for dropoff location
+      const dropoffMarker = new google.maps.Marker({
+        map,
+        anchorPoint: new google.maps.Point(0, -29),
+      });
 
-        const place = autocomplete.getPlace();
+      pickupAutocomplete.addListener('place_changed', () => {
+        pickupMarker.setVisible(false);
+        const place = pickupAutocomplete.getPlace();
 
         if (!place.geometry || !place.geometry.location) {
           return;
         }
 
-        // If the place has a geometry, then present it on a map.
         if (place.geometry.viewport) {
           map.fitBounds(place.geometry.viewport);
         } else {
@@ -72,93 +108,63 @@ export function Step1(props: StepProps) {
         setValue('location.latitude', place.geometry.location.lat().toString());
         setValue('location.longitude', place.geometry.location.lng().toString());
 
-        marker.setPosition(place.geometry.location);
-        marker.setVisible(true);
+        pickupMarker.setPosition(place.geometry.location);
+        pickupMarker.setVisible(true);
+        drawRoute();
+      });
+
+      dropoffAutocomplete.addListener('place_changed', () => {
+        dropoffMarker.setVisible(false);
+        const place = dropoffAutocomplete.getPlace();
+
+        if (!place.geometry || !place.geometry.location) {
+          return;
+        }
+
+        if (place.geometry.viewport) {
+          map.fitBounds(place.geometry.viewport);
+        } else {
+          map.setCenter(place.geometry.location);
+          map.setZoom(17);
+        }
+
+        setValue('locationDropOff.latitude', place.geometry.location.lat().toString());
+        setValue('locationDropOff.longitude', place.geometry.location.lng().toString());
+
+        dropoffMarker.setPosition(place.geometry.location);
+        dropoffMarker.setVisible(true);
+        drawRoute();
       });
     });
   }
 
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
-      <Stack alignItems="center" gap={3} width={1}>
-        <Paper sx={{ width: '100%', padding: (theme) => theme.spacing(2) }}>
-          <Grid container spacing={3} width={1} rowSpacing={3}>
-            <Grid item zeroMinWidth xs={3}>
-              <Stack alignItems="start" gap={1}>
-                <Typography noWrap>Pickup:</Typography>
-                <Typography noWrap>Drop-off:</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={7}>
-              <Stack alignItems="start" gap={1}>
-                <Typography fontWeight="500">500 Three Islands...</Typography>
-                <Typography fontWeight="500">5323 SW 32nd Te...</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={2}>
-              <Stack alignItems="start" gap={1}>
-                <Typography fontWeight="500">3.5 Mile</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={3}>
-              <Stack alignItems="start" gap={1}>
-                <Typography>VIN:</Typography>
-                <Typography>Model:</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={7}>
-              <Stack alignItems="start" gap={1}>
-                <Typography fontWeight="500"></Typography>
-                <Typography fontWeight="500">2022 Honda Pilot</Typography>
-              </Stack>
-            </Grid>
-            <Grid item zeroMinWidth xs={2}>
-              <Stack gap={1}>
-                <Stack gap={1} direction="row">
-                  <CheckCircleOutlineIcon color="success" />
-                  <Typography noWrap>Goes Neutral</Typography>
-                </Stack>
-                <Stack gap={1} direction="row">
-                  <CancelOutlinedIcon color="error" />
-                  <Typography noWrap>Tires Inflated</Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={3}>
-              <Stack alignItems="start" gap={1}>
-                <div>Note:</div>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <Stack alignItems="start">
-                <div></div>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <Stack>
-                <div></div>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Paper>
-        <TextField
-          {...register('location.address', { required: { value: true, message: 'Pick-up location is required' } })}
-          id="pac-input"
-          fullWidth
-          label="Pick-up"
-          placeholder="Start typing your address"
-          error={Boolean(errors.location?.address)}
-          helperText={errors.location?.address?.message}
-        ></TextField>
-        <TextField
-          {...register('locationDropOff.address', { required: { value: true, message: 'Drop-off location is required' } })}
-          fullWidth
-          label="Drop-off"
-          placeholder="Start typing destination address"
-          error={Boolean(errors.locationDropOff?.address)}
-          helperText={errors.locationDropOff?.address?.message}
-        ></TextField>
-        <Box component="div" id="map" width={1} height="300px"></Box>
+      <Stack justifyContent="start" alignItems="center" gap={2} width={1}>
+        <TowingRequestSummary serviceRequest={serviceRequest} />
+        <StyledPaper>
+          <Stack justifyContent="start" alignItems="flex-start" gap={2} width={1} p={2}>
+            <TextField
+              {...register('location.address', { required: { value: true, message: 'Pick-up location is required' } })}
+              id="pickup-input"
+              label="Pick-up"
+              fullWidth
+              placeholder="Start typing your address"
+              error={Boolean(errors.location?.address)}
+              helperText={errors.location?.address?.message}
+            ></TextField>
+            <TextField
+              {...register('locationDropOff.address', { required: { value: true, message: 'Drop-off location is required' } })}
+              id="dropoff-input"
+              label="Drop-off"
+              fullWidth
+              placeholder="Start typing destination address"
+              error={Boolean(errors.locationDropOff?.address)}
+              helperText={errors.locationDropOff?.address?.message}
+            ></TextField>
+            <Box component="div" id="map" width={1} height="300px"></Box>
+          </Stack>
+        </StyledPaper>
       </Stack>
     </form>
   );

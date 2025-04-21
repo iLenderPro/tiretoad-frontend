@@ -4,20 +4,28 @@ const roboto = Open_Sans({
   weight: ['300', '400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
+  preload: false,
 });
 export const typography = {
   fontFamily: roboto.style.fontFamily,
-  fontSize: 14,
-  color: '#000000',
+  fontSize: 16,
+  color: '#0E0D0D',
+  allVariants: {
+    color: '#0E0D0D',
+    fontSize: 16,
+  },
   body1: {
     fontSize: '1rem',
+  },
+  body2: {
+    fontSize: '0.875rem',
   },
   h1: {
     fontSize: '2rem',
     fontWeight: 500,
   },
   h2: {
-    fontSize: '1.85rem',
+    fontSize: '1.25rem',
     fontWeight: 500,
   },
   h3: {

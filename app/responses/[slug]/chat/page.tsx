@@ -11,6 +11,7 @@ import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorRe
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { skipToken } from '@reduxjs/toolkit/query';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 export default function ServiceRequestChatPage({ params }: { params: { slug: string } }) {
   const session = useSelector(selectUserSession);
@@ -44,7 +45,7 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
                     </Button>
                   </Stack>
                 )}
-                <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest} />
+                <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest as TireRepairRequest} />
               </Stack>
               <Chat user={session.user} vendorResponse={vendorResponse} />
             </Stack>

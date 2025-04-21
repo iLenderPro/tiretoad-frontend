@@ -22,6 +22,8 @@ import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 import { useGetUnreadMessagesQuery } from '@/entities/chat/api/chatApi';
 import MenuIcon from '@mui/icons-material/Menu';
+import Typography from '@mui/material/Typography';
+import Image from 'next/image';
 
 export default function NavBar() {
   const session = useSelector(selectUserSession);
@@ -76,14 +78,15 @@ export default function NavBar() {
               </IconButton>
             )}
           </Box>
-          <Box flex={1} sx={{ flexGrow: 1 }} textAlign="center">
-            TireToad
+          <Box display="flex" flex={1} sx={{ flexGrow: 1 }} alignItems="center" justifyContent="center" gap={1}>
+            <Image src="/icons/icon_tiretoad.png" alt="TireToad" width="26" height="26" />
+            <Typography variant="h2">TireToad</Typography>
           </Box>
-          <Box flex={1 / 3}>
+          <Box flex={1 / 3} textAlign="right">
             <IconButton size="large" color="inherit" aria-label="open drawer" onClick={toggleLeftDrawer(true)}>
               <MenuIcon />
             </IconButton>
-            {session?.user && (
+            {false && (
               <Stack direction="row" justifyContent="flex-end">
                 {/*<IconButton size="large" aria-label="show 17 new notifications" color="inherit">*/}
                 {/*  <Badge badgeContent={17} color="error">*/}

@@ -1,6 +1,6 @@
 import { CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
 import { useLazyGetMakesQuery, useLazyGetModelsQuery, useLazyGetTrimsQuery } from '@/entities/tires/api/tiresApi';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,9 @@ import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import Typography from '@mui/material/Typography';
+import { StickyNote2Outlined } from '@mui/icons-material';
+import { StyledPaper } from '@/features/ui/Paper/Paper';
+import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();
@@ -30,11 +33,12 @@ export function Step2(props: StepProps) {
   const [isInitFlow, toggleInitFlow] = useState<boolean>(false);
   const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const dispatch = useDispatch();
-  const methods = useForm<Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated'>>({
+  const methods = useForm<Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated' | 'location'>>({
     values: {
       vehicle: { vin: serviceRequest.vehicle?.vin } as ServiceRequestDto['vehicle'],
       canGoNeutral: serviceRequest.canGoNeutral,
       tiresInflated: serviceRequest.tiresInflated,
+      location: serviceRequest.location,
     },
   });
   const {
@@ -73,7 +77,7 @@ export function Step2(props: StepProps) {
     rules: { required: { value: true, message: 'Trim is required' } },
   });
 
-  const handleStepSubmit = (data: Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated'>) => {
+  const handleStepSubmit = (data: Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated' | 'location'>) => {
     dispatch(
       setServiceRequest({
         ...data,
@@ -311,127 +315,156 @@ export function Step2(props: StepProps) {
       toggleInitFlow(true);
     }
   }, []);
+
   return (
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
-      <FormProvider {...methods}>
-        <Stack alignItems="center" gap={4}>
-          <Stack direction="row" width={1} gap={2}>
-            <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleDecode}
-              disabled={isVehicleDecoding}
-              endIcon={isVehicleDecoding ? <CircularProgress size="1.5rem" color="inherit" /> : null}
-            >
-              Decode
-            </Button>
-          </Stack>
-          <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
-            <TextField
-              label="Year"
-              select
-              fullWidth
-              style={{ flex: 1, minWidth: '250px' }}
-              value={year.value || ''}
-              onChange={(e) => handleYearChange(e.target.value)}
-              error={Boolean(errors.vehicle?.year)}
-              helperText={errors.vehicle?.year?.message}
-            >
-              {years &&
-                years.map(({ name }) => (
-                  <MenuItem key={name} value={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-            </TextField>
-            <TextField
-              label="Make"
-              select
-              fullWidth
-              style={{ flex: 1, minWidth: '250px' }}
-              value={make.value || ''}
-              onChange={(e) => handleMakeChange(e.target.value)}
-              error={Boolean(errors.vehicle?.make)}
-              helperText={errors.vehicle?.make?.message}
-            >
-              {ymm?.children?.[year.value]?.children ? (
-                Object.keys(ymm?.children?.[year.value.toString()]?.children || {}).map((key) => (
-                  <MenuItem key={key} value={ymm?.children?.[year.value.toString()]?.children?.[key]?.name}>
-                    {ymm?.children?.[year.value.toString()]?.children?.[key]?.name}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem>{isMakesFetching ? 'Loading...' : 'Select Year to see all makes'}</MenuItem>
-              )}
-            </TextField>
-            <TextField
-              label="Model"
-              select
-              fullWidth
-              style={{ flex: 1, minWidth: '250px' }}
-              value={model.value || ''}
-              onChange={(e) => handleModelChange(e.target.value)}
-              error={Boolean(errors.vehicle?.model)}
-              helperText={errors.vehicle?.model?.message}
-            >
-              {ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children ? (
-                Object.keys(ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children || {}).map((key) => (
-                  <MenuItem key={key} value={ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[key]?.name}>
-                    {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[key]?.name}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Make to see all models'}</MenuItem>
-              )}
-            </TextField>
-            <TextField
-              label="Trim"
-              select
-              fullWidth
-              style={{ flex: 1, minWidth: '250px' }}
-              value={!isTrimsFetching ? trim?.value || '' : ''}
-              onChange={(e) => handleTrimChange(e.target.value)}
-              error={Boolean(errors.vehicle?.trim)}
-              helperText={errors.vehicle?.trim?.message}
-            >
-              {ymm?.children?.[year.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children ? (
-                Object.keys(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children || {}).map((key) => (
-                  <MenuItem
-                    key={key}
-                    value={ymm?.children?.[year?.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children?.[key]?.name}
-                  >
-                    {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[key]?.name}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
-              )}
-            </TextField>
-          </Stack>
-          <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
-            <Controller
-              rules={{ required: true }}
-              control={control}
-              name="canGoNeutral"
-              defaultValue={true}
-              render={({ field }) => (
-                <FormControlLabel value={true} control={<Switch color="primary" />} label={<Typography>Can the vehicle go into neutral? Yes</Typography>} labelPlacement="start" />
-              )}
-            />
+      <Stack justifyContent="start" alignItems="center" gap={2} width={1}>
+        <TowingRequestSummary serviceRequest={serviceRequest} />
+        <StyledPaper>
+          <FormProvider {...methods}>
+            <Stack alignItems="center" gap={4} p={2}>
+              <Stack direction="row" width={1} gap={2}>
+                <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleDecode}
+                  disabled={isVehicleDecoding}
+                  endIcon={isVehicleDecoding ? <CircularProgress size="1.5rem" color="inherit" /> : null}
+                >
+                  Decode
+                </Button>
+              </Stack>
+              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
+                <TextField
+                  label="Year"
+                  select
+                  fullWidth
+                  style={{ flex: 1, minWidth: '250px' }}
+                  value={year.value || ''}
+                  onChange={(e) => handleYearChange(e.target.value)}
+                  error={Boolean(errors.vehicle?.year)}
+                  helperText={errors.vehicle?.year?.message}
+                >
+                  {years &&
+                    years.map(({ name }) => (
+                      <MenuItem key={name} value={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+                <TextField
+                  label="Make"
+                  select
+                  fullWidth
+                  style={{ flex: 1, minWidth: '250px' }}
+                  value={make.value || ''}
+                  onChange={(e) => handleMakeChange(e.target.value)}
+                  error={Boolean(errors.vehicle?.make)}
+                  helperText={errors.vehicle?.make?.message}
+                >
+                  {ymm?.children?.[year.value]?.children ? (
+                    Object.keys(ymm?.children?.[year.value.toString()]?.children || {}).map((key) => (
+                      <MenuItem key={key} value={ymm?.children?.[year.value.toString()]?.children?.[key]?.name}>
+                        {ymm?.children?.[year.value.toString()]?.children?.[key]?.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>{isMakesFetching ? 'Loading...' : 'Select Year to see all makes'}</MenuItem>
+                  )}
+                </TextField>
+                <TextField
+                  label="Model"
+                  select
+                  fullWidth
+                  style={{ flex: 1, minWidth: '250px' }}
+                  value={model.value || ''}
+                  onChange={(e) => handleModelChange(e.target.value)}
+                  error={Boolean(errors.vehicle?.model)}
+                  helperText={errors.vehicle?.model?.message}
+                >
+                  {ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children ? (
+                    Object.keys(ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children || {}).map((key) => (
+                      <MenuItem key={key} value={ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[key]?.name}>
+                        {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[key]?.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Make to see all models'}</MenuItem>
+                  )}
+                </TextField>
+                <TextField
+                  label="Trim"
+                  select
+                  fullWidth
+                  style={{ flex: 1, minWidth: '250px' }}
+                  value={!isTrimsFetching ? trim?.value || '' : ''}
+                  onChange={(e) => handleTrimChange(e.target.value)}
+                  error={Boolean(errors.vehicle?.trim)}
+                  helperText={errors.vehicle?.trim?.message}
+                >
+                  {ymm?.children?.[year.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children ? (
+                    Object.keys(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children || {}).map((key) => (
+                      <MenuItem
+                        key={key}
+                        value={
+                          ymm?.children?.[year?.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children?.[key]?.name
+                        }
+                      >
+                        {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[key]?.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
+                  )}
+                </TextField>
+              </Stack>
+              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
+                <Controller
+                  control={control}
+                  name="canGoNeutral"
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      checked={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      control={<Switch color="primary" />}
+                      label={<Typography variant="body2">Can the vehicle go into neutral? Yes</Typography>}
+                      labelPlacement="start"
+                    />
+                  )}
+                />
 
-            <Controller
-              rules={{ required: true }}
-              control={control}
-              name="tiresInflated"
-              defaultValue={true}
-              render={({ field }) => (
-                <FormControlLabel value={true} control={<Switch color="primary" />} label={<Typography>Are all four tires inflated? Yes</Typography>} labelPlacement="start" />
-              )}
-            />
-          </Stack>
-        </Stack>
-      </FormProvider>
+                <Controller
+                  control={control}
+                  name="tiresInflated"
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      checked={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      control={<Switch color="primary" />}
+                      label={<Typography variant="body2">Are all four tires inflated? Yes</Typography>}
+                      labelPlacement="start"
+                    />
+                  )}
+                />
+              </Stack>
+              <Stack direction="row" flexWrap="wrap" gap={1} width={1}>
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <StickyNote2Outlined />
+                  <Typography variant="subtitle1" fontWeight="700">
+                    Add Note
+                  </Typography>
+                </Stack>
+                <TextField {...register('location.comment')} fullWidth label="Add your notes"></TextField>
+              </Stack>
+            </Stack>
+          </FormProvider>
+        </StyledPaper>
+      </Stack>
     </form>
   );
 }

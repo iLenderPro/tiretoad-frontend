@@ -26,6 +26,7 @@ import { useGetServiceRequestsQuery } from '@/entities/serviceRequest/api/servic
 import IconButton from '@mui/material/IconButton';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import Typography from '@mui/material/Typography';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 enum StatusColor {
   PENDING = 'warning',
@@ -55,7 +56,7 @@ export default function ServiceRequestTableClient() {
         </TableHead>
         <TableBody>
           {serviceRequests &&
-            serviceRequests?.map((row) => (
+            (serviceRequests as TireRepairRequest[])?.map((row) => (
               <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell>{row.vehicle?.vin}</TableCell>
                 <TableCell>{`${row.vehicle.year} ${row.vehicle.model} ${row.vehicle.trim}`}</TableCell>
@@ -78,7 +79,7 @@ export default function ServiceRequestTableClient() {
   ) : (
     <Stack width="1" gap={2}>
       {!!serviceRequests?.length ? (
-        serviceRequests?.map((row) => (
+        (serviceRequests as TireRepairRequest[])?.map((row) => (
           <Card variant="elevation" elevation={1} key={row.id} sx={{ width: '100%' }}>
             <CardHeader
               style={{ paddingBottom: '8px' }}

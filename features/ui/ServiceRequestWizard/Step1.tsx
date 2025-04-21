@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectLocation } from '@/entities/geo/geoSlice';
 import { createMap, drawMarkers, handleError, loader } from '@/features/utils/mapUtils';
 import { Controller, useForm } from 'react-hook-form';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { selectPlacesWithinRadius, setPlacesWithinRadius } from '@/entities/vendors/vendorSlice';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
 import Image from 'next/image';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
@@ -23,7 +23,7 @@ export function Step1(props: StepProps) {
   const { isFetching: isLocationFetching } = useGetLocationQuery();
   const { data: places } = useGetPlacesQuery();
   const location = useSelector(selectLocation);
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TireRepairRequest;
   const placesWithinRadius = useSelector(selectPlacesWithinRadius);
   const dispatch = useDispatch();
 
@@ -31,16 +31,16 @@ export function Step1(props: StepProps) {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<Pick<ServiceRequestDto, 'tires'>>({
+  } = useForm<Pick<TireRepairRequest, 'tires'>>({
     values: serviceRequest,
   });
 
-  const handleStepSubmit = (data: Pick<ServiceRequestDto, 'tires'>) => {
+  const handleStepSubmit = (data: Pick<TireRepairRequest, 'tires'>) => {
     dispatch(setServiceRequest(data));
     goToNextStep();
   };
 
-  const handleStepErrors = (errors: FieldErrors<Pick<ServiceRequestDto, 'tires'>>) => {
+  const handleStepErrors = (errors: FieldErrors<Pick<TireRepairRequest, 'tires'>>) => {
     if (errors.tires?.[0]?.side) {
       dispatch(showSnackbar({ type: 'error', content: errors.tires?.[0]?.side.message }));
     }

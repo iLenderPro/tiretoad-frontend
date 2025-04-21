@@ -6,6 +6,7 @@ import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequ
 import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
 import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
 import { ServiceRequestStatus } from '@/features/ui/ServiceRequestWizard/types/ServiceRequestStatus';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 const createData = (id: string, client: string, vin: string, vehicle: string, tires: string, damage: string, createdAt: string) => ({
   id,
@@ -51,7 +52,7 @@ export default function ServiceRequestResponseTable(props: ServiceRequestRespons
           </TableRow>
         </TableHead>
         <TableBody>
-          {serviceRequests.map((row) => (
+          {(serviceRequests as TireRepairRequest[]).map((row) => (
             <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
                 {row.client.fullName}

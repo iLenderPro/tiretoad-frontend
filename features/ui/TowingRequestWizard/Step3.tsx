@@ -1,106 +1,73 @@
 import Typography from '@mui/material/Typography';
-import { FormControlLabel, Radio, RadioGroup, Stack, TextField } from '@mui/material';
-import { Loader } from '@googlemaps/js-api-loader';
-import Box from '@mui/material/Box';
+import { Stack, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
-import { Controller, useForm } from 'react-hook-form';
-
-const loader = new Loader({
-  apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-  version: 'weekly',
-  libraries: ['places', 'geometry', 'marker'],
-});
+import { useForm } from 'react-hook-form';
+import { StyledPaper } from '@/features/ui/Paper/Paper';
+import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
+import React from 'react';
+import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
+import { AccountDto } from '@/entities/account/api/dto/AccountDto';
+import { useRegisterUserMutation } from '@/entities/account/api/accountApi';
 
 export function Step3(props: StepProps) {
   const { formRef, goToNextStep } = props;
   const dispatch = useDispatch();
-  const serviceRequest = useSelector(selectServiceRequest);
+  const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const {
     register,
-    control,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<Pick<ServiceRequestDto, 'location' | 'urgency'>>({ values: serviceRequest });
-  const handleStepSubmit = (data: Pick<ServiceRequestDto, 'location' | 'urgency'>) => {
-    dispatch(setServiceRequest(data));
+  } = useForm<AccountDto['registration']>({ values: serviceRequest.client });
+
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+
+  const handleStepSubmit = async (data: AccountDto['registration']) => {
+    const result = await registerUser(data).unwrap();
+    dispatch(setServiceRequest({ client: { ...serviceRequest.client, ...data, ...result } }));
     goToNextStep();
   };
 
-  loader.load().then(async () => {
-    const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
-    const map = new Map(document.getElementById('map') as HTMLElement, {
-      center: { lat: 25.761681, lng: -80.191788 },
-      zoom: 11,
-      mapTypeControl: false,
-    });
-
-    const input = document.getElementById('pac-input') as HTMLInputElement;
-    const autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.bindTo('bounds', map);
-
-    const marker = new google.maps.Marker({
-      map,
-      anchorPoint: new google.maps.Point(0, -29),
-    });
-
-    autocomplete.addListener('place_changed', () => {
-      marker.setVisible(false);
-
-      const place = autocomplete.getPlace();
-
-      if (!place.geometry || !place.geometry.location) {
-        return;
-      }
-
-      // If the place has a geometry, then present it on a map.
-      if (place.geometry.viewport) {
-        map.fitBounds(place.geometry.viewport);
-      } else {
-        map.setCenter(place.geometry.location);
-        map.setZoom(17);
-      }
-
-      setValue('location.latitude', place.geometry.location.lat().toString());
-      setValue('location.longitude', place.geometry.location.lng().toString());
-
-      marker.setPosition(place.geometry.location);
-      marker.setVisible(true);
-    });
-  });
-
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
-      <Stack alignItems="center" gap={3}>
-        <Typography variant="h3">How soon do you need the repair?</Typography>
-        <Controller
-          rules={{ required: true }}
-          control={control}
-          name="urgency"
-          defaultValue="IMMEDIATELY"
-          render={({ field }) => (
-            <RadioGroup row {...field}>
-              <Stack alignItems="center">
-                <FormControlLabel value="IMMEDIATELY" control={<Radio />} label="Immediately" />
-              </Stack>
-            </RadioGroup>
-          )}
-        />
-        <Typography variant="h3">What is your location?</Typography>
-        <TextField
-          {...register('location.address', { required: { value: true, message: 'Location is required' } })}
-          id="pac-input"
-          fullWidth
-          label="Enter your exact location"
-          placeholder="Start typing your address"
-          error={Boolean(errors.location?.address)}
-          helperText={errors.location?.address?.message}
-        ></TextField>
-        <Box component="div" id="map" width={1} height="300px"></Box>
-        <TextField {...register('location.comment')} fullWidth label="Describe the place your car located at" placeholder="In the sumepmaket parking lot"></TextField>
+      <Stack justifyContent="start" alignItems="center" gap={2} width={1}>
+        <TowingRequestSummary serviceRequest={serviceRequest} />
+        <StyledPaper>
+          <Stack alignItems="left" gap={3} p={2}>
+            <Typography variant="subtitle1" fontWeight={700} textAlign="left">
+              Please input your personal information
+            </Typography>
+            <TextField
+              {...register('fullName', { required: { value: true, message: 'Name is required' } })}
+              label="Full name"
+              placeholder="Your full name"
+              fullWidth
+              error={Boolean(errors.fullName)}
+              helperText={errors.fullName?.message}
+            />
+            <TextField
+              {...register('email', {
+                required: { value: true, message: 'Email is required' },
+                setValueAs: (value) => value.toLowerCase(),
+              })}
+              label="Email"
+              placeholder="Your email"
+              fullWidth
+              error={Boolean(errors.email)}
+              helperText={errors.email?.message}
+            />
+            <TextField
+              {...register('phone', { required: { value: true, message: 'Phone is required' } })}
+              label="Phone"
+              placeholder="Contact phone number"
+              fullWidth
+              error={Boolean(errors.phone)}
+              helperText={errors.phone?.message}
+            />
+            {/*<input type="hidden" {...register('client')} defaultValue={undefined} />*/}
+          </Stack>
+        </StyledPaper>
       </Stack>
     </form>
   );
