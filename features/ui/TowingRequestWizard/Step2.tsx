@@ -1,7 +1,6 @@
-import { CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
+import { FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
 import { useLazyGetMakesQuery, useLazyGetModelsQuery, useLazyGetTrimsQuery } from '@/entities/tires/api/tiresApi';
 import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
@@ -204,13 +203,6 @@ export function Step2(props: StepProps) {
     trim.onChange(value || '');
   };
 
-  const handleDecode = async () => {
-    if (vehicle.vin) {
-      toggleDecodingFlow(true);
-      decode(vehicle.vin);
-    }
-  };
-
   useEffect(() => {
     if (isDecodingFlow && decodedData && !isVehicleDecoding) {
       decodedData.year && handleYearChange(decodedData.year.toString());
@@ -325,15 +317,6 @@ export function Step2(props: StepProps) {
             <Stack alignItems="center" gap={4} p={2}>
               <Stack direction="row" width={1} gap={2}>
                 <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleDecode}
-                  disabled={isVehicleDecoding}
-                  endIcon={isVehicleDecoding ? <CircularProgress size="1.5rem" color="inherit" /> : null}
-                >
-                  Decode
-                </Button>
               </Stack>
               <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
                 <TextField

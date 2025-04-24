@@ -7,7 +7,6 @@ import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
-import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
@@ -141,7 +140,6 @@ export function Step1(props: StepProps) {
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>
       <Stack justifyContent="start" alignItems="center" gap={2} width={1}>
-        <TowingRequestSummary serviceRequest={serviceRequest} />
         <StyledPaper>
           <Stack justifyContent="start" alignItems="flex-start" gap={2} width={1} p={2}>
             <TextField
