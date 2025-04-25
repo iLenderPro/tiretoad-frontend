@@ -21,6 +21,7 @@ import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireTy
 import { setUserSession } from '@/entities/account/authSlice';
 import { Loader } from '@googlemaps/js-api-loader';
 import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
@@ -64,7 +65,7 @@ export function Step4(props: StepProps) {
         setValue('client', { ...data, ...result });
         dispatch(setServiceRequest({ client: { ...serviceRequest.client, ...data, ...result } }));
         if (user.email && user.password) {
-          const session = await login({ email: user.email, password: user.password }).unwrap();
+          const session = await login({ email: user.email, password: user.password, role: UserRole.CLIENT }).unwrap();
           dispatch(setUserSession(session));
         }
       }
