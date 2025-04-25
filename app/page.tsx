@@ -1,6 +1,6 @@
 import { Container } from '@mui/material';
 import type { Metadata } from 'next';
-import TowingRequestWizard from '@/features/ui/TowingRequestWizard/TowingRequestWizard';
+import TowingRequestWizard from '@/features/ui/client/TowingRequestWizard/TowingRequestWizard';
 
 export const metadata: Metadata = {
   title: `Mobile tire repair shops - TireToad`,

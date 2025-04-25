@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
-import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import Typography from '@mui/material/Typography';
 import { StickyNote2Outlined } from '@mui/icons-material';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
-import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
+import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();

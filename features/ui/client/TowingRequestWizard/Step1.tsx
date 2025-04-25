@@ -26,8 +26,8 @@ export function Step1(props: StepProps) {
     setValue,
     getValues,
     formState: { errors },
-  } = useForm<Pick<TowingRequest, 'location' | 'locationDropOff'>>({ values: serviceRequest });
-  const handleStepSubmit = (data: Pick<TowingRequest, 'location' | 'locationDropOff'>) => {
+  } = useForm<Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>>({ values: serviceRequest });
+  const handleStepSubmit = (data: Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>) => {
     dispatch(setServiceRequest(data));
     goToNextStep();
   };
@@ -61,8 +61,14 @@ export function Step1(props: StepProps) {
           };
 
           directionsService.route(request, (result, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
+            if (status === google.maps.DirectionsStatus.OK && result) {
               directionsRenderer.setDirections(result);
+
+              // Calculate and store the distance
+              if (result.routes[0].legs[0].distance) {
+                const meters = result.routes[0].legs[0].distance.value;
+                setValue('distance', meters);
+              }
             }
           });
         }

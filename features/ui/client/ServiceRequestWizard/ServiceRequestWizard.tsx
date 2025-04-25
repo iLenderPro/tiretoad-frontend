@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import React, { useRef, useState } from 'react';
-import { Step1, Step2, Step3, Step4 } from '@/features/ui/ServiceRequestWizard/index';
+import { Step1, Step2, Step3, Step4 } from '@/features/ui/client/ServiceRequestWizard/index';
 import { CircularProgress, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { isServiceRequestUpdating, selectServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';

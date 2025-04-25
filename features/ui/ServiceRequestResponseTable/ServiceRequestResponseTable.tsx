@@ -3,9 +3,9 @@ import { Badge, Paper, Table, TableBody, TableCell, TableContainer, TableHead, T
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
-import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
-import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
-import { ServiceRequestStatus } from '@/features/ui/ServiceRequestWizard/types/ServiceRequestStatus';
+import { TireDamage } from '@/features/ui/client/ServiceRequestWizard/types/TireDamage';
+import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireType';
+import { ServiceRequestStatus } from '@/features/ui/client/ServiceRequestWizard/types/ServiceRequestStatus';
 import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
 
 const createData = (id: string, client: string, vin: string, vehicle: string, tires: string, damage: string, createdAt: string) => ({

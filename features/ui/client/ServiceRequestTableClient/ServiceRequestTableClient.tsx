@@ -19,9 +19,9 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
-import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
-import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
-import { ServiceRequestStatus } from '@/features/ui/ServiceRequestWizard/types/ServiceRequestStatus';
+import { TireDamage } from '@/features/ui/client/ServiceRequestWizard/types/TireDamage';
+import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireType';
+import { ServiceRequestStatus } from '@/features/ui/client/ServiceRequestWizard/types/ServiceRequestStatus';
 import { useGetServiceRequestsQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
 import IconButton from '@mui/material/IconButton';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';

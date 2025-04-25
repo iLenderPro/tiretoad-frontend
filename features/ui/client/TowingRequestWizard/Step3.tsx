@@ -1,11 +1,11 @@
 import Typography from '@mui/material/Typography';
 import { Stack, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { useForm } from 'react-hook-form';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
-import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
+import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
 import React from 'react';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';

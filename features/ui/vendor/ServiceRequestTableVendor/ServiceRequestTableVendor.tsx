@@ -19,8 +19,8 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
-import { TireDamage } from '@/features/ui/ServiceRequestWizard/types/TireDamage';
-import { TireType } from '@/features/ui/ServiceRequestWizard/types/TireType';
+import { TireDamage } from '@/features/ui/client/ServiceRequestWizard/types/TireDamage';
+import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireType';
 import { useGetVendorResponsesQuery } from '@/entities/vendorResponse/api/vendorResponseApi';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';

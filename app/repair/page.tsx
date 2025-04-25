@@ -1,4 +1,4 @@
-import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequestWizard';
+import ServiceRequestWizard from '@/features/ui/client/ServiceRequestWizard/ServiceRequestWizard';
 import { Container } from '@mui/material';
 import type { Metadata } from 'next';
 

@@ -4,14 +4,14 @@ import { selectServiceRequest, setServiceRequest, setServiceRequestUpdating } fr
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
-import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { useLoginUserMutation, useVerifyUserMutation } from '@/entities/account/api/accountApi';
 import React, { useEffect } from 'react';
 import { useCreateServiceRequestMutation } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { useRouter } from 'next/navigation';
 import { setUserSession } from '@/entities/account/authSlice';
 import { Loader } from '@googlemaps/js-api-loader';
-import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
+import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { UserRole } from '@/entities/user/api/dto/UserRole';

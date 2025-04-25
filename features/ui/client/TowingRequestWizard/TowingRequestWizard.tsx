@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Step1, Step2, Step3, Step4 } from './';
+import { Step1, Step2, Step3, Step4 } from './index';
 import { CircularProgress, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { isServiceRequestUpdating, selectServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
-import { StepButtons } from '@/features/ui/StepButtons/StepButtons';
+import { StepButtons } from '@/features/ui/client/ServiceRequestWizard/StepButtons/StepButtons';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 

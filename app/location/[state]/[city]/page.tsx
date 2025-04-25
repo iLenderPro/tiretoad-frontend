@@ -1,6 +1,6 @@
 import { Container, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ServiceRequestWizard from '@/features/ui/ServiceRequestWizard/ServiceRequestWizard';
+import ServiceRequestWizard from '@/features/ui/client/ServiceRequestWizard/ServiceRequestWizard';
 import type { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {

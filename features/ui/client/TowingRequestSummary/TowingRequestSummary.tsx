@@ -28,7 +28,7 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
           {serviceRequest?.locationDropOff?.address && (
             <Stack direction="row" justifyContent="end" alignItems="center">
               <Typography variant="body2" fontWeight="500" noWrap>
-                3.5 Mile
+                {Math.round((serviceRequest?.distance / 1609.34) * 10) / 10} mi
               </Typography>
             </Stack>
           )}

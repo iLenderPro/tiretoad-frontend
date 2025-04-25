@@ -3,7 +3,7 @@ import { FormControlLabel, Radio, RadioGroup, Stack, TextField } from '@mui/mate
 import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux';
-import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { Controller, useForm } from 'react-hook-form';
 import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';

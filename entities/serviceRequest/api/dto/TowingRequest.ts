@@ -7,6 +7,7 @@ export interface TowingRequest extends ServiceRequest {
     address: string;
     comment: string;
   };
+  distance: number;
   canGoNeutral: boolean;
   tiresInflated: boolean;
 }

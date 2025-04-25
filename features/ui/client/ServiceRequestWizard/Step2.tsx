@@ -7,7 +7,7 @@ import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FieldError, FormProvider, useController, useForm } from 'react-hook-form';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
-import { StepProps } from '@/features/ui/ServiceRequestWizard/Step1';
+import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { ImageUpload } from '@/features/ui/ImageUpload/ImageUpload';
 import Box from '@mui/material/Box';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';

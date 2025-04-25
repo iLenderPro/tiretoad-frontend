@@ -1,4 +1,4 @@
-import { StyledToggleButton, StyledToggleButtonGroup } from '@/features/ui/StepButtons/styles';
+import { StyledToggleButton, StyledToggleButtonGroup } from '@/features/ui/client/ServiceRequestWizard/StepButtons/styles';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
 
 export function StepButtons({ step }: { step: number }) {
