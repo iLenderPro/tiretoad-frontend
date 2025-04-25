@@ -14,6 +14,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import TowingRequestSummary from '@/features/ui/TowingRequestSummary/TowingRequestSummary';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
@@ -43,7 +44,7 @@ export function Step4(props: StepProps) {
     if (user?.id) {
       const result = await verifyUser({ ...data, userId: user.id }).unwrap();
       if (result && user.email && data.verificationToken) {
-        const session = await login({ email: user.email, password: data.verificationToken }).unwrap();
+        const session = await login({ email: user.email, password: data.verificationToken, role: UserRole.CLIENT }).unwrap();
         dispatch(setUserSession(session));
         dispatch(setServiceRequest({ client: { ...serviceRequest.client, ...data, ...result } }));
       }

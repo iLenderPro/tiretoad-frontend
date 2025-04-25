@@ -10,6 +10,7 @@ import React from 'react';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { AccountDto } from '@/entities/account/api/dto/AccountDto';
 import { useRegisterUserMutation } from '@/entities/account/api/accountApi';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 export function Step3(props: StepProps) {
   const { formRef, goToNextStep } = props;
@@ -65,6 +66,7 @@ export function Step3(props: StepProps) {
               error={Boolean(errors.phone)}
               helperText={errors.phone?.message}
             />
+            <input type="hidden" {...register('role')} value={UserRole.CLIENT} />
             {/*<input type="hidden" {...register('client')} defaultValue={undefined} />*/}
           </Stack>
         </StyledPaper>

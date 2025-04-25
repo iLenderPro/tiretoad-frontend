@@ -1,7 +1,6 @@
 import { FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
 import { useLazyGetMakesQuery, useLazyGetModelsQuery, useLazyGetTrimsQuery } from '@/entities/tires/api/tiresApi';
 import React, { useEffect, useState } from 'react';
-import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
@@ -50,7 +49,6 @@ export function Step2(props: StepProps) {
 
   const vehicle = watch('vehicle');
 
-  const [decode, { data: decodedData, isLoading: isVehicleDecoding }] = useLazyDecodeQuery();
   const [getMakes, { isFetching: isMakesFetching }] = useLazyGetMakesQuery();
   const [getModels, { isFetching: isModelsFetching }] = useLazyGetModelsQuery();
   const [getTrims, { isFetching: isTrimsFetching }] = useLazyGetTrimsQuery();
@@ -70,11 +68,6 @@ export function Step2(props: StepProps) {
     control,
     rules: { required: { value: true, message: 'Model is required' } },
   });
-  const { field: trim } = useController({
-    name: 'vehicle.trim',
-    control,
-    rules: { required: { value: true, message: 'Trim is required' } },
-  });
 
   const handleStepSubmit = (data: Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated' | 'location'>) => {
     dispatch(
@@ -84,8 +77,6 @@ export function Step2(props: StepProps) {
           ...data.vehicle,
           make: ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.name || '',
           model: ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.name || '',
-          trim:
-            ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.name || '',
         },
       }),
     );
@@ -146,69 +137,21 @@ export function Step2(props: StepProps) {
     }));
   };
 
-  const loadTrims = async (yearId: string, makeId: string, modelId: string) => {
-    const { data } = await getTrims({ yearId, makeId, modelId });
-    setYmm((prevState) => ({
-      ...prevState,
-      children: {
-        ...prevState.children,
-        [yearId]: {
-          id: yearId,
-          name: yearId,
-          children: {
-            ...prevState?.children?.[yearId]?.children,
-            [makeId.toLowerCase()]: {
-              id: makeId,
-              name: makeId,
-              children: {
-                ...prevState?.children?.[yearId]?.children?.[makeId.toLowerCase()]?.children,
-                [modelId.toLowerCase()]: {
-                  id: modelId,
-                  name: modelId,
-                  children: data?.reduce(
-                    (acc, cur) => ({
-                      ...acc,
-                      [cur.name.toLowerCase()]: { id: cur.id, name: cur.name },
-                    }),
-                    {} as YmmHierarchy['children'],
-                  ),
-                },
-              },
-            },
-          },
-        },
-      },
-    }));
-  };
-
   const handleYearChange = async (value: string) => {
     make.onChange('');
     model.onChange('');
-    trim.onChange('');
     year.onChange(value);
     await loadMakes(value);
   };
   const handleMakeChange = async (value: string) => {
     model.onChange('');
-    trim.onChange('');
     make.onChange(value);
     await loadModels(year.value, value);
   };
-  const handleModelChange = async (value: string) => {
-    trim.onChange('');
-    model.onChange(value);
-    await loadTrims(year.value, make.value, value);
-  };
-  const handleTrimChange = async (value: string) => {
-    trim.onChange(value || '');
-  };
 
-  useEffect(() => {
-    if (isDecodingFlow && decodedData && !isVehicleDecoding) {
-      decodedData.year && handleYearChange(decodedData.year.toString());
-      !decodedData.make && toggleDecodingFlow(false);
-    }
-  }, [isVehicleDecoding, decodedData]);
+  const handleModelChange = async (value: string) => {
+    model.onChange(value);
+  };
 
   useEffect(() => {
     if (isInitFlow && serviceRequest.vehicle) {
@@ -217,27 +160,12 @@ export function Step2(props: StepProps) {
   }, [isInitFlow]);
 
   useEffect(() => {
-    if (isDecodingFlow && !isMakesFetching && decodedData?.make && ymm?.children?.[year.value.toString()]?.children?.[decodedData.make.toLowerCase()]) {
-      handleMakeChange(ymm?.children?.[year.value.toString()]?.children?.[decodedData.make.toLowerCase()]?.name || '');
-      !decodedData.model && toggleDecodingFlow(false);
-    }
-
     if (isInitFlow && !isMakesFetching && serviceRequest.vehicle.make && ymm?.children?.[year.value.toString()]?.children?.[serviceRequest.vehicle.make.toLowerCase()]) {
       handleMakeChange(ymm?.children?.[year.value.toString()]?.children?.[serviceRequest.vehicle.make.toLowerCase()]?.name || '');
     }
   }, [isMakesFetching]);
 
   useEffect(() => {
-    if (
-      isDecodingFlow &&
-      !isModelsFetching &&
-      decodedData?.model &&
-      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]
-    ) {
-      handleModelChange(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[decodedData.model.toLowerCase()]?.name || '');
-      !decodedData?.trim && toggleDecodingFlow(false);
-    }
-
     if (
       isInitFlow &&
       !isModelsFetching &&
@@ -248,59 +176,6 @@ export function Step2(props: StepProps) {
       !serviceRequest.vehicle.trim && toggleInitFlow(false);
     }
   }, [isModelsFetching]);
-
-  useEffect(() => {
-    if (
-      isDecodingFlow &&
-      !isTrimsFetching &&
-      decodedData?.trim &&
-      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[decodedData.trim.toLowerCase()]
-    ) {
-      handleTrimChange(
-        ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[decodedData.trim.toLowerCase()]?.name || '',
-      );
-      toggleDecodingFlow(false);
-    }
-
-    if (
-      isInitFlow &&
-      !isTrimsFetching &&
-      serviceRequest.vehicle.trim &&
-      ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]
-    ) {
-      handleTrimChange(
-        ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]?.name || '',
-      );
-      // !serviceRequest.tires?.[0]?.size && toggleInitFlow(false);
-    }
-  }, [isTrimsFetching]);
-
-  // useEffect(() => {
-  //   if (!isTiresFetching) {
-  //     if (isInitFlow && serviceRequest?.tires?.[0]?.size) {
-  //       // TODO: tire does not match tire name, gotta fix it
-  //       // console.log('tire size from request: ', serviceRequest?.tires?.[0]?.size);
-  //       // console.log(
-  //       //   'tire size from hash table: ',
-  //       //   ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children,
-  //       // );
-  //       tire.onChange(
-  //         ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children?.[
-  //           serviceRequest?.tires?.[0]?.size?.toLowerCase()
-  //         ]?.id,
-  //       );
-  //       toggleInitFlow(false);
-  //     }
-  //     // else {
-  //     //   tire.onChange(
-  //     //     Object.keys(
-  //     //       ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children ||
-  //     //         {},
-  //     //     )?.[0],
-  //     //   );
-  //     // }
-  //   }
-  // }, [isTiresFetching]);
 
   useEffect(() => {
     if (serviceRequest.vehicle) {
@@ -314,11 +189,11 @@ export function Step2(props: StepProps) {
         <TowingRequestSummary serviceRequest={serviceRequest} />
         <StyledPaper>
           <FormProvider {...methods}>
-            <Stack alignItems="center" gap={4} p={2}>
+            <Stack alignItems="center" gap={3} p={2}>
               <Stack direction="row" width={1} gap={2}>
                 <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
               </Stack>
-              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
+              <Stack direction="row" flexWrap="wrap" gap={3} width={1}>
                 <TextField
                   label="Year"
                   select
@@ -374,31 +249,6 @@ export function Step2(props: StepProps) {
                     ))
                   ) : (
                     <MenuItem>{isModelsFetching ? 'Loading...' : 'Select Make to see all models'}</MenuItem>
-                  )}
-                </TextField>
-                <TextField
-                  label="Trim"
-                  select
-                  fullWidth
-                  style={{ flex: 1, minWidth: '250px' }}
-                  value={!isTrimsFetching ? trim?.value || '' : ''}
-                  onChange={(e) => handleTrimChange(e.target.value)}
-                  error={Boolean(errors.vehicle?.trim)}
-                  helperText={errors.vehicle?.trim?.message}
-                >
-                  {ymm?.children?.[year.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children ? (
-                    Object.keys(ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children || {}).map((key) => (
-                      <MenuItem
-                        key={key}
-                        value={
-                          ymm?.children?.[year?.value]?.children?.[make.value.toString().toLowerCase()]?.children?.[model.value.toString().toLowerCase()]?.children?.[key]?.name
-                        }
-                      >
-                        {ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[key]?.name}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
                   )}
                 </TextField>
               </Stack>
