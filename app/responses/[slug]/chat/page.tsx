@@ -6,9 +6,6 @@ import { useGetVendorResponseQuery, useUpdateVendorResponseMutation } from '@/en
 import { selectUserSession } from '@/entities/account/authSlice';
 import { useSelector } from 'react-redux';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
-import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
@@ -18,14 +15,14 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
   const { data: vendorResponse } = useGetVendorResponseQuery(params.slug);
   const { data: serviceRequest } = useGetServiceRequestQuery(vendorResponse?.serviceRequest.id || skipToken, { skip: !vendorResponse?.serviceRequest.id });
   const [updateVendorResponse, { isLoading }] = useUpdateVendorResponseMutation();
-
-  const handleAcceptRequest = async () => {
-    vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.ACCEPTED }));
-  };
-
-  const handleDeclineRequest = async () => {
-    vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.DECLINED }));
-  };
+  //
+  // const handleAcceptRequest = async () => {
+  //   vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.ACCEPTED }));
+  // };
+  //
+  // const handleDeclineRequest = async () => {
+  //   vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.DECLINED }));
+  // };
 
   return (
     <>
@@ -35,16 +32,16 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
             <Stack direction="row" display="flex" flexWrap="wrap" gap={3} width={1}>
               <Stack alignItems="center" minHeight="100%" gap={3} flex={1}>
                 <Typography variant="h3">Service Request Summary</Typography>
-                {session?.user.role === UserRole.VENDOR && (
-                  <Stack direction="row" gap={2}>
-                    <Button variant="contained" color="success" disabled={vendorResponse.status === VendorResponseStatus.ACCEPTED} onClick={handleAcceptRequest}>
-                      Accept
-                    </Button>
-                    <Button variant="contained" color="error" disabled={vendorResponse.status === VendorResponseStatus.DECLINED} onClick={handleDeclineRequest}>
-                      Decline
-                    </Button>
-                  </Stack>
-                )}
+                {/*{session?.user.role === UserRole.VENDOR && (*/}
+                {/*  <Stack direction="row" gap={2}>*/}
+                {/*    <Button variant="contained" color="success" disabled={vendorResponse.status === VendorResponseStatus.ACCEPTED} onClick={handleAcceptRequest}>*/}
+                {/*      Accept*/}
+                {/*    </Button>*/}
+                {/*    <Button variant="contained" color="error" disabled={vendorResponse.status === VendorResponseStatus.DECLINED} onClick={handleDeclineRequest}>*/}
+                {/*      Decline*/}
+                {/*    </Button>*/}
+                {/*  </Stack>*/}
+                {/*)}*/}
                 <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest as TireRepairRequest} />
               </Stack>
               <ResponseChat user={session.user} vendorResponse={vendorResponse} />

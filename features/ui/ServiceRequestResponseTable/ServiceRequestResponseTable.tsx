@@ -3,10 +3,8 @@ import { Badge, Paper, Table, TableBody, TableCell, TableContainer, TableHead, T
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
-import { TireDamage } from '@/features/ui/client/ServiceRequestWizard/types/TireDamage';
-import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireType';
-import { ServiceRequestStatus } from '@/features/ui/client/ServiceRequestWizard/types/ServiceRequestStatus';
 import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
+import { ServiceRequestStatusColorMap } from '@/features/ui/client/ServiceRequestWizard/types/ServiceRequestStatus';
 
 const createData = (id: string, client: string, vin: string, vehicle: string, tires: string, damage: string, createdAt: string) => ({
   id,
@@ -45,8 +43,6 @@ export default function ServiceRequestResponseTable(props: ServiceRequestRespons
             <TableCell>Customer</TableCell>
             <TableCell>VIN</TableCell>
             <TableCell>Vehicle</TableCell>
-            <TableCell>Tires</TableCell>
-            <TableCell>Damage</TableCell>
             <TableCell>Status</TableCell>
             <TableCell colSpan={2}>Date & Time</TableCell>
           </TableRow>
@@ -59,14 +55,12 @@ export default function ServiceRequestResponseTable(props: ServiceRequestRespons
               </TableCell>
               <TableCell>{row.vehicle?.vin}</TableCell>
               <TableCell>{`${row.vehicle.year} ${row.vehicle.model} ${row.vehicle.trim}`}</TableCell>
-              <TableCell>{`${row.tires[0].size} (${TireType[row.tires[0].type as keyof typeof TireType]})`}</TableCell>
-              <TableCell>{TireDamage[row.tires[0].damage as keyof typeof TireDamage]}</TableCell>
               <TableCell align="center">
-                <Badge badgeContent={ServiceRequestStatus.NEW} color="primary" />
+                <Badge badgeContent={row.status} color={ServiceRequestStatusColorMap[row.status]} />
               </TableCell>
               <TableCell>{new Date(row?.createdAt || '').toLocaleString()}</TableCell>
               <TableCell>
-                <Button color="success" variant="contained" onClick={() => router.push(`/service-requests/${row.id}/chat`)}>
+                <Button color="success" variant="contained" onClick={() => router.push(`/requests/${row.id}/chat`)}>
                   Chat
                 </Button>
               </TableCell>

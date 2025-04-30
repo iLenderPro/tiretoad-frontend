@@ -108,7 +108,7 @@ export default function NavBar() {
                   >
                     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                       {unreadMessages?.map((message) => (
-                        <MenuItem key={message.id} id={message.response.id} onClick={handleMessageClick}>
+                        <MenuItem key={message.id} id={message.request?.id || message.response?.id} onClick={handleMessageClick}>
                           <ListItemAvatar>
                             <Avatar src="/icons/icon_tiretoad.png" />
                           </ListItemAvatar>
