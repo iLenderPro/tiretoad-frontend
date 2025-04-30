@@ -1,6 +1,6 @@
 'use client';
 import { Container, Stack } from '@mui/material';
-import { Chat } from '@/shared/ui/Chat/Chat';
+import { ResponseChat } from '@/shared/ui/Chat/ResponseChat';
 import ServiceRequestPreview from '@/features/ui/client/ServiceRequestPreview/ServiceRequestPreview';
 import { useGetVendorResponseQuery, useUpdateVendorResponseMutation } from '@/entities/vendorResponse/api/vendorResponseApi';
 import { selectUserSession } from '@/entities/account/authSlice';
@@ -47,7 +47,7 @@ export default function ServiceRequestChatPage({ params }: { params: { slug: str
                 )}
                 <ServiceRequestPreview user={session.user} serviceRequest={serviceRequest as TireRepairRequest} />
               </Stack>
-              <Chat user={session.user} vendorResponse={vendorResponse} />
+              <ResponseChat user={session.user} vendorResponse={vendorResponse} />
             </Stack>
           )}
         </Stack>

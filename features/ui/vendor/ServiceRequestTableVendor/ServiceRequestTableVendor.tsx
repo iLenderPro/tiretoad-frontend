@@ -25,6 +25,7 @@ import { useGetVendorResponsesQuery } from '@/entities/vendorResponse/api/vendor
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { VendorResponseStatusColorMap } from '@/features/ui/vendor/ServiceRequestTableVendor/VendorResponseStatus';
 
 enum StatusColor {
   PENDING = 'warning',
@@ -64,7 +65,7 @@ export default function ServiceRequestTableVendor() {
                 <TableCell>{`${row.serviceRequest.tires[0].size} (${TireType[row.serviceRequest.tires[0].type as keyof typeof TireType]})`}</TableCell>
                 <TableCell>{TireDamage[row.serviceRequest.tires[0].damage as keyof typeof TireDamage]}</TableCell>
                 <TableCell align="center">
-                  <Badge badgeContent={row.status} color={StatusColor[row.status]} />
+                  <Badge badgeContent={row.status} color={VendorResponseStatusColorMap[row.status]} />
                 </TableCell>
                 <TableCell>{new Date(row?.serviceRequest.createdAt || '').toLocaleString()}</TableCell>
                 <TableCell>
@@ -116,7 +117,7 @@ export default function ServiceRequestTableVendor() {
               <Badge
                 slotProps={{ badge: { style: { position: 'relative', transform: 'translate(0, 0)' } } }}
                 component="div"
-                color={StatusColor[row.status]}
+                color={VendorResponseStatusColorMap[row.status]}
                 badgeContent={row.status}
               />
             </Divider>

@@ -14,42 +14,33 @@ export default function AssignedAgentsList(props: { serviceRequestId: string }) 
 
   return (
     <Stack alignItems="center" gap={2} width="100%" maxWidth={566}>
-      {!agent && (
-        <>
-          <Alert severity="info">Please, wait on this page until agent connects.</Alert>
-        </>
-      )}
+      {!agent && <Alert severity="info">Please, wait on this page until agent connects.</Alert>}
       {agent && (
-        <>
-          <Typography gutterBottom variant="h6">
-            Assigned Agents:
-          </Typography>
-          <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            <ListItem
-              key={agent.id}
-              alignItems="flex-start"
-              secondaryAction={
-                <Button color="primary" variant="contained" onClick={() => router.push(`/agents/${agent.id}/chat`)}>
-                  Contact
-                </Button>
+        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          <ListItem
+            key={agent.id}
+            alignItems="flex-start"
+            secondaryAction={
+              <Button color="primary" variant="contained" onClick={() => router.push(`/requests/${serviceRequestId}/chat`)}>
+                Chat
+              </Button>
+            }
+          >
+            <ListItemAvatar>
+              <Avatar src="/icons/icon_tiretoad.png" />
+            </ListItemAvatar>
+            <ListItemText
+              primary={<Typography fontWeight="500">Towing Agent</Typography>}
+              secondary={
+                <>
+                  <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                    {agent.fullName}
+                  </Typography>
+                </>
               }
-            >
-              <ListItemAvatar>
-                <Avatar src="/icons/icon_tiretoad.png" />
-              </ListItemAvatar>
-              <ListItemText
-                primary={'Towing Agent'}
-                secondary={
-                  <>
-                    <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                      {agent.fullName}
-                    </Typography>
-                  </>
-                }
-              />
-            </ListItem>
-          </List>
-        </>
+            />
+          </ListItem>
+        </List>
       )}
     </Stack>
   );

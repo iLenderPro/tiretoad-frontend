@@ -8,10 +8,10 @@ import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/service
 export default function RespondedVendorsList(props: { serviceRequestId: string }) {
   const { serviceRequestId } = props;
   const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(serviceRequestId, {
-    pollingInterval: 1000,
+    pollingInterval: 5000,
   });
   const router = useRouter();
-  const accepted = serviceRequest?.responses?.filter((response) => response.status === VendorResponseStatus.ACCEPTED);
+  const accepted = serviceRequest?.responses?.filter((response) => response.status === VendorResponseStatus.SENT);
   return (
     <Stack alignItems="center" gap={2} width="100%" maxWidth={566}>
       {!accepted?.length && (

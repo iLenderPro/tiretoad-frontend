@@ -1,9 +1,11 @@
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 import { UserDto } from '@/entities/user/api/dto/UserDto';
+import { ServiceRequestStatus } from '@/entities/serviceRequest/api/dto/ServiceRequestStatus';
 
 export interface ServiceRequest {
   id?: string;
+  status: ServiceRequestStatus;
   vehicle: {
     vin?: string;
     year: string;

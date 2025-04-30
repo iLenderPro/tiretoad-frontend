@@ -1,9 +1,8 @@
 import { MessageContent, MessageRow, MessageText, MessageTime } from './styles';
 import { MessageDto } from '@/entities/chat/api/dto/MessageDto';
-import { Typography } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
-import Box from '@mui/material/Box';
 
 export type MessageProps = {
   isMyMessage: boolean;
@@ -12,9 +11,9 @@ export type MessageProps = {
 
 export function Message({ isMyMessage, message }: MessageProps) {
   const imageThumbnail = !isMyMessage ? (
-    message.user.role === UserRole.VENDOR ? (
+    message.user.role !== UserRole.CLIENT ? (
       <Typography variant="subtitle2">
-        <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={48} height={48} />
+        <Avatar src="/icons/icon_tiretoad.png" style={{ width: '3.5rem', height: '3.5rem' }}></Avatar>
       </Typography>
     ) : (
       <Typography variant="subtitle2">

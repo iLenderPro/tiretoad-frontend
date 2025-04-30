@@ -5,13 +5,9 @@ import { UserRole } from '@/entities/user/api/dto/UserRole';
 export function middleware(request: NextRequest) {
   const authToken = request.cookies.get('authToken')?.value;
   const user = request.cookies.get('user')?.value;
-
-  console.log('token', authToken);
-  console.log('user', user);
-
   if (authToken && user) {
     const userData = JSON.parse(user);
-    if (request.nextUrl.pathname === '/' && userData.role === UserRole.VENDOR) {
+    if (request.nextUrl.pathname === '/' && (userData.role === UserRole.VENDOR || userData.role === UserRole.AGENT)) {
       return NextResponse.redirect(new URL('/requests', request.url));
     }
   } else {

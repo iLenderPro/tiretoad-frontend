@@ -1,22 +1,23 @@
 'use client';
-import { Button, Card, CardActions, CardContent, Divider, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Avatar, Button, Card, CardActions, CardContent, Divider, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { ChatMessageList, StyledAppBar } from './styles';
 import SendIcon from '@mui/icons-material/Send';
 import { useForm } from 'react-hook-form';
 import { Message } from './Message/Message';
-import { useGetMessageQuery, useMarkAsReadMutation, useSendMessageMutation } from '@/entities/chat/api/chatApi';
-import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
+import { useGetRequestMessagesQuery, useMarkAsReadMutation, useSendMessageMutation } from '@/entities/chat/api/chatApi';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
+import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import Box from '@mui/material/Box';
 
 export type ChatProps = {
   user: ClientDto;
-  vendorResponse: VendorResponseDto;
+  serviceRequest: ServiceRequestDto;
 };
 
-export function Chat({ user, vendorResponse }: ChatProps) {
-  const { data: messages, isLoading, refetch } = useGetMessageQuery(vendorResponse?.id || '', { pollingInterval: 1000 });
+export function RequestChat({ user, serviceRequest }: ChatProps) {
+  const { data: messages, isLoading, refetch } = useGetRequestMessagesQuery(serviceRequest?.id || '', { pollingInterval: 1000 });
   const [sendMessage, { isLoading: isMessageSending }] = useSendMessageMutation();
   const { register, handleSubmit, reset } = useForm<{ prompt: string }>({ defaultValues: { prompt: '' } });
   const [markAsRead] = useMarkAsReadMutation();
@@ -28,14 +29,14 @@ export function Chat({ user, vendorResponse }: ChatProps) {
 
   const handleSendMessage = async (data: { prompt: string }) => {
     reset({ prompt: '' });
-    await sendMessage({ vendorResponse, user, prompt: data.prompt });
+    await sendMessage({ request: serviceRequest, user, content: data.prompt });
     refetch();
   };
 
   useEffect(() => {
     scrollToBottom();
-    messages && markAsRead(vendorResponse.id);
-  }, [messages]);
+    messages && serviceRequest.id && markAsRead(serviceRequest.id);
+  }, [messages, serviceRequest]);
 
   return (
     <Card
@@ -47,14 +48,25 @@ export function Chat({ user, vendorResponse }: ChatProps) {
         minWidth: '350px',
         minHeight: '80vh',
         maxHeight: '80vh',
+        boxShadow: '0px 4px 34px rgba(0, 0, 0, 0.08)',
       }}
     >
-      <StyledAppBar elevation={2} position="fixed">
+      <StyledAppBar elevation={0} position="fixed" color="transparent">
         <Toolbar>
-          <Typography variant="body2" fontWeight="700">
-            {user.role === UserRole.CLIENT && `Chat with ${vendorResponse.vendor.fullName} from ${vendorResponse.vendor.businessName}`}
-            {user.role === UserRole.VENDOR && `Chat with ${vendorResponse.serviceRequest.client.fullName}`}
-          </Typography>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Avatar>
+              <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={32} height={32} />
+            </Avatar>
+            <Stack>
+              <Typography variant="body1" fontWeight="700">
+                {user.role === UserRole.CLIENT && 'Towing Agent'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {user.role === UserRole.CLIENT && serviceRequest.agent.fullName}
+                {user.role === UserRole.AGENT && serviceRequest.client.fullName}
+              </Typography>
+            </Stack>
+          </Stack>
         </Toolbar>
       </StyledAppBar>
       <CardContent sx={{ overflow: 'scroll', height: '100%' }}>
@@ -68,9 +80,7 @@ export function Chat({ user, vendorResponse }: ChatProps) {
         <form onSubmit={handleSubmit(handleSendMessage)} style={{ width: '100%' }}>
           <Stack direction="row" width={1} gap={1}>
             <TextField {...register('prompt', { required: true, setValueAs: (v) => v.trim() })} fullWidth />
-            <Button type="submit" autoFocus variant="contained" size="large" endIcon={<SendIcon />}>
-              Send
-            </Button>
+            <Button type="submit" autoFocus variant="contained" color="error" size="large" endIcon={<SendIcon />} />
           </Stack>
         </form>
       </CardActions>
