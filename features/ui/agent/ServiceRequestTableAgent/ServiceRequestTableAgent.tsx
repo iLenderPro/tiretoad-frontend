@@ -65,8 +65,8 @@ export default function ServiceRequestTableAgent() {
                 </TableCell>
                 <TableCell>{new Date(row?.createdAt || '').toLocaleString()}</TableCell>
                 <TableCell align="right">
-                  <Button color="primary" variant="contained" onClick={() => router.push(`/requests/${row.id}/view`)}>
-                    View
+                  <Button color="primary" variant="contained" onClick={() => router.push(`/requests/${row.id}/chat`)}>
+                    Visitor Chat
                   </Button>
                 </TableCell>
               </TableRow>
@@ -112,8 +112,8 @@ export default function ServiceRequestTableAgent() {
             </Divider>
             <CardActions sx={{ justifyContent: 'space-between', padding: '8px 16px' }}>
               <Typography variant="subtitle2">{row.prettyTime}</Typography>
-              <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/requests/${row.id}/view`)}>
-                View
+              <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/requests/${row.id}/chat`)}>
+                Visitor Chat
               </Button>
             </CardActions>
           </Card>

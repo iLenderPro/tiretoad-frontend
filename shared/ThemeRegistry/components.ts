@@ -9,4 +9,9 @@ export const components: Components<Omit<Theme, 'components'>> = {
       },
     },
   },
+  MuiButton: {
+    defaultProps: {
+      disableElevation: true,
+    },
+  },
 };

@@ -60,16 +60,17 @@ export function RequestChat({ user, serviceRequest }: ChatProps) {
             <Stack>
               <Typography variant="body1" fontWeight="700">
                 {user.role === UserRole.CLIENT && 'Towing Agent'}
+                {user.role === UserRole.AGENT && serviceRequest.client.fullName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {user.role === UserRole.CLIENT && serviceRequest.agent.fullName}
-                {user.role === UserRole.AGENT && serviceRequest.client.fullName}
+                {user.role === UserRole.AGENT && 'Client'}
               </Typography>
             </Stack>
           </Stack>
         </Toolbar>
       </StyledAppBar>
-      <CardContent sx={{ overflow: 'scroll', height: '100%' }}>
+      <CardContent sx={{ overflow: 'scroll', height: '100%', flexGrow: 1 }}>
         <ChatMessageList>
           {messages && messages.map((message) => <Message key={message.id} isMyMessage={message.user.id === user.id} message={message} />)}
           <div ref={messagesEndRef} />

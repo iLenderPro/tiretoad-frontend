@@ -14,6 +14,22 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
   return (
     <StyledPaper elevation={0} sx={{ padding: (theme) => theme.spacing(2) }}>
       <Stack width={1} gap={2}>
+        {serviceRequest.client && (
+          <>
+            <Stack direction="row" alignItems="center" gap={1} width={1} justifyContent="space-between">
+              <Typography align="left" variant="body2" fontWeight="500" width="1/3">
+                {serviceRequest.client.fullName}
+              </Typography>
+              <Typography align="left" variant="body2" fontWeight="500" width="1/3">
+                {serviceRequest.client.email}
+              </Typography>
+              <Typography align="right" variant="body2" fontWeight="500" width="1/3">
+                {serviceRequest.client.phone}
+              </Typography>
+            </Stack>
+            <Divider />
+          </>
+        )}
         <Stack direction="row" alignItems="center" gap={1} width={1} justifyContent="space-between">
           <Typography align="left" variant="body2" fontWeight="500" width="35%">
             {serviceRequest?.location?.address}

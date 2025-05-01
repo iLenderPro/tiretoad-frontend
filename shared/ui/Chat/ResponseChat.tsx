@@ -57,7 +57,7 @@ export function ResponseChat({ user, vendorResponse }: ChatProps) {
           </Typography>
         </Toolbar>
       </StyledAppBar>
-      <CardContent sx={{ overflow: 'scroll', height: '100%' }}>
+      <CardContent sx={{ overflow: 'scroll', height: '100%', flexGrow: 1 }}>
         <ChatMessageList>
           {messages && messages.map((message) => <Message key={message.id} isMyMessage={message.user.id === user.id} message={message} />)}
           <div ref={messagesEndRef} />

@@ -47,8 +47,8 @@ export const MessageText = styled(Box, {
   ...theme.typography.body2,
   padding: '9px 14px',
   marginBottom: '5px',
-  background: $isMyMessage ? theme.palette.primary.main : theme.palette.success.main,
-  color: $isMyMessage ? 'white' : 'white',
-  border: $isMyMessage ? '1px solid ' + theme.palette.primary.dark : '1px solid ' + theme.palette.success.dark,
+  background: $isMyMessage ? 'rgba(2,136,209,0.08)' : 'rgba(255,0,40,0.08)',
+  color: $isMyMessage ? theme.palette.text.primary : theme.palette.text.primary,
+  border: $isMyMessage ? '1px solid ' + 'rgba(2,136,209,0.10)' : '1px solid ' + 'rgba(195,33,56,0.10)',
   borderRadius: $isMyMessage ? '14px 14px 0 14px' : '14px 14px 14px 0',
 }));
