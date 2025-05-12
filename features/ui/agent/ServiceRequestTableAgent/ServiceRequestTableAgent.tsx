@@ -26,13 +26,6 @@ import Typography from '@mui/material/Typography';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { ServiceRequestStatusColorMap } from '@/features/ui/client/ServiceRequestWizard/types/ServiceRequestStatus';
 
-enum StatusColor {
-  PENDING = 'warning',
-  ACCEPTED = 'success',
-  DECLINED = 'error',
-  DONE = 'primary',
-}
-
 export default function ServiceRequestTableAgent() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('sm'));
@@ -65,8 +58,8 @@ export default function ServiceRequestTableAgent() {
                 </TableCell>
                 <TableCell>{new Date(row?.createdAt || '').toLocaleString()}</TableCell>
                 <TableCell align="right">
-                  <Button color="primary" variant="contained" onClick={() => router.push(`/requests/${row.id}/chat`)}>
-                    Visitor Chat
+                  <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/requests/${row.id}/chat`)}>
+                    Chat
                   </Button>
                 </TableCell>
               </TableRow>
@@ -113,7 +106,7 @@ export default function ServiceRequestTableAgent() {
             <CardActions sx={{ justifyContent: 'space-between', padding: '8px 16px' }}>
               <Typography variant="subtitle2">{row.prettyTime}</Typography>
               <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/requests/${row.id}/chat`)}>
-                Visitor Chat
+                Chat
               </Button>
             </CardActions>
           </Card>

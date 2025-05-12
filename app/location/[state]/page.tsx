@@ -34,7 +34,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const locations = await getLocations();
-  console.log('locations', locations);
   return locations.map((state: { code: string; name: string }) => ({ code: state.code }));
 }
 

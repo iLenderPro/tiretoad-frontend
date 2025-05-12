@@ -19,8 +19,6 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
-import { TireDamage } from '@/features/ui/client/ServiceRequestWizard/types/TireDamage';
-import { TireType } from '@/features/ui/client/ServiceRequestWizard/types/TireType';
 import { useGetVendorResponsesQuery } from '@/entities/vendorResponse/api/vendorResponseApi';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -47,8 +45,6 @@ export default function ServiceRequestTableVendor() {
             <TableCell>Customer</TableCell>
             <TableCell>VIN</TableCell>
             <TableCell>Vehicle</TableCell>
-            <TableCell>Tires</TableCell>
-            <TableCell>Damage</TableCell>
             <TableCell>Status</TableCell>
             <TableCell colSpan={2}>Date & Time</TableCell>
           </TableRow>
@@ -62,15 +58,13 @@ export default function ServiceRequestTableVendor() {
                 </TableCell>
                 <TableCell>{row.serviceRequest.vehicle?.vin}</TableCell>
                 <TableCell>{`${row.serviceRequest.vehicle.year} ${row.serviceRequest.vehicle.model} ${row.serviceRequest.vehicle.trim}`}</TableCell>
-                <TableCell>{`${row.serviceRequest.tires[0].size} (${TireType[row.serviceRequest.tires[0].type as keyof typeof TireType]})`}</TableCell>
-                <TableCell>{TireDamage[row.serviceRequest.tires[0].damage as keyof typeof TireDamage]}</TableCell>
                 <TableCell align="center">
                   <Badge badgeContent={row.status} color={VendorResponseStatusColorMap[row.status]} />
                 </TableCell>
                 <TableCell>{new Date(row?.serviceRequest.createdAt || '').toLocaleString()}</TableCell>
-                <TableCell>
+                <TableCell align="right">
                   <Button color="primary" variant="contained" onClick={() => router.push(`/responses/${row.id}/chat`)}>
-                    View
+                    Chat
                   </Button>
                 </TableCell>
               </TableRow>
@@ -109,10 +103,7 @@ export default function ServiceRequestTableVendor() {
               }
               disableTypography
             />
-            <CardContent style={{ paddingTop: '8px', paddingBottom: '8px' }}>
-              <Typography variant="body1">Tire: {`${row.serviceRequest.tires[0].size} (${TireType[row.serviceRequest.tires[0].type as keyof typeof TireType]})`}</Typography>
-              <Typography variant="body1">Damage: {TireDamage[row.serviceRequest.tires[0].damage as keyof typeof TireDamage]}</Typography>
-            </CardContent>
+            <CardContent style={{ paddingTop: '8px', paddingBottom: '8px' }}></CardContent>
             <Divider variant="middle" light>
               <Badge
                 slotProps={{ badge: { style: { position: 'relative', transform: 'translate(0, 0)' } } }}
@@ -124,7 +115,7 @@ export default function ServiceRequestTableVendor() {
             <CardActions sx={{ justifyContent: 'space-between', padding: '8px 16px' }}>
               <Typography variant="subtitle2">{row.serviceRequest.prettyTime}</Typography>
               <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/responses/${row.id}/chat`)}>
-                View
+                Chat
               </Button>
             </CardActions>
           </Card>

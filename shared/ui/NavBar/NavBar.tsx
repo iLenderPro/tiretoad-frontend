@@ -22,7 +22,6 @@ import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 import { useGetUnreadMessagesQuery } from '@/entities/chat/api/chatApi';
 import MenuIcon from '@mui/icons-material/Menu';
-import Typography from '@mui/material/Typography';
 import Image from 'next/image';
 
 export default function NavBar() {
@@ -79,8 +78,7 @@ export default function NavBar() {
             )}
           </Box>
           <Box display="flex" flex={1} sx={{ flexGrow: 1 }} alignItems="center" justifyContent="center" gap={1}>
-            <Image src="/icons/icon_tiretoad.png" alt="TireToad" width="26" height="26" />
-            <Typography variant="h2">TireToad</Typography>
+            <Image src="/images/tiretoad_logo.png" alt="TireToad" height="35" width="94" />
           </Box>
           <Box flex={1 / 3} textAlign="right">
             <IconButton size="large" color="inherit" aria-label="open drawer" onClick={toggleLeftDrawer(true)}>

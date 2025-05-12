@@ -1,5 +1,5 @@
 'use client';
-import { Button, Card, CardActions, CardContent, Divider, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Avatar, Button, Card, CardActions, CardContent, Divider, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { ChatMessageList, StyledAppBar } from './styles';
 import SendIcon from '@mui/icons-material/Send';
@@ -9,6 +9,7 @@ import { useGetResponseMessagesQuery, useMarkAsReadMutation, useSendMessageMutat
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 import { ClientDto } from '@/entities/user/api/dto/ClientDto';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
+import Box from '@mui/material/Box';
 
 export type ChatProps = {
   user: ClientDto;
@@ -49,12 +50,21 @@ export function ResponseChat({ user, vendorResponse }: ChatProps) {
         maxHeight: '80vh',
       }}
     >
-      <StyledAppBar elevation={2} position="fixed">
+      <StyledAppBar elevation={0} position="fixed" color="transparent">
         <Toolbar>
-          <Typography variant="body2" fontWeight="700">
-            {user.role === UserRole.CLIENT && `Chat with ${vendorResponse.vendor.fullName} from ${vendorResponse.vendor.businessName}`}
-            {user.role === UserRole.VENDOR && `Chat with ${vendorResponse.serviceRequest.client.fullName}`}
-          </Typography>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Avatar>{user.role === UserRole.VENDOR && <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={32} height={32} />}</Avatar>
+            <Stack>
+              <Typography variant="body1" fontWeight="700">
+                {user.role === UserRole.VENDOR && 'Towing Agent'}
+                {user.role === UserRole.AGENT && vendorResponse.vendor.fullName}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {user.role === UserRole.VENDOR && vendorResponse.serviceRequest.agent.fullName}
+                {user.role === UserRole.AGENT && vendorResponse.vendor.businessName}
+              </Typography>
+            </Stack>
+          </Stack>
         </Toolbar>
       </StyledAppBar>
       <CardContent sx={{ overflow: 'scroll', height: '100%', flexGrow: 1 }}>

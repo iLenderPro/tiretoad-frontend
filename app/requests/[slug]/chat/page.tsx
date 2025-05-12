@@ -13,15 +13,6 @@ import TowingRequestChatClient from '@/features/ui/client/TowingRequestChatClien
 export default function ServiceRequestChatPage({ params }: { params: { slug: string } }) {
   const { data: serviceRequest } = useGetServiceRequestQuery(params.slug || skipToken, { skip: !params.slug });
   const session = useSelector(selectUserSession);
-  // const [updateVendorResponse, { isLoading }] = useUpdateVendorResponseMutation();
-
-  // const handleAcceptRequest = async () => {
-  //   vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.ACCEPTED }));
-  // };
-  //
-  // const handleDeclineRequest = async () => {
-  //   vendorResponse && (await updateVendorResponse({ id: vendorResponse.id, status: VendorResponseStatus.DECLINED }));
-  // };
 
   return serviceRequest && session.user ? (
     <Container style={{ height: '100%', paddingTop: '24px' }}>

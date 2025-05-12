@@ -10,7 +10,7 @@ export type ServiceRequestPreviewProps = {
   serviceRequest: TowingRequest;
 };
 
-function TowingRequestPreview(props: ServiceRequestPreviewProps) {
+function TowingRequestPreviewClient(props: ServiceRequestPreviewProps) {
   const { serviceRequest } = props;
   return serviceRequest ? (
     <Stack gap={2}>
@@ -25,4 +25,4 @@ function TowingRequestPreview(props: ServiceRequestPreviewProps) {
   );
 }
 
-export default memo(TowingRequestPreview);
+export default memo(TowingRequestPreviewClient);

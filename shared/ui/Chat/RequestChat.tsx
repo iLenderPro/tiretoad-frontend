@@ -54,9 +54,7 @@ export function RequestChat({ user, serviceRequest }: ChatProps) {
       <StyledAppBar elevation={0} position="fixed" color="transparent">
         <Toolbar>
           <Stack direction="row" gap={1} alignItems="center">
-            <Avatar>
-              <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={32} height={32} />
-            </Avatar>
+            <Avatar>{user.role === UserRole.CLIENT && <Box component="img" src="/icons/icon_tiretoad.png" alt="tiretoad" width={32} height={32} />}</Avatar>
             <Stack>
               <Typography variant="body1" fontWeight="700">
                 {user.role === UserRole.CLIENT && 'Towing Agent'}
