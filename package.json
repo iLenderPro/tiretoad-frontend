@@ -43,7 +43,7 @@
     "eslint-config-prettier": "^9.1.0",
     "typescript": "^5.3.3"
   },
-  "overrides": {
-    "@parcel/watcher": "2.1.0"
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "^2.5.1"
   }
 }
