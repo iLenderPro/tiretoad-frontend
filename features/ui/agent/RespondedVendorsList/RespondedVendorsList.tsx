@@ -1,11 +1,11 @@
-import { Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Radio, Stack, TextField } from '@mui/material';
+import { Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Radio, RadioGroup, Stack, TextField } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useRouter } from 'next/navigation';
 import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
-import IconButton from '@mui/material/IconButton';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import React from 'react';
 
 export default function RespondedVendorsList(props: { serviceRequestId: string }) {
   const { serviceRequestId } = props;
@@ -30,17 +30,23 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
       {!!fields?.length && (
         <StyledPaper>
           <List sx={{ width: '100%' }}>
-            {fields?.map((field, index) => (
-              <Stack key={field.key}>
+            {fields?.map((response, index) => (
+              <Stack key={response.key}>
                 <ListItem
                   secondaryAction={
                     <Stack direction="row" alignItems="center">
-                      <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/responses/${field.id}/chat`)}>
+                      <Button color="primary" variant="contained" size="small" onClick={() => router.push(`/responses/${response.id}/chat`)}>
                         Chat
                       </Button>
-                      <IconButton disableRipple>
-                        <Radio />
-                      </IconButton>
+                      <Controller
+                        control={control}
+                        name={`responses.${index}.id`}
+                        render={({ field }) => (
+                          <RadioGroup row {...field}>
+                            <Radio value={response.id} />
+                          </RadioGroup>
+                        )}
+                      />
                     </Stack>
                   }
                 >
@@ -48,10 +54,10 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
                     <Avatar src="/icons/icon_tiretoad.png" />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={field.vendor.businessName}
+                    primary={response.vendor.businessName}
                     secondary={
                       <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                        {field.vendor.fullName}
+                        {response.vendor.fullName}
                       </Typography>
                     }
                   />
@@ -73,7 +79,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
                   </Stack>
                   <Stack direction="row" gap={2}>
                     <TextField {...register(`responses.${index}.price`, { required: { value: true, message: 'Price is required' } })} size="small" />
-                    <Button variant="contained" size="small">
+                    <Button variant="contained" size="small" disabled={true}>
                       Send price
                     </Button>
                   </Stack>

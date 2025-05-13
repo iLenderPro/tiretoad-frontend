@@ -9,7 +9,6 @@ import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import Typography from '@mui/material/Typography';
-import { StickyNote2Outlined } from '@mui/icons-material';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
 import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
 
@@ -286,12 +285,6 @@ export function Step2(props: StepProps) {
                 />
               </Stack>
               <Stack direction="row" flexWrap="wrap" gap={1} width={1}>
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <StickyNote2Outlined />
-                  <Typography variant="subtitle1" fontWeight="700">
-                    Add Note
-                  </Typography>
-                </Stack>
                 <TextField {...register('location.comment')} fullWidth label="Add your notes"></TextField>
               </Stack>
             </Stack>

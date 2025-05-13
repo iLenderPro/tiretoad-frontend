@@ -15,7 +15,8 @@ function TowingRequestPreviewClient(props: ServiceRequestPreviewProps) {
   return serviceRequest ? (
     <Stack gap={2}>
       <Typography variant="subtitle2" fontWeight="700">
-        Good News! <br />A tow truck is ready for you. Let’s discuss on chat.
+        Good News! <br />
+        Your tow truck is ready and the dispatcher is waiting to assist you.
       </Typography>
       <AssignedAgentsList serviceRequestId={serviceRequest.id!} />
       <TowingRequestSummary serviceRequest={serviceRequest} />
