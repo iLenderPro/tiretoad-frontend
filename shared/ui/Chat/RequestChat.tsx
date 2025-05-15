@@ -34,7 +34,7 @@ export function RequestChat({ user, serviceRequest }: ChatProps) {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // scrollToBottom();
     messages && serviceRequest.id && markAsRead(serviceRequest.id);
   }, [messages, serviceRequest]);
 

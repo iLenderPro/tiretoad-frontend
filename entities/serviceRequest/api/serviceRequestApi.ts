@@ -1,5 +1,6 @@
 import { baseApi } from '@/shared/api';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import { SERVICE_REQUEST } from '@/shared/api/tags';
 
 export const serviceRequestApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -16,6 +17,7 @@ export const serviceRequestApi = baseApi.injectEndpoints({
           url: `service-requests/${id}`,
         };
       },
+      providesTags: [SERVICE_REQUEST],
     }),
     createServiceRequest: build.mutation<ServiceRequestDto, ServiceRequestDto>({
       query: (serviceRequestDto) => {

@@ -2,8 +2,8 @@ import { BadgeOwnProps } from '@mui/material/Badge/Badge';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 
 export const VendorResponseStatusColorMap: Record<VendorResponseStatus, BadgeOwnProps['color']> = {
-  [VendorResponseStatus.SENT]: 'info',
-  [VendorResponseStatus.QUOTED]: 'secondary',
+  [VendorResponseStatus.SENT]: 'secondary',
+  [VendorResponseStatus.QUOTED]: 'info',
   [VendorResponseStatus.PENDING]: 'warning',
   [VendorResponseStatus.PAID]: 'success',
   [VendorResponseStatus.IN_PROGRESS]: 'primary',

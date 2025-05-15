@@ -1,6 +1,6 @@
 import { baseApi } from '@/shared/api';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
-import { VENDOR_RESPONSE } from '@/shared/api/tags';
+import { SERVICE_REQUEST, VENDOR_RESPONSE } from '@/shared/api/tags';
 
 export const vendorResponseApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -23,13 +23,34 @@ export const vendorResponseApi = baseApi.injectEndpoints({
       query: (vendorResponseDto) => {
         return {
           url: `vendor-responses/${vendorResponseDto.id}`,
-          method: 'POST',
+          method: 'PUT',
           body: vendorResponseDto,
         };
       },
-      invalidatesTags: [VENDOR_RESPONSE],
+      invalidatesTags: [VENDOR_RESPONSE, SERVICE_REQUEST],
+    }),
+    selectForJob: build.mutation<VendorResponseDto, Partial<VendorResponseDto>>({
+      query: (vendorResponseDto) => {
+        return {
+          url: `vendor-responses/${vendorResponseDto.id}/select`,
+          method: 'PUT',
+          body: vendorResponseDto,
+        };
+      },
+      invalidatesTags: [VENDOR_RESPONSE, SERVICE_REQUEST],
+    }),
+    submitPriceToClient: build.mutation<VendorResponseDto, Partial<VendorResponseDto>>({
+      query: (vendorResponseDto) => {
+        return {
+          url: `vendor-responses/${vendorResponseDto.id}/submit`,
+          method: 'PUT',
+          body: vendorResponseDto,
+        };
+      },
+      invalidatesTags: [VENDOR_RESPONSE, SERVICE_REQUEST],
     }),
   }),
 });
 
-export const { useGetVendorResponsesQuery, useGetVendorResponseQuery, useUpdateVendorResponseMutation } = vendorResponseApi;
+export const { useGetVendorResponsesQuery, useGetVendorResponseQuery, useUpdateVendorResponseMutation, useSelectForJobMutation, useSubmitPriceToClientMutation } =
+  vendorResponseApi;

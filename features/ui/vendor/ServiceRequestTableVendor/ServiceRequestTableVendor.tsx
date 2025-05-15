@@ -25,13 +25,6 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { VendorResponseStatusColorMap } from '@/features/ui/vendor/ServiceRequestTableVendor/VendorResponseStatus';
 
-enum StatusColor {
-  PENDING = 'warning',
-  ACCEPTED = 'success',
-  DECLINED = 'error',
-  DONE = 'primary',
-}
-
 export default function ServiceRequestTableVendor() {
   const theme = useTheme();
   const router = useRouter();

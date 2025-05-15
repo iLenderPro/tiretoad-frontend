@@ -6,8 +6,11 @@ import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequ
 export type VendorResponseDto = {
   id: string;
   status: VendorResponseStatus;
+  quote: number;
   price: number;
   markup: number;
+  eta: string;
+  selected: boolean;
   vendor: VendorDto;
   serviceRequest: ServiceRequestDto;
   messages: MessageDto[];
