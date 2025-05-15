@@ -39,10 +39,20 @@ export const vendorResponseApi = baseApi.injectEndpoints({
       },
       invalidatesTags: [VENDOR_RESPONSE, SERVICE_REQUEST],
     }),
-    submitPriceToClient: build.mutation<VendorResponseDto, Partial<VendorResponseDto>>({
+    submitQuote: build.mutation<VendorResponseDto, Partial<VendorResponseDto>>({
       query: (vendorResponseDto) => {
         return {
-          url: `vendor-responses/${vendorResponseDto.id}/submit`,
+          url: `vendor-responses/${vendorResponseDto.id}/submit-quote`,
+          method: 'PUT',
+          body: vendorResponseDto,
+        };
+      },
+      invalidatesTags: [VENDOR_RESPONSE, SERVICE_REQUEST],
+    }),
+    submitPrice: build.mutation<VendorResponseDto, Partial<VendorResponseDto>>({
+      query: (vendorResponseDto) => {
+        return {
+          url: `vendor-responses/${vendorResponseDto.id}/submit-price`,
           method: 'PUT',
           body: vendorResponseDto,
         };
@@ -52,5 +62,4 @@ export const vendorResponseApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetVendorResponsesQuery, useGetVendorResponseQuery, useUpdateVendorResponseMutation, useSelectForJobMutation, useSubmitPriceToClientMutation } =
-  vendorResponseApi;
+export const { useGetVendorResponsesQuery, useGetVendorResponseQuery, useSelectForJobMutation, useSubmitQuoteMutation, useSubmitPriceMutation } = vendorResponseApi;

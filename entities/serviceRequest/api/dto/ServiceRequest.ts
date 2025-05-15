@@ -6,6 +6,8 @@ import { ServiceRequestStatus } from '@/entities/serviceRequest/api/dto/ServiceR
 export interface ServiceRequest {
   id?: string;
   status: ServiceRequestStatus;
+  price: number;
+  eta: string;
   vehicle: {
     vin?: string;
     year: string;

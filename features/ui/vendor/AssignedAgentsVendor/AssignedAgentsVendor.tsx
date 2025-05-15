@@ -1,17 +1,19 @@
 import { Alert, Avatar, List, ListItem, ListItemAvatar, ListItemText, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useRouter } from 'next/navigation';
 import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
 import { useState } from 'react';
 import QuoteDialog from '@/features/ui/vendor/QuoteDialog/QuoteDialog';
+import { StyledPaper } from '../../Paper/Paper';
+import { useGetVendorResponseQuery } from '@/entities/vendorResponse/api/vendorResponseApi';
 
-export default function AssignedAgentsVendor(props: { serviceRequestId: string }) {
-  const { serviceRequestId } = props;
+export default function AssignedAgentsVendor(props: { serviceRequestId: string; vendorResponseId: string }) {
+  const { serviceRequestId, vendorResponseId } = props;
   const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(serviceRequestId, {
     pollingInterval: 1000,
   });
-  const router = useRouter();
+  const { data: vendorResponse } = useGetVendorResponseQuery(vendorResponseId);
+
   const agent = serviceRequest?.agent;
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -23,35 +25,39 @@ export default function AssignedAgentsVendor(props: { serviceRequestId: string }
   };
 
   return (
-    <Stack alignItems="center" gap={2} width="100%" maxWidth={566}>
+    <Stack alignItems="center" gap={2} width="100%">
       {!agent && <Alert severity="info">Please, wait on this page until agent connects.</Alert>}
       {agent && (
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <ListItem
-            key={agent.id}
-            alignItems="flex-start"
-            secondaryAction={
-              <Button color="primary" variant="contained" onClick={() => handleClickOpen()}>
-                Quote
-              </Button>
-            }
-          >
-            <ListItemAvatar>
-              <Avatar src="/icons/icon_tiretoad.png" />
-            </ListItemAvatar>
-            <ListItemText
-              primary={<Typography fontWeight="500">Towing Agent</Typography>}
-              secondary={
-                <>
-                  <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                    {agent.fullName}
-                  </Typography>
-                </>
+        <StyledPaper>
+          <List sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', padding: 2 }}>
+            <ListItem
+              disablePadding
+              disableGutters
+              key={agent.id}
+              alignItems="flex-start"
+              secondaryAction={
+                <Button color="primary" variant="contained" onClick={() => handleClickOpen()}>
+                  Quote
+                </Button>
               }
-            />
-            <QuoteDialog open={open} handleClose={handleClose} />
-          </ListItem>
-        </List>
+            >
+              <ListItemAvatar>
+                <Avatar src="/icons/icon_tiretoad.png" />
+              </ListItemAvatar>
+              <ListItemText
+                primary={<Typography fontWeight="500">Towing Agent</Typography>}
+                secondary={
+                  <>
+                    <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                      {agent.fullName}
+                    </Typography>
+                  </>
+                }
+              />
+              {vendorResponse && <QuoteDialog vendorResponse={vendorResponse} open={open} handleClose={handleClose} />}
+            </ListItem>
+          </List>
+        </StyledPaper>
       )}
     </Stack>
   );

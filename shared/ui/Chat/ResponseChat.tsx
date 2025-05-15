@@ -48,6 +48,7 @@ export function ResponseChat({ user, vendorResponse }: ChatProps) {
         minWidth: '350px',
         minHeight: '80vh',
         maxHeight: '80vh',
+        boxShadow: '0px 4px 34px rgba(0, 0, 0, 0.08)',
       }}
     >
       <StyledAppBar elevation={0} position="fixed" color="transparent">

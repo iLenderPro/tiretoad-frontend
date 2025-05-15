@@ -4,6 +4,9 @@ import { StyledPaper } from '@/features/ui/Paper/Paper';
 import React from 'react';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import { useSelector } from 'react-redux';
+import { selectUserSession } from '@/entities/account/authSlice';
+import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 export type TowingRequestSummaryProps = {
   serviceRequest: TowingRequest;
@@ -11,10 +14,29 @@ export type TowingRequestSummaryProps = {
 
 export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
   const { serviceRequest } = props;
+  const session = useSelector(selectUserSession);
+  const date = new Date(serviceRequest.eta).toLocaleDateString();
+  const time = new Date(serviceRequest.eta).toLocaleTimeString();
   return (
     <StyledPaper elevation={0} sx={{ padding: (theme) => theme.spacing(2) }}>
       <Stack width={1} gap={2}>
-        {serviceRequest.client && (
+        {serviceRequest.price && serviceRequest.eta && (
+          <>
+            <Stack direction="row" alignItems="center" gap={1} width={1} justifyContent="space-between">
+              <Typography align="left" variant="body2" fontWeight="500" width="1/3">
+                {date}
+              </Typography>
+              <Typography align="left" variant="body2" fontWeight="500" width="1/3">
+                {time}
+              </Typography>
+              <Typography align="right" variant="body2" fontWeight={700} width="1/3" bgcolor="#f5f5f5" borderRadius={0.5} paddingX={1} paddingY={0.5}>
+                {session?.user?.role !== UserRole.VENDOR && `$${serviceRequest.price}`}
+              </Typography>
+            </Stack>
+            <Divider />
+          </>
+        )}
+        {session?.user?.role === UserRole.AGENT && serviceRequest.client && (
           <>
             <Stack direction="row" alignItems="center" gap={1} width={1} justifyContent="space-between">
               <Typography align="left" variant="body2" fontWeight="500" width="1/3">

@@ -22,7 +22,7 @@ import { StyledPaper } from '@/features/ui/Paper/Paper';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 import { SyntheticEvent, useState } from 'react';
-import { useSelectForJobMutation, useSubmitPriceToClientMutation, useUpdateVendorResponseMutation } from '@/entities/vendorResponse/api/vendorResponseApi';
+import { useSelectForJobMutation, useSubmitPriceMutation } from '@/entities/vendorResponse/api/vendorResponseApi';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 import { VendorResponseStatusColorMap } from '@/features/ui/vendor/ServiceRequestTableVendor/VendorResponseStatus';
 
@@ -30,8 +30,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
   const { serviceRequestId } = props;
   const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(serviceRequestId);
   const [selectVendor] = useSelectForJobMutation();
-  const [updateResponse] = useUpdateVendorResponseMutation();
-  const [submitPriceToClient] = useSubmitPriceToClientMutation();
+  const [submitPrice] = useSubmitPriceMutation();
   const [expanded, setExpanded] = useState<string | boolean>(serviceRequest?.responses?.find((response) => response.selected)?.id || false);
   const router = useRouter();
   const handleChange = (id: string) => (event: SyntheticEvent, isExpanded: boolean) => {
@@ -42,7 +41,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
     handleSubmit,
     formState: { errors },
   } = useForm<Pick<ServiceRequestDto, 'responses'>>({
-    values: { ...serviceRequest, responses: serviceRequest?.responses?.map((response) => ({ ...response, price: response.price || response.quote })) },
+    values: { ...serviceRequest, responses: serviceRequest?.responses?.map((response) => ({ ...response, price: response.price || response.quote || 0 })) },
   });
   const { fields, update } = useFieldArray({ control, name: 'responses', keyName: 'key' });
 
@@ -50,7 +49,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
     const vendorResponse = value?.responses?.find((response) => response.selected);
     if (!vendorResponse) return;
 
-    const result = await submitPriceToClient({ id: vendorResponse.id, price: vendorResponse.price, markup: vendorResponse.markup, status: VendorResponseStatus.PENDING }).unwrap();
+    const result = await submitPrice({ id: vendorResponse.id, price: vendorResponse.price, markup: vendorResponse.markup, status: VendorResponseStatus.PENDING }).unwrap();
   };
 
   const onVendorChange = async (value: string | undefined) => {
@@ -168,7 +167,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
                           name={`responses.${index}.price`}
                           render={({ field }) => <TextField {...field} size="small" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} />}
                         />
-                        <Button type="submit" variant="contained" size="small" disabled={!response.selected}>
+                        <Button type="submit" variant="contained" size="small" disabled={!response.selected || response.status !== VendorResponseStatus.QUOTED}>
                           Send price
                         </Button>
                       </Stack>
