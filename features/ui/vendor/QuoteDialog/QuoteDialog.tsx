@@ -16,7 +16,7 @@ export interface QuoteDialogProps {
 
 export default function QuoteDialog({ vendorResponse, open, handleClose }: QuoteDialogProps) {
   const { register, handleSubmit } = useForm<{ eta: string; quote: number }>({
-    values: { eta: vendorResponse.eta.slice(0, 5), quote: vendorResponse.quote },
+    values: { eta: vendorResponse.eta?.slice(0, 5), quote: vendorResponse?.quote },
   });
   const [submitQuote] = useSubmitQuoteMutation();
 
