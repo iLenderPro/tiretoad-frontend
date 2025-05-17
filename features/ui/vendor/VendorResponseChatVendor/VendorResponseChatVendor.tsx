@@ -19,7 +19,7 @@ function VendorResponseChatVendor(props: VendorResponseChatProps) {
 
   return vendorResponse && session.user ? (
     <Stack gap={2}>
-      <TowingRequestSummary serviceRequest={vendorResponse.serviceRequest as TowingRequest} />
+      <TowingRequestSummary serviceRequest={vendorResponse.serviceRequest as TowingRequest} vendorResponse={vendorResponse} />
       <AssignedAgentsVendor serviceRequestId={vendorResponse.serviceRequest.id!} vendorResponseId={vendorResponse.id} />
       <ResponseChat user={session.user} vendorResponse={vendorResponse} />
     </Stack>

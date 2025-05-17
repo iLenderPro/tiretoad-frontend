@@ -1,7 +1,6 @@
 'use client';
 import { Container } from '@mui/material';
 import { skipToken } from '@reduxjs/toolkit/query';
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserSession } from '@/entities/account/authSlice';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
@@ -15,8 +14,8 @@ export default function VendorResponseChatPage({ params }: { params: { slug: str
 
   return vendorResponse && session.user ? (
     <Container style={{ height: '100%', paddingTop: '24px' }}>
-      {session.user.role === UserRole.VENDOR && <VendorResponseChatVendor vendorResponse={vendorResponse} />}
       {session.user.role === UserRole.AGENT && <VendorResponseChatAgent vendorResponse={vendorResponse} />}
+      {session.user.role === UserRole.VENDOR && <VendorResponseChatVendor vendorResponse={vendorResponse} />}
     </Container>
   ) : (
     <></>
