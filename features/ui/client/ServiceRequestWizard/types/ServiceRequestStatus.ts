@@ -4,7 +4,7 @@ import { BadgeOwnProps } from '@mui/material/Badge/Badge';
 export const ServiceRequestStatusColorMap: Record<ServiceRequestStatus, BadgeOwnProps['color']> = {
   [ServiceRequestStatus.PENDING]: 'warning',
   [ServiceRequestStatus.ACCEPTED]: 'info',
-  [ServiceRequestStatus.PAID]: 'secondary',
+  [ServiceRequestStatus.PAID]: 'success',
   [ServiceRequestStatus.IN_PROGRESS]: 'primary',
-  [ServiceRequestStatus.COMPLETED]: 'success',
+  [ServiceRequestStatus.COMPLETED]: 'secondary',
 };

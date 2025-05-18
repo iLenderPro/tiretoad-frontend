@@ -1,11 +1,14 @@
 'use client';
 
-import { useGetIntentQuery } from '@/entities/payment/api/paymentApi';
-import { Container, Stack } from '@mui/material';
-import { redirect } from 'next/navigation';
+import { useCompletePaymentMutation, useGetIntentQuery } from '@/entities/payment/api/paymentApi';
+import { Button, Container, Stack } from '@mui/material';
+import { redirect, useParams, useRouter } from 'next/navigation';
 import { CheckCircleOutline, ErrorOutlineOutlined, ScheduleOutlined } from '@mui/icons-material';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { StyledPaper } from '@/features/ui/Paper/Paper';
+import { TransactionStatus } from '@/entities/payment/api/dto/TransactionStatus';
+import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
 
 const ErrorIcon = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -107,16 +110,30 @@ const Status: FC<{ status: string }> = ({ status }) => {
 
 export default function SuccessPage({ searchParams }: PageProps) {
   const { payment_intent: paymentIntentId } = searchParams;
+  const { slug } = useParams();
+  const router = useRouter();
 
   if (!paymentIntentId) redirect('/');
-
   const { data: paymentIntent, isFetching } = useGetIntentQuery(paymentIntentId);
+  const [completePayment] = useCompletePaymentMutation();
+
+  useEffect(() => {
+    !isFetching &&
+      paymentIntent &&
+      paymentIntent.status === 'succeeded' &&
+      completePayment({ payment: { serviceRequest: { id: slug.toString() } as ServiceRequestDto, stripeIntentId: paymentIntent.id, status: TransactionStatus.COMPLETED } });
+  }, [paymentIntent]);
 
   return paymentIntent ? (
     <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
-      <Stack justifyContent="start" alignItems="center" width={1} gap={3} mt={6}>
-        <Status status={'requires_payment_method'} />
-      </Stack>
+      <StyledPaper>
+        <Stack justifyContent="start" alignItems="center" width={1} gap={3} mt={6}>
+          <Status status={paymentIntent.status} />
+          <Button variant="contained" onClick={() => router.push(`/requests/${slug}/chat`)}>
+            Continue
+          </Button>
+        </Stack>
+      </StyledPaper>
     </Container>
   ) : (
     <></>

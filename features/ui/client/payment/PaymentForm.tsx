@@ -3,11 +3,13 @@ import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { Stack } from '@mui/material';
 import { FormEvent, useState } from 'react';
 import Button from '@mui/material/Button';
+import { useCreatePaymentMutation } from '@/entities/payment/api/paymentApi';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
-export default function PaymentForm({ isLoading }: { isLoading: boolean }) {
+export default function PaymentForm({ serviceRequestId, paymentIntentId, isLoading }: { serviceRequestId: string; paymentIntentId: string; isLoading: boolean }) {
   const [message, setMessage] = useState<string | null>();
+  const [createPayment] = useCreatePaymentMutation();
 
   const stripe = useStripe();
   const elements = useElements();
@@ -21,11 +23,13 @@ export default function PaymentForm({ isLoading }: { isLoading: boolean }) {
       return;
     }
 
+    await createPayment({ serviceRequestId, paymentIntentId });
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: 'http://localhost:8080/payment/success',
+        return_url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/requests/${serviceRequestId}/pay/success`,
       },
     });
 

@@ -1,3 +1,3 @@
 export interface ItemDto {
-  amount: number;
+  serviceRequestId: string;
 }

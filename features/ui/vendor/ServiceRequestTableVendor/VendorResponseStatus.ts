@@ -9,5 +9,5 @@ export const VendorResponseStatusColorMap: Record<VendorResponseStatus, BadgeOwn
   [VendorResponseStatus.IN_PROGRESS]: 'primary',
   [VendorResponseStatus.PICK_UP_VALIDATED]: 'info',
   [VendorResponseStatus.DROP_OFF_VALIDATED]: 'info',
-  [VendorResponseStatus.COMPLETED]: 'success',
+  [VendorResponseStatus.COMPLETED]: 'secondary',
 };
