@@ -67,7 +67,20 @@ export function Step1(props: StepProps) {
               // Calculate and store the distance
               if (result.routes[0].legs[0].distance) {
                 const meters = result.routes[0].legs[0].distance.value;
+                const distanceText = result.routes[0].legs[0].distance.text;
                 setValue('distance', meters);
+
+                // Get the midpoint of the route to place the distance label
+                const route = result.routes[0].overview_path;
+                const midpoint = route[Math.floor(route.length / 2)];
+
+                // Create a marker at the midpoint with the distance as a label
+                const infoWindow = new google.maps.InfoWindow({
+                  content: `<strong>${distanceText}</strong>`,
+                  position: midpoint,
+                  headerDisabled: true,
+                });
+                infoWindow.open(map);
               }
             }
           });
