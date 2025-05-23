@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { selectUserSession } from '@/entities/account/authSlice';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
+import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 
 export type TowingRequestSummaryProps = {
   serviceRequest: TowingRequest;
@@ -17,17 +18,39 @@ export type TowingRequestSummaryProps = {
 export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
   const { serviceRequest, vendorResponse } = props;
   const session = useSelector(selectUserSession);
-  const date = new Date(serviceRequest.eta).toLocaleDateString();
-  const time = new Date(serviceRequest.eta).toLocaleTimeString();
 
   let price = null;
-  if (session?.user?.role === UserRole.VENDOR && vendorResponse?.selected) price = vendorResponse?.quote;
-  if (session?.user?.role !== UserRole.VENDOR) price = serviceRequest?.price;
+  let eta = null;
+
+  price = session?.user?.role === UserRole.VENDOR ? vendorResponse?.quote : serviceRequest.price;
+  if (session?.user?.role === UserRole.VENDOR) {
+    switch (vendorResponse?.status) {
+      case VendorResponseStatus.QUOTED:
+      case VendorResponseStatus.PENDING:
+        const [hours, minutes, seconds] = vendorResponse.eta.split(':').map(Number);
+        const currentDateTime = new Date();
+        eta = new Date(currentDateTime.getTime() + hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000);
+        break;
+      case VendorResponseStatus.ACCEPTED:
+      case VendorResponseStatus.PAID:
+      case VendorResponseStatus.IN_PROGRESS:
+      case VendorResponseStatus.PICK_UP_VALIDATED:
+      case VendorResponseStatus.DROP_OFF_VALIDATED:
+      case VendorResponseStatus.COMPLETED:
+        eta = serviceRequest.eta;
+        break;
+    }
+  } else {
+    eta = serviceRequest.eta;
+  }
+
+  let date = eta && new Date(eta).toLocaleDateString();
+  let time = eta && new Date(eta).toLocaleTimeString();
 
   return (
     <StyledPaper elevation={0} sx={{ padding: (theme) => theme.spacing(2) }}>
       <Stack width={1} gap={2}>
-        {serviceRequest.price && serviceRequest.eta && (
+        {price && eta && (
           <>
             <Stack direction="row" alignItems="center" gap={1} width={1} justifyContent="space-between">
               <Typography align="left" variant="body2" fontWeight="500" width="1/3">

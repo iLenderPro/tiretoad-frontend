@@ -5,6 +5,7 @@ export const VendorResponseStatusColorMap: Record<VendorResponseStatus, BadgeOwn
   [VendorResponseStatus.SENT]: 'secondary',
   [VendorResponseStatus.QUOTED]: 'info',
   [VendorResponseStatus.PENDING]: 'warning',
+  [VendorResponseStatus.ACCEPTED]: 'success',
   [VendorResponseStatus.PAID]: 'success',
   [VendorResponseStatus.IN_PROGRESS]: 'primary',
   [VendorResponseStatus.PICK_UP_VALIDATED]: 'info',

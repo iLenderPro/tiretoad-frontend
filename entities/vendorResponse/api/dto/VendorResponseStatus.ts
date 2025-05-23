@@ -2,6 +2,7 @@ export enum VendorResponseStatus {
   SENT = 'SENT',
   QUOTED = 'QUOTED',
   PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
   PAID = 'PAID',
   IN_PROGRESS = 'IN_PROGRESS',
   PICK_UP_VALIDATED = 'PICK_UP_VALIDATED',

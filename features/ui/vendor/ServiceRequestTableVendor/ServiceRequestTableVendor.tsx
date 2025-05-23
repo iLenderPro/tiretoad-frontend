@@ -38,7 +38,7 @@ export default function ServiceRequestTableVendor() {
             <TableCell>Customer</TableCell>
             <TableCell>VIN</TableCell>
             <TableCell>Vehicle</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell colSpan={2}>Date & Time</TableCell>
           </TableRow>
         </TableHead>

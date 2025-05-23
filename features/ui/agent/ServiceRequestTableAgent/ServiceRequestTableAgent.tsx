@@ -40,7 +40,7 @@ export default function ServiceRequestTableAgent() {
             <TableCell>Customer</TableCell>
             <TableCell>VIN</TableCell>
             <TableCell>Vehicle</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell colSpan={2}>Date & Time</TableCell>
           </TableRow>
         </TableHead>
@@ -53,7 +53,7 @@ export default function ServiceRequestTableAgent() {
                 </TableCell>
                 <TableCell>{row.vehicle?.vin}</TableCell>
                 <TableCell>{`${row.vehicle.year} ${row.vehicle.model} ${row.vehicle.trim}`}</TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <Badge badgeContent={row.status} color={ServiceRequestStatusColorMap[row.status]} style={{ marginLeft: '20px' }} />
                 </TableCell>
                 <TableCell>{new Date(row?.createdAt || '').toLocaleString()}</TableCell>
