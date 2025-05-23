@@ -12,7 +12,6 @@ import { VendorDto } from '@/entities/user/api/dto/VendorDto';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
-import { UserRole } from '@/entities/user/api/dto/UserRole';
 
 export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
   const router = useRouter();
@@ -39,7 +38,7 @@ export default function SignUpForm({ redirectUrl }: { redirectUrl?: string }) {
       const result = await verifyUser({ ...data, userId: user.id }).unwrap();
       if (result) {
         if (user.email && user.password) {
-          const session = await login({ email: user.email, password: user.password, role: UserRole.VENDOR }).unwrap();
+          const session = await login({ email: user.email, password: user.password }).unwrap();
           dispatch(setUserSession(session));
           result && router.push(redirectUrl ? redirectUrl : '/');
         }

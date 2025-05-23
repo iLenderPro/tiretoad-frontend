@@ -1,19 +1,22 @@
 'use client';
 import React, { memo } from 'react';
 import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
-import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { Stack } from '@mui/material';
 import RespondedVendorsList from '@/features/ui/agent/RespondedVendorsList/RespondedVendorsList';
+import { useGetServiceRequestQuery } from '@/entities/serviceRequest/api/serviceRequestApi';
+import { skipToken } from '@reduxjs/toolkit/query';
+import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 
 export type ServiceRequestPreviewProps = {
-  serviceRequest: TowingRequest;
+  serviceRequestId: string;
 };
 
-function TowingRequestPreviewAgent(props: ServiceRequestPreviewProps) {
-  const { serviceRequest } = props;
+function TowingRequestPreviewAgent({ serviceRequestId }: ServiceRequestPreviewProps) {
+  const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(serviceRequestId || skipToken, { skip: !serviceRequestId });
+
   return serviceRequest ? (
     <Stack gap={2}>
-      <TowingRequestSummary serviceRequest={serviceRequest} />
+      <TowingRequestSummary serviceRequest={serviceRequest as TowingRequest} />
       <RespondedVendorsList serviceRequestId={serviceRequest.id!} />
     </Stack>
   ) : (

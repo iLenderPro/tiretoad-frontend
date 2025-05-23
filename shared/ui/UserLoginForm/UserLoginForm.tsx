@@ -7,10 +7,9 @@ import Button from '@mui/material/Button';
 import { useDispatch } from 'react-redux';
 import { setUserSession } from '@/entities/account/authSlice';
 import { useRouter } from 'next/navigation';
-import { UserRole } from '@/entities/user/api/dto/UserRole';
 import React from 'react';
 
-export default function UserLoginForm({ role, redirectUrl }: { role: UserRole; redirectUrl?: string }) {
+export default function UserLoginForm({ redirectUrl }: { redirectUrl?: string }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginUserMutation();
@@ -52,7 +51,6 @@ export default function UserLoginForm({ role, redirectUrl }: { role: UserRole; r
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
         />
-        <input type="hidden" {...register('role')} value={role} />
         <Button variant="contained" type="submit" size="large" disabled={isLoading} endIcon={isLoading ? <CircularProgress color="inherit" size="1em" /> : null}>
           Submit
         </Button>
