@@ -32,6 +32,10 @@ export const typography = {
     fontSize: '1.85rem',
     fontWeight: 500,
   },
+  h4: {
+    fontSize: '1.5rem',
+    fontWeight: 700,
+  },
   h6: {
     fontSize: '1rem',
     lineHeight: '1.2rem',

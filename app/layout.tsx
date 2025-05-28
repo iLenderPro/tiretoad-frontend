@@ -19,12 +19,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <StoreProvider>
         <Auth>
           <html style={{ height: '100%' }} lang="en">
-            <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', paddingBottom: '24px' }}>
+            <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
               {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && <GoogleAnalytics gaId="G-87C6D9V2J4" />}
               <ThemeRegistry>
                 <NavBar />
                 <Snackbar />
-                <main style={{ display: 'flex', flex: 1, backgroundColor: '#fafafa' }}>{children}</main>
+                <main
+                  style={{
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    backgroundColor: '#fafafa',
+                  }}
+                >
+                  {children}
+                </main>
               </ThemeRegistry>
             </body>
           </html>
