@@ -49,7 +49,7 @@ export default function LandingPageTestimonials() {
   return (
     <Stack gap={3}>
       <Stack alignItems="center" gap={3}>
-        <Avatar src={testimonials[activeStep].photo} alt={testimonials[activeStep].name} sx={{ width: 89, height: 89 }} />
+        <Avatar src={testimonials[activeStep].photo} alt={testimonials[activeStep].name} sx={{ width: 89, height: 89, outline: '3px solid #fff' }} />
         <Typography variant="body2">{testimonials[activeStep].text}</Typography>
         <Stack>
           <Typography variant="h6" gutterBottom>
