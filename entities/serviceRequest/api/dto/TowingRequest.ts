@@ -4,8 +4,8 @@ export interface TowingRequest extends ServiceRequest {
   locationDropOff: {
     latitude: string;
     longitude: string;
-    address: string;
-    comment: string;
+    address?: string;
+    comment?: string;
   };
   distance: number;
   canGoNeutral: boolean;

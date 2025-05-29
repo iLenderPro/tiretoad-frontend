@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { LandingPageForm } from '@/features/ui/landing/LandingPageForm/LandingPageForm';
 import React from 'react';
 import Typography from '@mui/material/Typography';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: `Mobile tire repair shops - TireToad`,
@@ -28,9 +29,9 @@ export default function Home() {
       </Container>
       <Stack alignItems="center" gap={5} padding={5} style={{ backgroundColor: '#000' }}>
         <Stack direction="row" gap={3}>
-          <img src="/icons/icon-facebook.svg" width={24} height={24} alt="Facebook" />
-          <img src="/icons/icon-twitter.svg" width={24} height={24} alt="Twitter" />
-          <img src="/icons/icon-linkedin.svg" width={24} height={24} alt="LinkedIn" />
+          <Image src="/icons/icon-facebook.svg" width={24} height={24} alt="Facebook" />
+          <Image src="/icons/icon-twitter.svg" width={24} height={24} alt="Twitter" />
+          <Image src="/icons/icon-linkedin.svg" width={24} height={24} alt="LinkedIn" />
         </Stack>
         <Stack direction="row" gap={2}>
           <Typography variant="body2" color="error.contrastText">

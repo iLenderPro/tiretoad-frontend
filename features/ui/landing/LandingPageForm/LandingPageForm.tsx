@@ -12,6 +12,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LandingPageTestimonials from '@/features/ui/landing/LandingPageTestimonials/LandingPageTestimonials';
+import { useRouter } from 'next/navigation';
 
 const loader = new Loader({
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
@@ -21,6 +22,7 @@ const loader = new Loader({
 
 export function LandingPageForm() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const {
     register,
@@ -29,9 +31,10 @@ export function LandingPageForm() {
     getValues,
     formState: { errors },
   } = useForm<Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>>({ values: serviceRequest });
+
   const handleStepSubmit = (data: Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>) => {
     dispatch(setServiceRequest(data));
-    // goToNextStep();
+    router.push('/new/');
   };
 
   if (typeof window !== 'undefined') {

@@ -1,5 +1,5 @@
 import { Stack, TextField } from '@mui/material';
-import React, { MutableRefObject } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
@@ -7,6 +7,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import Box from '@mui/material/Box';
 import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
+import { ServiceRequest } from '@/entities/serviceRequest/api/dto/ServiceRequest';
 
 export type StepProps = { formRef?: MutableRefObject<HTMLFormElement | null>; goToNextStep: (index?: number) => void };
 
@@ -27,12 +28,111 @@ export function Step1(props: StepProps) {
     getValues,
     formState: { errors },
   } = useForm<Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>>({ values: serviceRequest });
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const pickupMarkerRef = useRef<google.maps.Marker | null>(null);
+  const dropoffMarkerRef = useRef<google.maps.Marker | null>(null);
+  const pickupAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const dropoffAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const [mapsLoaded, setMapsLoaded] = useState(false);
+
   const handleStepSubmit = (data: Pick<TowingRequest, 'location' | 'locationDropOff' | 'distance'>) => {
     dispatch(setServiceRequest(data));
     goToNextStep();
   };
 
-  if (typeof window !== 'undefined') {
+  const drawRoute = async (map: google.maps.Map) => {
+    const pickupLocation = getValues('location');
+    const dropoffLocation = getValues('locationDropOff');
+    const pickupLat = pickupLocation?.latitude;
+    const pickupLng = pickupLocation?.longitude;
+    const dropoffLat = dropoffLocation?.latitude;
+    const dropoffLng = dropoffLocation?.longitude;
+
+    if (pickupLat && pickupLng && dropoffLat && dropoffLng) {
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+      directionsRenderer.setMap(map);
+
+      const request = {
+        origin: { lat: parseFloat(pickupLat), lng: parseFloat(pickupLng) },
+        destination: { lat: parseFloat(dropoffLat), lng: parseFloat(dropoffLng) },
+        travelMode: google.maps.TravelMode.DRIVING,
+      };
+
+      await directionsService.route(request, (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          directionsRenderer.setDirections(result);
+
+          // Calculate and store the distance
+          if (result.routes[0].legs[0].distance) {
+            const meters = result.routes[0].legs[0].distance.value;
+            const distanceText = result.routes[0].legs[0].distance.text;
+            setValue('distance', meters);
+
+            // Get the midpoint of the route to place the distance label
+            const route = result.routes[0].overview_path;
+            const midpoint = route[Math.floor(route.length / 2)];
+
+            // Create a marker at the midpoint with the distance as a label
+            const infoWindow = new google.maps.InfoWindow({
+              content: `<strong>${distanceText}</strong>`,
+              position: midpoint,
+              headerDisabled: true,
+            });
+            infoWindow.open(map);
+          }
+        }
+      });
+    }
+  };
+
+  const handleLocationChange = async (
+    map: google.maps.Map,
+    marker: google.maps.Marker,
+    autocomplete: google.maps.places.Autocomplete,
+    type: 'location' | 'locationDropOff',
+    coordinates?: ServiceRequest['location'],
+  ) => {
+    marker.setVisible(false);
+
+    let place: Partial<google.maps.places.PlaceResult> = {};
+
+    if (coordinates) {
+      const lat = parseFloat(coordinates.latitude);
+      const lng = parseFloat(coordinates.longitude);
+      const location = new google.maps.LatLng(lat, lng);
+
+      place = {
+        geometry: {
+          location: location,
+          viewport: new google.maps.LatLngBounds(new google.maps.LatLng(lat - 0.01, lng - 0.01), new google.maps.LatLng(lat + 0.01, lng + 0.01)),
+        },
+      };
+    } else {
+      place = autocomplete.getPlace();
+    }
+
+    if (!place.geometry || !place.geometry.location) {
+      return;
+    }
+
+    if (place.geometry.viewport) {
+      map.fitBounds(place.geometry.viewport);
+    } else {
+      map.setCenter(place.geometry.location);
+      map.setZoom(17);
+    }
+
+    setValue(`${type}.latitude`, place.geometry.location.lat().toString());
+    setValue(`${type}.longitude`, place.geometry.location.lng().toString());
+
+    marker.setPosition(place.geometry.location);
+    marker.setVisible(true);
+    await drawRoute(map);
+  };
+
+  useEffect(() => {
     loader.load().then(async () => {
       const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
       const map = new Map(document.getElementById('map') as HTMLElement, {
@@ -40,121 +140,59 @@ export function Step1(props: StepProps) {
         zoom: 11,
         mapTypeControl: false,
       });
-
-      const drawRoute = () => {
-        const pickupLocation = getValues('location');
-        const dropoffLocation = getValues('locationDropOff');
-        const pickupLat = pickupLocation?.latitude;
-        const pickupLng = pickupLocation?.longitude;
-        const dropoffLat = dropoffLocation?.latitude;
-        const dropoffLng = dropoffLocation?.longitude;
-
-        if (pickupLat && pickupLng && dropoffLat && dropoffLng) {
-          const directionsService = new google.maps.DirectionsService();
-          const directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: true });
-          directionsRenderer.setMap(map);
-
-          const request = {
-            origin: { lat: parseFloat(pickupLat), lng: parseFloat(pickupLng) },
-            destination: { lat: parseFloat(dropoffLat), lng: parseFloat(dropoffLng) },
-            travelMode: google.maps.TravelMode.DRIVING,
-          };
-
-          directionsService.route(request, (result, status) => {
-            if (status === google.maps.DirectionsStatus.OK && result) {
-              directionsRenderer.setDirections(result);
-
-              // Calculate and store the distance
-              if (result.routes[0].legs[0].distance) {
-                const meters = result.routes[0].legs[0].distance.value;
-                const distanceText = result.routes[0].legs[0].distance.text;
-                setValue('distance', meters);
-
-                // Get the midpoint of the route to place the distance label
-                const route = result.routes[0].overview_path;
-                const midpoint = route[Math.floor(route.length / 2)];
-
-                // Create a marker at the midpoint with the distance as a label
-                const infoWindow = new google.maps.InfoWindow({
-                  content: `<strong>${distanceText}</strong>`,
-                  position: midpoint,
-                  headerDisabled: true,
-                });
-                infoWindow.open(map);
-              }
-            }
-          });
-        }
-      };
+      mapRef.current = map;
 
       // Pickup autocomplete
       const pickupInput = document.getElementById('pickup-input') as HTMLInputElement;
       const pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput);
       pickupAutocomplete.bindTo('bounds', map);
+      pickupAutocompleteRef.current = pickupAutocomplete;
 
       // Dropoff autocomplete - Add this section
       const dropoffInput = document.getElementById('dropoff-input') as HTMLInputElement;
       const dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput);
       dropoffAutocomplete.bindTo('bounds', map);
+      dropoffAutocompleteRef.current = dropoffAutocomplete;
 
       const pickupMarker = new google.maps.Marker({
         map,
         anchorPoint: new google.maps.Point(0, -29),
       });
+      pickupMarkerRef.current = pickupMarker;
 
       // Create a second marker for dropoff location
       const dropoffMarker = new google.maps.Marker({
         map,
         anchorPoint: new google.maps.Point(0, -29),
       });
+      dropoffMarkerRef.current = dropoffMarker;
 
       pickupAutocomplete.addListener('place_changed', () => {
-        pickupMarker.setVisible(false);
-        const place = pickupAutocomplete.getPlace();
-
-        if (!place.geometry || !place.geometry.location) {
-          return;
-        }
-
-        if (place.geometry.viewport) {
-          map.fitBounds(place.geometry.viewport);
-        } else {
-          map.setCenter(place.geometry.location);
-          map.setZoom(17);
-        }
-
-        setValue('location.latitude', place.geometry.location.lat().toString());
-        setValue('location.longitude', place.geometry.location.lng().toString());
-
-        pickupMarker.setPosition(place.geometry.location);
-        pickupMarker.setVisible(true);
-        drawRoute();
+        handleLocationChange(map, pickupMarker, pickupAutocomplete, 'location');
       });
 
       dropoffAutocomplete.addListener('place_changed', () => {
-        dropoffMarker.setVisible(false);
-        const place = dropoffAutocomplete.getPlace();
-
-        if (!place.geometry || !place.geometry.location) {
-          return;
-        }
-
-        if (place.geometry.viewport) {
-          map.fitBounds(place.geometry.viewport);
-        } else {
-          map.setCenter(place.geometry.location);
-          map.setZoom(17);
-        }
-
-        setValue('locationDropOff.latitude', place.geometry.location.lat().toString());
-        setValue('locationDropOff.longitude', place.geometry.location.lng().toString());
-
-        dropoffMarker.setPosition(place.geometry.location);
-        dropoffMarker.setVisible(true);
-        drawRoute();
+        handleLocationChange(map, dropoffMarker, dropoffAutocomplete, 'locationDropOff');
       });
+
+      setMapsLoaded(true);
     });
-  }
+  }, []);
+
+  useEffect(() => {
+    if (mapsLoaded && mapRef.current && pickupMarkerRef.current && dropoffMarkerRef.current) {
+      const pickupLocation = getValues('location');
+      const dropoffLocation = getValues('locationDropOff');
+
+      if (pickupLocation?.latitude && pickupLocation?.longitude) {
+        handleLocationChange(mapRef.current, pickupMarkerRef.current, pickupAutocompleteRef.current as google.maps.places.Autocomplete, 'location', pickupLocation);
+      }
+
+      if (dropoffLocation?.latitude && dropoffLocation?.longitude) {
+        handleLocationChange(mapRef.current, dropoffMarkerRef.current, dropoffAutocompleteRef.current as google.maps.places.Autocomplete, 'locationDropOff', dropoffLocation);
+      }
+    }
+  }, [mapsLoaded]);
 
   return (
     <form onSubmit={handleSubmit(handleStepSubmit)} ref={formRef}>

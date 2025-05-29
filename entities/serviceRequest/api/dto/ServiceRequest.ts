@@ -18,8 +18,8 @@ export interface ServiceRequest {
   location: {
     latitude: string;
     longitude: string;
-    address: string;
-    comment: string;
+    address?: string;
+    comment?: string;
   };
   urgency: string;
   createdAt?: string;
