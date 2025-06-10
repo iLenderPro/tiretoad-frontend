@@ -114,7 +114,7 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
           </Stack>
           <Stack direction="row" alignItems="center" justifyContent="start" width="100%">
             <Typography variant="body2" fontWeight="500" flexGrow={1} align="left">
-              Model: {serviceRequest.vehicle?.year} {serviceRequest.vehicle?.make} {serviceRequest.vehicle?.model}
+              Model: {serviceRequest.vehicle?.year} {serviceRequest.vehicle?.make} {serviceRequest.vehicle?.model} {serviceRequest.vehicle?.trim}
             </Typography>
           </Stack>
         </Stack>
