@@ -1,17 +1,19 @@
-import { CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
-import { useLazyDecodeQuery, useLazyGetMakesQuery, useLazyGetModelsQuery } from '@/entities/vin/api/vinApi';
+import { CircularProgress, MenuItem, Stack, TextField } from '@mui/material';
+import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
+import { useLazyGetMakesQuery, useLazyGetModelsQuery, useLazyGetTrimsQuery } from '@/entities/tires/api/tiresApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
-import { ServiceRequestDto } from '@/entities/serviceRequest/api/dto/ServiceRequestDto';
+import { FormProvider, useController, useForm } from 'react-hook-form';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
-import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 import Typography from '@mui/material/Typography';
 import { StyledPaper } from '@/features/ui/Paper/Paper';
 import TowingRequestSummary from '@/features/ui/client/TowingRequestSummary/TowingRequestSummary';
 import Button from '@mui/material/Button';
+import { TireRepairRequest } from '@/entities/serviceRequest/api/dto/TireRepairRequest';
+import { showSnackbar } from '@/shared/ui/Snackbar/model/snackbarSlice';
+import { TowingRequest } from '@/entities/serviceRequest/api/dto/TowingRequest';
 
 const minYear = new Date('1980').getFullYear();
 const currentYear = new Date().getFullYear();
@@ -31,12 +33,9 @@ export function Step2(props: StepProps) {
   const [isInitFlow, toggleInitFlow] = useState<boolean>(false);
   const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const dispatch = useDispatch();
-  const methods = useForm<Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated' | 'location'>>({
+  const methods = useForm<Pick<TireRepairRequest, 'vehicle'>>({
     values: {
-      vehicle: { vin: serviceRequest.vehicle?.vin } as ServiceRequestDto['vehicle'],
-      canGoNeutral: serviceRequest.canGoNeutral,
-      tiresInflated: serviceRequest.tiresInflated,
-      location: serviceRequest.location,
+      vehicle: { vin: serviceRequest.vehicle?.vin } as TireRepairRequest['vehicle'],
     },
   });
   const {
@@ -48,9 +47,11 @@ export function Step2(props: StepProps) {
   } = methods;
 
   const vehicle = watch('vehicle');
+
   const [decode, { data: decodedData, isLoading: isVehicleDecoding }] = useLazyDecodeQuery();
   const [getMakes, { isFetching: isMakesFetching }] = useLazyGetMakesQuery();
   const [getModels, { isFetching: isModelsFetching }] = useLazyGetModelsQuery();
+  const [getTrims, { isFetching: isTrimsFetching }] = useLazyGetTrimsQuery();
 
   const { field: year } = useController({
     name: 'vehicle.year',
@@ -73,7 +74,7 @@ export function Step2(props: StepProps) {
     rules: { required: { value: true, message: 'Trim is required' } },
   });
 
-  const handleStepSubmit = (data: Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated' | 'location'>) => {
+  const handleStepSubmit = (data: Pick<TireRepairRequest, 'vehicle'>) => {
     dispatch(
       setServiceRequest({
         ...data,
@@ -81,19 +82,23 @@ export function Step2(props: StepProps) {
           ...data.vehicle,
           make: ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.name || '',
           model: ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.name || '',
+          trim:
+            ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.name || '',
         },
       }),
     );
     goToNextStep();
   };
 
-  const handleStepErrors = (errors: FieldErrors<Pick<TowingRequest, 'vehicle'>>) => {
-    if (!errors.vehicle) {
+  const handleStepErrors = (errors: FieldErrors<Pick<TireRepairRequest, 'vehicle'>>) => {
+    if (errors.vehicle) {
+      dispatch(showSnackbar({ type: 'error', content: errors.vehicle.message }));
+      return;
     }
   };
 
   const loadMakes = async (yearId: string) => {
-    const { data } = await getMakes();
+    const { data } = await getMakes({ yearId });
     setYmm((prevState) => ({
       ...prevState,
       children: {
@@ -142,33 +147,38 @@ export function Step2(props: StepProps) {
   };
 
   const loadTrims = async (yearId: string, makeId: string, modelId: string) => {
-    if (decodedData?.trim) {
-      setYmm((prevState) => ({
-        ...prevState,
-        children: {
-          ...prevState.children,
-          [yearId]: {
-            id: yearId,
-            name: yearId,
-            children: {
-              ...prevState?.children?.[yearId]?.children,
-              [makeId.toLowerCase()]: {
-                id: makeId,
-                name: makeId,
-                children: {
-                  ...prevState?.children?.[yearId]?.children?.[makeId.toLowerCase()]?.children,
-                  [modelId.toLowerCase()]: {
-                    id: modelId,
-                    name: modelId,
-                    children: decodedData?.trim ? { [decodedData.trim.toLowerCase()]: { id: decodedData.trim, name: decodedData.trim } } : undefined,
-                  },
+    const { data } = await getTrims({ yearId, makeId, modelId });
+    setYmm((prevState) => ({
+      ...prevState,
+      children: {
+        ...prevState.children,
+        [yearId]: {
+          id: yearId,
+          name: yearId,
+          children: {
+            ...prevState?.children?.[yearId]?.children,
+            [makeId.toLowerCase()]: {
+              id: makeId,
+              name: makeId,
+              children: {
+                ...prevState?.children?.[yearId]?.children?.[makeId.toLowerCase()]?.children,
+                [modelId.toLowerCase()]: {
+                  id: modelId,
+                  name: modelId,
+                  children: data?.reduce(
+                    (acc, cur) => ({
+                      ...acc,
+                      [cur.name.toLowerCase()]: { id: cur.id, name: cur.name },
+                    }),
+                    {} as YmmHierarchy['children'],
+                  ),
                 },
               },
             },
           },
         },
-      }));
-    }
+      },
+    }));
   };
 
   const handleYearChange = async (value: string) => {
@@ -196,7 +206,7 @@ export function Step2(props: StepProps) {
   const handleDecode = async () => {
     if (vehicle.vin) {
       toggleDecodingFlow(true);
-      await decode(vehicle.vin);
+      decode(vehicle.vin);
     }
   };
 
@@ -247,12 +257,9 @@ export function Step2(props: StepProps) {
   }, [isModelsFetching]);
 
   useEffect(() => {
-    console.log('entered');
-    console.log(isDecodingFlow);
-    console.log(decodedData?.trim);
-    console.log(ymm);
     if (
       isDecodingFlow &&
+      !isTrimsFetching &&
       decodedData?.trim &&
       ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[decodedData.trim.toLowerCase()]
     ) {
@@ -264,14 +271,43 @@ export function Step2(props: StepProps) {
 
     if (
       isInitFlow &&
+      !isTrimsFetching &&
       serviceRequest.vehicle.trim &&
       ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]
     ) {
       handleTrimChange(
         ymm?.children?.[year.value]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[serviceRequest.vehicle.trim.toLowerCase()]?.name || '',
       );
+      toggleInitFlow(false);
     }
-  }, [model.value]);
+  }, [isTrimsFetching]);
+
+  // useEffect(() => {
+  //   if (!isTiresFetching) {
+  //     if (isInitFlow && serviceRequest?.tires?.[0]?.size) {
+  //       // TODO: tire does not match tire name, gotta fix it
+  //       // console.log('tire size from request: ', serviceRequest?.tires?.[0]?.size);
+  //       // console.log(
+  //       //   'tire size from hash table: ',
+  //       //   ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children,
+  //       // );
+  //       tire.onChange(
+  //         ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children?.[
+  //           serviceRequest?.tires?.[0]?.size?.toLowerCase()
+  //         ]?.id,
+  //       );
+  //       toggleInitFlow(false);
+  //     }
+  //     // else {
+  //     //   tire.onChange(
+  //     //     Object.keys(
+  //     //       ymm?.children?.[year.value.toString()]?.children?.[make.value.toLowerCase()]?.children?.[model.value.toLowerCase()]?.children?.[trim.value.toLowerCase()]?.children ||
+  //     //         {},
+  //     //     )?.[0],
+  //     //   );
+  //     // }
+  //   }
+  // }, [isTiresFetching]);
 
   useEffect(() => {
     if (serviceRequest.vehicle) {
@@ -285,7 +321,8 @@ export function Step2(props: StepProps) {
         <TowingRequestSummary serviceRequest={serviceRequest} />
         <StyledPaper>
           <FormProvider {...methods}>
-            <Stack alignItems="center" gap={3} p={2}>
+            <Stack alignItems="center" gap={4} p={2}>
+              <Typography variant="h3">Enter VIN</Typography>
               <Stack direction="row" width={1} gap={2}>
                 <TextField {...register('vehicle.vin')} placeholder="Enter VIN to find your tire size" fullWidth />
                 <Button
@@ -298,7 +335,8 @@ export function Step2(props: StepProps) {
                   Decode
                 </Button>
               </Stack>
-              <Stack direction="row" flexWrap="wrap" gap={3} width={1}>
+              <Typography variant="h5">Or Select Year, Make, Model and Trim</Typography>
+              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
                 <TextField
                   label="Year"
                   select
@@ -316,6 +354,7 @@ export function Step2(props: StepProps) {
                       </MenuItem>
                     ))}
                 </TextField>
+
                 <TextField
                   label="Make"
                   select
@@ -361,7 +400,7 @@ export function Step2(props: StepProps) {
                   select
                   fullWidth
                   style={{ flex: 1, minWidth: '250px' }}
-                  value={trim?.value || ''}
+                  value={!isTrimsFetching ? trim?.value || '' : ''}
                   onChange={(e) => handleTrimChange(e.target.value)}
                   error={Boolean(errors.vehicle?.trim)}
                   helperText={errors.vehicle?.trim?.message}
@@ -378,45 +417,9 @@ export function Step2(props: StepProps) {
                       </MenuItem>
                     ))
                   ) : (
-                    <MenuItem>{'Select Model to see all trims'}</MenuItem>
+                    <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
                   )}
                 </TextField>
-              </Stack>
-              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
-                <Controller
-                  control={control}
-                  name="canGoNeutral"
-                  defaultValue={false}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      checked={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      control={<Switch color="primary" />}
-                      label={<Typography variant="body2">Can the vehicle go into neutral? Yes</Typography>}
-                      labelPlacement="start"
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="tiresInflated"
-                  defaultValue={false}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      checked={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      control={<Switch color="primary" />}
-                      label={<Typography variant="body2">Are all four tires inflated? Yes</Typography>}
-                      labelPlacement="start"
-                    />
-                  )}
-                />
-              </Stack>
-              <Stack direction="row" flexWrap="wrap" gap={1} width={1}>
-                <TextField {...register('location.comment')} fullWidth label="Add your notes"></TextField>
               </Stack>
             </Stack>
           </FormProvider>

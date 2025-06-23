@@ -385,6 +385,7 @@ export function Step2(props: StepProps) {
       toggleInitFlow(true);
     }
   }, []);
+
   return (
     <form onSubmit={handleSubmit(handleStepSubmit, handleStepErrors)} ref={formRef}>
       <FormProvider {...methods}>
