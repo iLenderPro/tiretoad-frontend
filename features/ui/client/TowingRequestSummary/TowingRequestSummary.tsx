@@ -9,6 +9,7 @@ import { selectUserSession } from '@/entities/account/authSlice';
 import { UserRole } from '@/entities/user/api/dto/UserRole';
 import { VendorResponseDto } from '@/entities/vendorResponse/api/dto/VendorResponseDto';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
+import { ServiceRequestStatus } from '@/entities/serviceRequest/api/dto/ServiceRequestStatus';
 
 export type TowingRequestSummaryProps = {
   serviceRequest: TowingRequest;
@@ -19,10 +20,9 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
   const { serviceRequest, vendorResponse } = props;
   const session = useSelector(selectUserSession);
 
-  let price = null;
   let eta = null;
+  const price = session?.user?.role === UserRole.VENDOR ? vendorResponse?.quote : serviceRequest.price;
 
-  price = session?.user?.role === UserRole.VENDOR ? vendorResponse?.quote : serviceRequest.price;
   if (session?.user?.role === UserRole.VENDOR) {
     switch (vendorResponse?.status) {
       case VendorResponseStatus.QUOTED:
@@ -61,7 +61,17 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
               </Typography>
               <span>
                 {price && (
-                  <Typography align="right" variant="body2" fontWeight={700} width="1/3" bgcolor="#f5f5f5" borderRadius={0.5} paddingX={1} paddingY={0.5}>
+                  <Typography
+                    align="right"
+                    variant="body2"
+                    fontWeight={700}
+                    width="1/3"
+                    color={(theme) => (session?.user?.role === UserRole.CLIENT && serviceRequest.status === ServiceRequestStatus.PAID ? 'white' : theme.palette.text.primary)}
+                    bgcolor={(theme) => (session?.user?.role === UserRole.CLIENT && serviceRequest.status === ServiceRequestStatus.PAID ? theme.palette.success.main : '#f5f5f5')}
+                    borderRadius={0.5}
+                    paddingX={1}
+                    paddingY={0.5}
+                  >
                     {`$${price}`}
                   </Typography>
                 )}
