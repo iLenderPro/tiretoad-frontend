@@ -27,9 +27,8 @@ export default function TowingRequestSummary(props: TowingRequestSummaryProps) {
     switch (vendorResponse?.status) {
       case VendorResponseStatus.QUOTED:
       case VendorResponseStatus.PENDING:
-        const [hours, minutes, seconds] = vendorResponse.eta.split(':').map(Number);
         const currentDateTime = new Date();
-        eta = new Date(currentDateTime.getTime() + hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000);
+        eta = new Date(currentDateTime.getTime() + vendorResponse.eta * 60 * 1000);
         break;
       case VendorResponseStatus.ACCEPTED:
       case VendorResponseStatus.PAID:

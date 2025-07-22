@@ -9,7 +9,7 @@ export type VendorResponseDto = {
   quote: number;
   price: number;
   markup: number;
-  eta: string;
+  eta: number;
   selected: boolean;
   vendor: VendorDto;
   serviceRequest: ServiceRequestDto;

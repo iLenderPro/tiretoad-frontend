@@ -25,6 +25,7 @@ import { SyntheticEvent, useState } from 'react';
 import { useSelectForJobMutation, useSubmitPriceMutation } from '@/entities/vendorResponse/api/vendorResponseApi';
 import { VendorResponseStatus } from '@/entities/vendorResponse/api/dto/VendorResponseStatus';
 import { VendorResponseStatusColorMap } from '@/features/ui/vendor/ServiceRequestTableVendor/VendorResponseStatus';
+import { timeOptions } from '@/features/ui/vendor/QuoteDialog/QuoteDialog';
 
 export default function RespondedVendorsList(props: { serviceRequestId: string }) {
   const { serviceRequestId } = props;
@@ -112,7 +113,7 @@ export default function RespondedVendorsList(props: { serviceRequestId: string }
                           <Stack component="span" direction="row" alignItems="center" gap={1}>
                             {response?.eta && (
                               <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
-                                {response.eta.slice(0, 5)}
+                                {response.eta && timeOptions.find(({ value }) => value === response.eta)?.label}
                               </Typography>
                             )}
                             {response?.eta && (

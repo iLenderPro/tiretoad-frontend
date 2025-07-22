@@ -14,13 +14,56 @@ export interface QuoteDialogProps {
   handleClose: () => void;
 }
 
+export const timeOptions = [
+  {
+    value: 15,
+    label: '15 min',
+  },
+  {
+    value: 30,
+    label: '30 min',
+  },
+  {
+    value: 45,
+    label: '45 min',
+  },
+  {
+    value: 60,
+    label: '1 hour',
+  },
+  {
+    value: 75,
+    label: '1 hour 15 min',
+  },
+  {
+    value: 90,
+    label: '1 hour 30 min',
+  },
+  {
+    value: 105,
+    label: '1 hour 45 min',
+  },
+  {
+    value: 120,
+    label: '2 hours',
+  },
+  {
+    value: 135,
+    label: '2 hours 15 min',
+  },
+  {
+    value: 150,
+    label: '2 hours 30 min',
+  },
+];
+
 export default function QuoteDialog({ vendorResponse, open, handleClose }: QuoteDialogProps) {
-  const { register, handleSubmit } = useForm<{ eta: string; quote: number }>({
-    values: { eta: vendorResponse.eta?.slice(0, 5), quote: vendorResponse?.quote },
+  const { register, handleSubmit } = useForm<{ eta: number; quote: number }>({
+    values: { eta: vendorResponse.eta, quote: vendorResponse?.quote },
   });
   const [submitQuote] = useSubmitQuoteMutation();
 
-  const onSubmit = (data: { eta: string; quote: number }) => {
+  const onSubmit = (data: { eta: number; quote: number }) => {
     const result = submitQuote({ id: vendorResponse.id, ...data }).unwrap();
     handleClose();
   };
@@ -34,21 +77,27 @@ export default function QuoteDialog({ vendorResponse, open, handleClose }: Quote
         onSubmit: handleSubmit(onSubmit),
       }}
     >
-      <DialogContent>
+      <DialogContent sx={{ paddingTop: (theme) => theme.spacing(4) }}>
         <TextField
-          {...register('eta', { required: true, setValueAs: (value) => value.slice(0, 5) })}
+          {...register('eta', { required: true })}
+          select
           fullWidth
           variant="outlined"
-          margin="normal"
-          type="time"
-          label="Time"
-          inputProps={{
-            step: 300,
+          label="ETA"
+          defaultValue=""
+          SelectProps={{
+            native: true,
           }}
           InputLabelProps={{
             shrink: true,
           }}
-        />
+        >
+          {timeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </TextField>
         <TextField
           {...register('quote', { required: true, valueAsNumber: true })}
           fullWidth
@@ -60,6 +109,7 @@ export default function QuoteDialog({ vendorResponse, open, handleClose }: Quote
           InputLabelProps={{
             shrink: true,
           }}
+          inputProps={{ min: 0 }}
         />
       </DialogContent>
       <DialogActions>
