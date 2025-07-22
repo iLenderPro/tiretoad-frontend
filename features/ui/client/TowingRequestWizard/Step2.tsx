@@ -1,9 +1,9 @@
-import { CircularProgress, MenuItem, Stack, TextField } from '@mui/material';
+import { CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField } from '@mui/material';
 import { useLazyDecodeQuery } from '@/entities/vin/api/vinApi';
 import { useLazyGetMakesQuery, useLazyGetModelsQuery, useLazyGetTrimsQuery } from '@/entities/tires/api/tiresApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormProvider, useController, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useController, useForm } from 'react-hook-form';
 import { selectServiceRequest, setServiceRequest } from '@/entities/serviceRequest/serviceRequestSlice';
 import { StepProps } from '@/features/ui/client/ServiceRequestWizard/Step1';
 import { FieldErrors } from 'react-hook-form/dist/types/errors';
@@ -33,9 +33,11 @@ export function Step2(props: StepProps) {
   const [isInitFlow, toggleInitFlow] = useState<boolean>(false);
   const serviceRequest = useSelector(selectServiceRequest) as TowingRequest;
   const dispatch = useDispatch();
-  const methods = useForm<Pick<TireRepairRequest, 'vehicle'>>({
+  const methods = useForm<Pick<TowingRequest, 'vehicle' | 'canGoNeutral' | 'tiresInflated'>>({
     values: {
-      vehicle: { vin: serviceRequest.vehicle?.vin } as TireRepairRequest['vehicle'],
+      vehicle: { vin: serviceRequest.vehicle?.vin } as TowingRequest['vehicle'],
+      canGoNeutral: serviceRequest.canGoNeutral,
+      tiresInflated: serviceRequest.tiresInflated,
     },
   });
   const {
@@ -420,6 +422,39 @@ export function Step2(props: StepProps) {
                     <MenuItem>{isTrimsFetching ? 'Loading...' : 'Select Model to see all trims'}</MenuItem>
                   )}
                 </TextField>
+              </Stack>
+              <Stack direction="row" flexWrap="wrap" gap={2} width={1}>
+                <Controller
+                  control={control}
+                  name="canGoNeutral"
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      checked={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      control={<Switch color="primary" />}
+                      label={<Typography variant="body2">Can the vehicle go into neutral? Yes</Typography>}
+                      labelPlacement="start"
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="tiresInflated"
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      checked={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      control={<Switch color="primary" />}
+                      label={<Typography variant="body2">Are all four tires inflated? Yes</Typography>}
+                      labelPlacement="start"
+                    />
+                  )}
+                />
               </Stack>
             </Stack>
           </FormProvider>
