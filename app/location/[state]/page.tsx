@@ -15,7 +15,7 @@ export default async function LocationState(props: any) {
     <Container style={{ display: 'flex', flex: 1, paddingTop: '24px' }}>
       <Stack flex="1" alignItems="center" gap={5}>
         <Typography variant="h1">
-          There are {count} mobile tire repair shops in {state.name}
+          There are {count} towing services in {state.name}
         </Typography>
         <ServiceRequestWizard />
       </Stack>
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state, count } = await getCount({ params });
 
   return {
-    title: `There are ${count} mobile tire repair shops in ${state.name}`,
-    description: `Get your flat tire fixed in ${state.name} in 30 minutes or less. Connect with a mobile tire repair service right in your area instantly.`,
+    title: `There are ${count} towing services in ${state.name}`,
+    description: `TireToad’s 24/7 tow truck dispatch app offers fast, reliable help for any roadside emergency in ${state.name}. DIY dispatch makes getting assistance easy!`,
   };
 }
 

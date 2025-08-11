@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: `Mobile tire repair shops - TireToad`,
-  description: `Get your flat tire fixed in 30 minutes or less. Connect with a mobile tire repair service right in your area instantly.`,
+  title: `TireToad guarantees fast, reliable towing service with 30-minute response time.`,
+  description: `TireToad’s 24/7 tow truck dispatch app offers fast, reliable help for any roadside emergency. DIY dispatch makes getting assistance easy!`,
 };
 export default function Home() {
   return (

@@ -27,8 +27,8 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   const { state, city, count } = await getCount({ params });
 
   return {
-    title: `There are ${count} mobile tire repair shops in ${city.name} (${state.code})`,
-    description: `Get your flat tire fixed in ${city.name}, ${state.code} in 30 minutes or less. Connect with a mobile tire repair service right in your area instantly.`,
+    title: `There are ${count} towing services in ${city.name}, (${state.code})`,
+    description: `TireToad offers guaranteed towing service in ${city.name}, ${state.code} with 30-minute response times. Fast, reliable, and here when you need us most!`,
   };
 }
 

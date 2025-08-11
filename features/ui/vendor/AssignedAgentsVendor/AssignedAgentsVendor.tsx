@@ -9,7 +9,7 @@ import { useGetVendorResponseQuery } from '@/entities/vendorResponse/api/vendorR
 
 export default function AssignedAgentsVendor(props: { serviceRequestId: string; vendorResponseId: string }) {
   const { serviceRequestId, vendorResponseId } = props;
-  const { data: serviceRequest, isFetching } = useGetServiceRequestQuery(serviceRequestId, {
+  const { data: serviceRequest } = useGetServiceRequestQuery(serviceRequestId, {
     pollingInterval: 1000,
   });
   const { data: vendorResponse } = useGetVendorResponseQuery(vendorResponseId);
